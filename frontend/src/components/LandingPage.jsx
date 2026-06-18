@@ -40,10 +40,18 @@ export default function LandingPage({ onAnalyze, latestReport }) {
       );
     }
     const W = 500, H = 140, P = 20;
-    const vals = trendPoints.map(t => t.value), mx = Math.max(...vals, 100), mn = Math.min(...vals, 0);
+    const vals = trendPoints.map(t => Number(t.value) || 0);
+    const maxVal = Math.max(...vals);
+    const minVal = Math.min(...vals);
+    const mx = maxVal === minVal && maxVal === 0 ? 100 : maxVal;
+    const mn = minVal;
+    
+    const range = (mx - mn) || 1;
+    const lengthDivider = (trendPoints.length - 1) || 1;
+
     const pts = trendPoints.map((t, i) => ({
-      x: P + (i * (W - 2 * P)) / (trendPoints.length - 1),
-      y: H - P - ((t.value - mn) / (mx - mn)) * (H - 2 * P),
+      x: P + (i * (W - 2 * P)) / lengthDivider,
+      y: H - P - (((Number(t.value) || 0) - mn) / range) * (H - 2 * P),
     }));
     const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
     const area = `${d} L ${pts[pts.length - 1].x} ${H - P} L ${pts[0].x} ${H - P} Z`;
