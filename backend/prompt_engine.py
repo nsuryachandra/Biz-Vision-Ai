@@ -1,4 +1,5 @@
 import re
+import time
 import logging
 import json
 import google.generativeai as genai
@@ -179,14 +180,27 @@ class PromptEngine:
             except Exception as e:
                 logger.warning(f"Groq API call failed: {e}. Trying Gemini fallback if configured.")
 
-        # Try Gemini if Groq was not used or failed
+        # Try Gemini if Groq was not used or failed, with retry on quota errors
         if not response_content and self.gemini_api_key:
-            try:
-                response = self.model.generate_content(prompt_text)
-                response_content = response.text.strip()
-                logger.info("Successfully generated report response via Gemini API.")
-            except Exception as e:
-                logger.warning(f"Gemini API call failed: {e}.")
+            from google.api_core.exceptions import ResourceExhausted
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    response = self.model.generate_content(prompt_text)
+                    response_content = response.text.strip()
+                    logger.info("Successfully generated report response via Gemini API.")
+                    break
+                except ResourceExhausted as e:
+                    delay_match = re.search(r"retry in (\d+\.?\d*)s", str(e))
+                    retry_seconds = (delay_match and float(delay_match.group(1)) + 1) or (2 ** attempt * 5)
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Gemini API quota exceeded. Retrying in {retry_seconds:.1f}s (attempt {attempt+1}/{max_retries}).")
+                        time.sleep(retry_seconds)
+                    else:
+                        logger.warning(f"Gemini API quota exceeded after {max_retries} retries: {e}.")
+                except Exception as e:
+                    logger.warning(f"Gemini API call failed: {e}.")
+                    break
 
         # If both failed or are unconfigured, use premium simulated fallback
         if response_content:
@@ -330,7 +344,16 @@ class PromptEngine:
             m = re.search(r"```(?:json)?(.*?)```", response, re.DOTALL)
             if m:
                 clean = m.group(1).strip()
-        parsed = json.loads(clean)
+        try:
+            parsed = json.loads(clean)
+        except json.JSONDecodeError:
+            logger.warning(f"Failed to parse business names JSON from response. Using fallback.")
+            parsed = [
+                {"name": "VenturePro", "popularity": "Medium", "competition": "Low", "brand_uniqueness": 75, "rationale": "Reliable branding for your venture."},
+                {"name": "NovaBiz", "popularity": "High", "competition": "Low", "brand_uniqueness": 85, "rationale": "Modern and innovative brand identity."},
+                {"name": "CoreSolution", "popularity": "Medium", "competition": "Medium", "brand_uniqueness": 70, "rationale": "Strong foundational brand name."},
+                {"name": "AuraStart", "popularity": "High", "competition": "Medium", "brand_uniqueness": 80, "rationale": "Premium and aspirational branding."}
+            ]
         self._log_prompt_call("business_name_prompt", idea_data, prompt, response)
         return parsed
 
