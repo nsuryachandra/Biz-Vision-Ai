@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SaaS Core | Platform Settings</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter & Geist -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .active-tab-indicator {
+            view-transition-name: active-tab;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#131b2e",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "outline": "#727785",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c2c6d6",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "secondary": "#565e74",
+                        "tertiary-container": "#b75b00",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#001a42",
+                        "primary-container": "#2170e4",
+                        "secondary-container": "#dae2fd",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "inverse-surface": "#2d3133",
+                        "background": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed": "#dae2fd",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "primary": "#0058be",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary-fixed": "#311400",
+                        "on-surface-variant": "#424754",
+                        "on-primary-container": "#fefcff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "tertiary": "#924700",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c1e",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-container": "#5c647a",
+                        "surface-bright": "#f7f9fb",
+                        "inverse-primary": "#adc6ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#005ac2",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#fffbff",
+                        "surface-container-highest": "#e0e3e5",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "32px",
+                        "container-max": "1280px",
+                        "base-unit": "4px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "stack-xs": "4px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "stack-xl": "64px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "mono-data": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "headline-md": ["Inter"],
+                        "body-base": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "mono-data": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+                        "body-base": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-base antialiased custom-scrollbar overflow-x-hidden min-h-screen">
+<!-- Background Shader -->
+<!-- STITCH_SHADER_START:ANIMATION_2 class="fixed inset-0 w-full h-full -z-10 opacity-40" -->
+<div class="fixed inset-0 w-full h-full -z-10 opacity-40" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_2" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_2');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+
+varying vec2 v_texCoord;
+
+void main() {
+    vec2 uv = v_texCoord;
+    
+    // Smooth, slow flowing gradient
+    float t = u_time * 0.2;
+    
+    vec3 color1 = vec3(0.96, 0.98, 1.0); // Very light blue
+    vec3 color2 = vec3(1.0, 1.0, 1.0);    // White
+    vec3 color3 = vec3(0.93, 0.95, 1.0); // Slightly darker light blue
+    
+    float noise1 = sin(uv.x * 3.0 + t) * cos(uv.y * 2.0 - t * 0.5);
+    float noise2 = sin(uv.y * 4.0 - t * 0.8) * cos(uv.x * 1.5 + t * 0.3);
+    
+    float mixFactor = smoothstep(-1.0, 1.0, noise1 + noise2);
+    vec3 finalColor = mix(color1, color2, mixFactor);
+    finalColor = mix(finalColor, color3, smoothstep(0.0, 1.0, sin(uv.x * 2.0 + uv.y * 2.0 + t)));
+    
+    // Add a very subtle grain
+    float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+    finalColor += (grain - 0.5) * 0.02;
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_2 -->
+<!-- Side Navigation (Authority: Shared Components JSON) -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest/60 backdrop-blur-2xl border-r border-outline-variant/20 shadow-xl z-50 p-stack-md gap-stack-sm">
+<div class="flex items-center gap-3 px-2 mb-stack-lg">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">enterprise</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-black text-primary leading-tight">Enterprise UI</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Premium Plan</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Mapping JSON labels: ["Dashboard", "Analytics", "Team", "Settings", "Reports"] -->
+<a class="flex items-center gap-3 px-4 py-3 font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container/30 transition-all rounded-lg duration-300" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container/30 transition-all rounded-lg duration-300" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container/30 transition-all rounded-lg duration-300" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Team</span>
+</a>
+<!-- Active State Logic: Mapping to Settings -->
+<a class="flex items-center gap-3 px-4 py-3 font-body-sm text-body-sm text-primary bg-secondary-container/50 rounded-lg transition-all duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-bold">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container/30 transition-all rounded-lg duration-300" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-stack-md border-t border-outline-variant/10">
+<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10">
+<p class="font-label-caps text-label-caps text-primary mb-2">PRO FEATURE</p>
+<p class="text-xs text-on-surface-variant mb-3">Get advanced API usage insights and priority support.</p>
+<button class="w-full py-2 bg-primary text-on-primary rounded-lg font-label-caps text-label-caps hover:brightness-110 transition-all">Upgrade Now</button>
+</div>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container/30 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-secondary-container/30 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen relative">
+<!-- Top Nav Bar (Authority: Shared Components JSON) -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm sticky top-0 z-40 w-full">
+<div class="flex justify-between items-center w-full px-margin-desktop py-stack-md max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">SaaS Core</span>
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/50 rounded-full text-body-sm focus:outline-none focus:ring-2 focus:ring-primary/20 w-64 transition-all" placeholder="Search settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high/50 rounded-full transition-colors cursor-pointer active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high/50 rounded-full transition-colors cursor-pointer active:scale-95 duration-200">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant/30 overflow-hidden ml-2 cursor-pointer transition-all hover:ring-2 hover:ring-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional high-resolution headshot of a software engineer in a bright, modern studio environment. The subject is wearing a clean white shirt, smiling slightly, with soft diffused lighting against a neutral grey background. The image evokes a sense of technical competence and approachable professionalism, aligning with a premium SaaS brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGYq8fn3AynDB7DFyQp-SphymksUL9les3hW34PKmStjUNIg_D7NmEwp9dw0sQ7PmwoAQUDZ_TxBJlephAKDl0_OXcSk6Q5PrjKd9T7rF6jK22ecG6MRHX8S59kukkUhSZb0KXOF54paIqpuA8hI5lLcG_VRKkDfCIxv3_EoN58Odqjp1nIuZJEZLqplx0no8Mjnm5Rh4ZfxvPJBvg4nm02UlhI1JI-KqX4q37yus6lV8coEtIxfXyxbpzLZa4ZkepOnhjXiDe2Rk"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="max-w-container-max mx-auto px-margin-desktop py-stack-xl">
+<!-- Header Section -->
+<div class="mb-stack-lg">
+<h2 class="font-display-lg text-display-lg text-on-background tracking-tight mb-2">Account Settings</h2>
+<p class="text-on-surface-variant max-w-2xl">Manage your organization's environment, security preferences, and developer tools from a centralized control panel.</p>
+</div>
+<!-- Glass Tabs (Horizontal) -->
+<div class="glass-panel flex p-1.5 rounded-xl border border-outline-variant/30 mb-stack-lg w-fit">
+<button class="px-6 py-2.5 rounded-lg font-label-caps text-label-caps transition-all text-on-surface-variant hover:bg-surface-container-high/40">GENERAL</button>
+<button class="px-6 py-2.5 rounded-lg font-label-caps text-label-caps transition-all text-on-surface-variant hover:bg-surface-container-high/40">SECURITY</button>
+<button class="px-6 py-2.5 rounded-lg font-label-caps text-label-caps transition-all text-on-surface-variant hover:bg-surface-container-high/40">BILLING</button>
+<button class="px-6 py-2.5 rounded-lg font-label-caps text-label-caps transition-all bg-white shadow-sm border border-outline-variant/20 text-primary active-tab-indicator">DEVELOPERS</button>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- API Key Management Section (Primary Focus) -->
+<section class="lg:col-span-8 space-y-gutter">
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-sm border border-outline-variant/20">
+<div class="flex justify-between items-center mb-stack-md">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">API Access Keys</h3>
+<p class="text-body-sm text-on-surface-variant">Use these keys to authenticate requests with the SaaS Core API.</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps text-label-caps hover:brightness-110 flex items-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm">add</span>
+                                CREATE KEY
+                            </button>
+</div>
+<!-- API Key Table -->
+<div class="overflow-hidden border border-outline-variant/20 rounded-lg">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant/20">NAME</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant/20">KEY</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant/20 text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-4">
+<p class="font-medium text-body-base">Production Main</p>
+<p class="text-[10px] text-outline uppercase tracking-widest mt-1">Last used 2h ago</p>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant/20 w-fit">
+<code class="font-mono-data text-mono-data text-on-surface-variant">sk_live_••••••••••••4k2e</code>
+<button class="text-primary hover:text-primary-container transition-colors" title="Copy Key">
+<span class="material-symbols-outlined text-base">content_copy</span>
+</button>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-error font-label-caps text-label-caps hover:underline">Revoke</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-4">
+<p class="font-medium text-body-base">Staging Environment</p>
+<p class="text-[10px] text-outline uppercase tracking-widest mt-1">Created 12 days ago</p>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant/20 w-fit">
+<code class="font-mono-data text-mono-data text-on-surface-variant">sk_test_••••••••••••9p1x</code>
+<button class="text-primary hover:text-primary-container transition-colors" title="Copy Key">
+<span class="material-symbols-outlined text-base">content_copy</span>
+</button>
+</div>
+</td>
+<td class="p-4 text-right">
+<button class="text-error font-label-caps text-label-caps hover:underline">Revoke</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Webhook Settings -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-3 mb-stack-md">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">webhook</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Webhooks</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface-container-low/50 rounded-xl border border-outline-variant/10">
+<div>
+<p class="font-medium">Global Notification Endpoint</p>
+<p class="text-body-sm text-on-surface-variant">https://api.acme.co/webhooks/main</p>
+</div>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-tertiary/10 text-tertiary-container rounded text-[10px] font-bold">ACTIVE</span>
+<button class="p-2 text-outline hover:text-on-surface"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<button class="w-full py-4 border-2 border-dashed border-outline-variant/50 rounded-xl text-on-surface-variant font-medium hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add_link</span>
+                                Add Webhook Endpoint
+                            </button>
+</div>
+</div>
+</section>
+<!-- Sidebar Settings / Configuration -->
+<aside class="lg:col-span-4 space-y-gutter">
+<!-- Advanced Configuration Card -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-sm border border-outline-variant/20">
+<h4 class="font-label-caps text-label-caps text-outline mb-stack-md">ENVIRONMENT</h4>
+<div class="space-y-stack-md">
+<div class="flex items-center justify-between">
+<label class="text-body-sm font-medium">Debug Mode</label>
+<button class="w-11 h-6 bg-outline-variant rounded-full p-1 transition-all duration-300 relative group" onclick="this.classList.toggle('bg-primary'); this.querySelector('.toggle-knob').classList.toggle('translate-x-5')">
+<div class="toggle-knob w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300"></div>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<label class="text-body-sm font-medium">Public Indexing</label>
+<button class="w-11 h-6 bg-primary rounded-full p-1 transition-all duration-300 relative" onclick="this.classList.toggle('bg-primary'); this.querySelector('.toggle-knob').classList.toggle('translate-x-5')">
+<div class="toggle-knob w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 translate-x-5"></div>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<label class="text-body-sm font-medium">Usage Alerts</label>
+<button class="w-11 h-6 bg-primary rounded-full p-1 transition-all duration-300 relative" onclick="this.classList.toggle('bg-primary'); this.querySelector('.toggle-knob').classList.toggle('translate-x-5')">
+<div class="toggle-knob w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300 translate-x-5"></div>
+</button>
+</div>
+</div>
+<div class="mt-stack-lg pt-stack-md border-t border-outline-variant/20">
+<label class="block text-body-sm font-medium mb-2">Region Preference</label>
+<select class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg p-2.5 text-body-sm focus:ring-2 focus:ring-primary/20">
+<option>US East (N. Virginia)</option>
+<option>EU Central (Frankfurt)</option>
+<option>Asia Pacific (Tokyo)</option>
+</select>
+</div>
+</div>
+<!-- Usage Monitor Card -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg shadow-sm border border-outline-variant/20 overflow-hidden relative">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl">query_stats</span>
+</div>
+<h4 class="font-label-caps text-label-caps text-outline mb-stack-md">API USAGE (MONTHLY)</h4>
+<div class="mb-4">
+<div class="flex justify-between items-end mb-2">
+<span class="font-headline-md text-headline-md">42,892</span>
+<span class="text-xs text-on-surface-variant">/ 100,000 requests</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2">
+<div class="bg-primary h-full rounded-full w-[42%]"></div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant">Your usage is on track for this billing cycle. Resets in 12 days.</p>
+<button class="mt-4 w-full py-2 border border-primary/20 text-primary font-label-caps text-label-caps rounded-lg hover:bg-primary/5 transition-all">VIEW DETAILED ANALYTICS</button>
+</div>
+<!-- Support Card -->
+<div class="bg-inverse-surface rounded-xl p-stack-lg shadow-xl text-inverse-on-surface">
+<h4 class="font-headline-md text-headline-md mb-2">Need help?</h4>
+<p class="text-sm opacity-80 mb-4">Our developer relations team is available 24/7 for technical assistance.</p>
+<div class="flex -space-x-2 mb-4">
+<img class="w-8 h-8 rounded-full border-2 border-inverse-surface object-cover" data-alt="A macro close-up of a human eye reflecting high-tech digital code and data streams. The lighting is cold blue and neon, symbolizing high-level data analysis and technical oversight. The image has a sharp focus on the iris details, illustrating the concept of 'eyes on data' or 24/7 monitoring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ-nSknqK_qmHLgUO-IMz526crGgJsDyPjRxcaVkFwV6MOTFN6SCHC939KXIVepGnjSTQnUrtM7OXqd8DSaohPcNzanQruPaQTAJslVT9oe5RVakUvxEKisIr9asMHT_TCyjpqBP-V0f7Y_WoFmlQMg2EUbg4zjKHa-BsVm0FsUPEe4Pouhoj2mIP3a1ZjtE0RcTBFAmCGGdsg1EU6mHJREg2vjBk0tzNEgcJSaTeAo0RMOlbuRkzK8urHFsX3oLPDTSyInr-unTw"/>
+<img class="w-8 h-8 rounded-full border-2 border-inverse-surface object-cover" data-alt="A portrait of a diverse software engineering team in a brightly lit modern office with glass walls. They are gathered around a computer screen, discussing code. The scene reflects collaboration, innovation, and expert technical support in a high-end corporate setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvcCPE6QNIGIrHrz4knmdFNw0oPWBCQNBXVFhNoC_3_StJpwSQZ-iDNqpBZ9kr5TsnQv5qKvO7HvfhjhPI57qbpBT_bi624mEWiaFSAicl1d6JCSIgVP0MvfkoX9kPLF1arg2P6WyJSit_Ne1qxXlp25eohNz79vVFCHn8uqF8GzYg3I0az3lKPCus9bZHL4yFYWnulmkdj2uI5r25bgnqf4Olk-AZASl5zp-T7dO0CKuHc-KqSyR0W6JFS3Ar4zxQZbCnXyBDVbM"/>
+<div class="w-8 h-8 rounded-full border-2 border-inverse-surface bg-outline flex items-center justify-center text-[10px] font-bold">+12</div>
+</div>
+<button class="w-full py-2.5 bg-white text-on-background rounded-lg font-bold text-sm hover:brightness-90 transition-all">Documentation</button>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Success Toast (Micro-interaction mockup) -->
+<div class="fixed bottom-8 right-8 bg-on-background text-background px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 translate-y-24 transition-transform duration-500 z-[100]" id="toast">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+<span class="font-medium">API Key copied to clipboard</span>
+</div>
+<script>
+        // Copy to clipboard simulation
+        document.querySelectorAll('button[title="Copy Key"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-24');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-24');
+                }, 3000);
+            });
+        });
+
+        // Sticky nav shadow toggle on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+    </script>
+</body></html>

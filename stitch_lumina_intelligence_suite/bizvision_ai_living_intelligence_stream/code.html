@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BizVision AI | Intelligence Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-alert": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "glass-border": "rgba(77, 68, 227, 0.15)",
+                    "surface": "#f8f9ff",
+                    "tertiary": "#444749",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e6eeff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c7c4d8",
+                    "secondary-fixed": "#dae2fc",
+                    "on-secondary-container": "#5a6278",
+                    "surface-container-high": "#dde9ff",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#5c5f61",
+                    "surface-dim": "#cbdbf6",
+                    "on-secondary-fixed-variant": "#3e465b",
+                    "surface-tint": "#4d44e3",
+                    "primary-fixed": "#e2dfff",
+                    "surface-bright": "#f8f9ff",
+                    "surface-container-highest": "#d3e3ff",
+                    "on-secondary": "#ffffff",
+                    "background-alt": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "on-primary-container": "#d7d4ff",
+                    "outline": "#777587",
+                    "inverse-on-surface": "#ebf1ff",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-primary-fixed": "#0f0069",
+                    "secondary-container": "#d7dff9",
+                    "surface-variant": "#d3e3ff",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "background": "#f8f9ff",
+                    "primary-glow": "rgba(77, 68, 227, 0.15)",
+                    "error": "#ba1a1a",
+                    "primary-container": "#4d44e3",
+                    "tertiary-fixed": "#e1e3e5",
+                    "inverse-primary": "#c3c0ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#191c1e",
+                    "on-tertiary-container": "#d7d9db",
+                    "primary": "#3323cc",
+                    "on-secondary-fixed": "#131b2e",
+                    "secondary": "#565e74",
+                    "on-background": "#0b1c30",
+                    "tertiary-fixed-dim": "#c5c7c9",
+                    "on-surface": "#0b1c30",
+                    "inverse-surface": "#213146",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-surface-variant": "#464555"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "48px",
+                    "stack-lg": "32px",
+                    "unit": "4px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Bricolage Grotesque"],
+                    "nav-link": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Bricolage Grotesque"],
+                    "display-lg": ["Bricolage Grotesque"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["Geist"],
+                    "mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["40px", {"lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "nav-link": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "normal", "fontWeight": "400"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "normal", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            backdrop-filter: blur(24px);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(77, 68, 227, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark .glass-panel {
+            background: rgba(11, 28, 48, 0.7);
+        }
+        .grid-bg {
+            background-image: radial-gradient(circle at 1px 1px, rgba(51, 35, 204, 0.05) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(51, 35, 204, 0.1) 0%, transparent 80%);
+        }
+        
+        /* Premium Wave Animation */
+        .wave-svg {
+            animation: wave-float 10s ease-in-out infinite;
+        }
+        @keyframes wave-float {
+            0%, 100% { transform: translateY(0) scaleY(1); }
+            50% { transform: translateY(-10px) scaleY(1.05); }
+        }
+
+        /* Staggered Entrance */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stagger-item {
+            opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* Chart Draw-in Effect */
+        .path-draw {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2s ease-out forwards;
+        }
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Radar Living Motion */
+        @keyframes radar-pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .radar-circle {
+            animation: radar-pulse 4s ease-in-out infinite;
+        }
+
+        /* Card Glow Interactions */
+        .pivot-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(77, 68, 227, 0.1);
+        }
+        .pivot-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(77, 68, 227, 0.15) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .pivot-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Metric Count Up Shim */
+        .count-up {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed-dim selection:text-on-primary-fixed min-h-screen">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-container-max rounded-2xl bg-white/70 dark:bg-on-background/70 backdrop-blur-2xl border border-glass-border shadow-2xl flex justify-between items-center px-gutter py-4 z-50 transition-all duration-500">
+<div class="flex items-center gap-12">
+<span class="font-display-lg text-headline-md tracking-tighter text-primary dark:text-primary-fixed">BizVision AI</span>
+<div class="hidden md:flex gap-8">
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary font-nav-link text-nav-link" href="#">Platform</a>
+<a class="text-on-surface-variant dark:text-on-tertiary-container hover:text-primary transition-all font-nav-link text-nav-link" href="#">Ecosystem</a>
+<a class="text-on-surface-variant dark:text-on-tertiary-container hover:text-primary transition-all font-nav-link text-nav-link" href="#">Insight</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/20 rounded-full text-body-md focus:ring-2 focus:ring-primary-glow focus:border-primary outline-none transition-all w-72" placeholder="Command Intelligence..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="bg-primary text-on-primary px-8 py-2.5 rounded-full font-bold hover:shadow-[0_0_20px_rgba(51,35,204,0.3)] hover:scale-105 transition-all duration-300 active:scale-95">Command</button>
+</div>
+</nav>
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-0 h-full w-20 hover:w-64 group bg-surface-container-lowest/90 dark:bg-on-background/90 backdrop-blur-2xl border-r border-glass-border shadow-2xl flex flex-col py-stack-lg px-unit transition-all duration-500 z-40">
+<div class="flex flex-col gap-6 mt-32 px-4">
+<div class="flex items-center gap-4 p-3 bg-primary-glow text-primary rounded-xl group/item cursor-pointer">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 1;">visibility</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity font-bold">Vision</span>
+</div>
+<div class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all cursor-pointer">
+<span class="material-symbols-outlined shrink-0">insights</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity">Pulse</span>
+</div>
+<div class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all cursor-pointer">
+<span class="material-symbols-outlined shrink-0">verified_user</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity">Validation</span>
+</div>
+<div class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all cursor-pointer">
+<span class="material-symbols-outlined shrink-0">inventory_2</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity">Archives</span>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-6 px-4 pb-12">
+<div class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl cursor-pointer">
+<span class="material-symbols-outlined shrink-0">settings</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity">Settings</span>
+</div>
+<div class="p-4 bg-primary/5 rounded-2xl hidden group-hover:block transition-all border border-primary/10">
+<p class="text-[10px] font-bold text-primary mb-2 uppercase tracking-[0.2em]">Upgrade Pro</p>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Unlock industrial-grade sentiment nodes.</p>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-20 min-h-screen pt-32 pb-24 px-margin-desktop grid-bg">
+<div class="max-w-container-max mx-auto">
+<!-- Header Section -->
+<header class="mb-stack-lg flex justify-between items-end stagger-item" style="animation-delay: 0.1s">
+<div>
+<span class="font-label-caps text-label-caps text-primary tracking-[0.25em] uppercase block mb-3">System Active / v.4.0.2</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg leading-none tracking-tighter">Command Center</h1>
+</div>
+<div class="hidden lg:flex gap-8">
+<div class="text-right border-r border-outline-variant/30 pr-6">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">NODE STATUS</p>
+<p class="font-mono text-body-md font-bold text-primary tracking-widest">OPTIMIZED</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">LATENCY</p>
+<p class="font-mono text-body-md font-bold text-primary tracking-widest">0.02ms</p>
+</div>
+</div>
+</header>
+<!-- Bento Grid Command Center -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Hero: Intelligence Stream Visualization -->
+<div class="col-span-12 lg:col-span-8 h-[450px] glass-panel rounded-[2.5rem] overflow-hidden relative group stagger-item shadow-sm border-[1px] border-white/40" style="animation-delay: 0.2s">
+<div class="absolute inset-0 hero-glow"></div>
+<div class="absolute top-10 left-10 z-10">
+<h2 class="font-headline-md text-headline-md mb-3">Intelligence Stream</h2>
+<p class="text-on-surface-variant max-w-sm text-body-md leading-relaxed">Real-time aggregate sentiment flow across global venture markets.</p>
+</div>
+<div class="absolute top-10 right-10 z-10 flex gap-3">
+<span class="bg-primary/10 backdrop-blur-md text-primary px-4 py-1.5 rounded-full text-[10px] font-bold border border-primary/20 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span> LIVE
+                    </span>
+<span class="bg-white/50 backdrop-blur-md text-on-surface px-4 py-1.5 rounded-full text-[10px] font-bold border border-white/40">128 SENSORS</span>
+</div>
+<!-- Animated Wave Visualization -->
+<div class="absolute inset-0 flex items-end opacity-40 pointer-events-none">
+<svg class="wave-svg w-full" height="300" viewbox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="waveGrad" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#3323cc" stop-opacity="0.1"></stop>
+<stop offset="50%" stop-color="#4d44e3" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#3323cc" stop-opacity="0.1"></stop>
+</lineargradient>
+</defs>
+<path class="path-draw" d="M0,150 C150,50 350,250 500,150 C650,50 850,250 1000,150 L1000,300 L0,300 Z" fill="url(#waveGrad)" stroke="#4d44e3" stroke-width="2"></path>
+</svg>
+</div>
+<div class="absolute bottom-10 left-10 right-10 flex justify-between items-end">
+<div class="flex gap-16">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-2">SENTIMENT</p>
+<p class="font-mono text-4xl font-bold text-primary tracking-tighter">+<span class="count-metric" data-target="82.4">0</span>%</p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-2">VOLATILITY</p>
+<p class="font-mono text-4xl font-bold text-primary tracking-tighter"><span class="count-metric" data-target="0.12">0.00</span></p>
+</div>
+</div>
+<button class="bg-on-background text-white p-5 rounded-2xl group-hover:scale-110 hover:shadow-2xl transition-all duration-300">
+<span class="material-symbols-outlined">north_east</span>
+</button>
+</div>
+</div>
+<!-- Abstract Scorecards -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
+<!-- Opportunity Card -->
+<div class="glass-panel p-10 rounded-[2.5rem] flex-1 flex flex-col justify-between stagger-item border-[1px] border-white/40" style="animation-delay: 0.3s">
+<div>
+<div class="flex justify-between items-start mb-8">
+<span class="bg-primary/10 p-3 rounded-2xl text-primary border border-primary/20">
+<span class="material-symbols-outlined">rocket_launch</span>
+</span>
+<span class="font-mono text-primary font-bold text-xl tracking-tighter">78/100</span>
+</div>
+<h3 class="font-headline-md text-2xl mb-4">Opportunity</h3>
+<div class="flex gap-2 mt-6">
+<div class="h-1.5 flex-1 bg-primary rounded-full origin-left scale-x-0 stagger-bar" style="transition-delay: 0.5s"></div>
+<div class="h-1.5 flex-1 bg-primary rounded-full origin-left scale-x-0 stagger-bar" style="transition-delay: 0.6s"></div>
+<div class="h-1.5 flex-1 bg-primary rounded-full origin-left scale-x-0 stagger-bar" style="transition-delay: 0.7s"></div>
+<div class="h-1.5 flex-1 bg-primary/20 rounded-full"></div>
+<div class="h-1.5 flex-1 bg-primary/20 rounded-full"></div>
+</div>
+</div>
+<p class="font-mono text-[10px] text-outline mt-6 tracking-widest uppercase">SEED_ROUND_CONVERGENCE_DETECTED: 0.94</p>
+</div>
+<!-- Risk Card -->
+<div class="bg-on-background p-10 rounded-[2.5rem] flex-1 text-white flex flex-col justify-between overflow-hidden relative stagger-item group" style="animation-delay: 0.4s">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] group-hover:bg-primary/20 transition-all duration-700"></div>
+<div>
+<div class="flex justify-between items-start mb-8">
+<span class="bg-white/10 p-3 rounded-2xl text-white border border-white/10">
+<span class="material-symbols-outlined">warning</span>
+</span>
+<span class="font-mono text-primary-fixed-dim font-bold text-xl tracking-tighter">LOW</span>
+</div>
+<h3 class="font-headline-md text-2xl mb-3">Risk Exposure</h3>
+<p class="text-white/60 text-sm leading-relaxed">Market saturation levels currently minimal in target sectors.</p>
+</div>
+<div class="mt-8">
+<div class="flex justify-between mb-3 items-end">
+<span class="font-mono text-[10px] text-white/40 tracking-[0.2em] uppercase">Saturation Threshold</span>
+<span class="font-mono text-xs text-primary-fixed-dim">12%</span>
+</div>
+<div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="w-[12%] h-full bg-primary-fixed-dim rounded-full shadow-[0_0_10px_rgba(195,192,255,0.5)]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Competitor Overview Radar -->
+<div class="col-span-12 lg:col-span-5 glass-panel rounded-[2.5rem] p-10 relative overflow-hidden h-[500px] stagger-item border-[1px] border-white/40" style="animation-delay: 0.5s">
+<div class="flex justify-between items-start mb-10">
+<div>
+<h3 class="font-headline-md text-2xl mb-1">Competitor Hub</h3>
+<p class="text-sm text-on-surface-variant">Market positioning constellation.</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-3 rounded-full transition-all border border-primary/10">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+<!-- Refined Radar Constellation -->
+<div class="relative w-full aspect-square max-w-[320px] mx-auto flex items-center justify-center">
+<!-- Concentric Circles with Living Motion -->
+<div class="absolute inset-0 border border-primary/10 rounded-full radar-circle" style="animation-delay: 0s"></div>
+<div class="absolute inset-8 border border-primary/10 rounded-full radar-circle" style="animation-delay: 1s"></div>
+<div class="absolute inset-20 border border-primary/10 rounded-full radar-circle" style="animation-delay: 2s"></div>
+<div class="absolute inset-36 border border-primary/10 rounded-full radar-circle" style="animation-delay: 3s"></div>
+<!-- Sweep Line -->
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent rounded-full animate-spin" style="animation-duration: 10s"></div>
+<!-- Constellation Nodes -->
+<div class="absolute top-[20%] right-[25%] w-12 h-12 rounded-full p-[2px] bg-primary/20 hover:scale-125 transition-transform cursor-pointer group/node">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-primary shadow-2xl">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1-ogworXaMMELsx7IrcmKIubcxAvyFPUcN_Hy_aEAf0EbtnpVtSUJB9T9guPst90eWV3UP6nm5KEBmifb8qHFzl8LGcJ0F5kQO7Jybw3UrMs4KDz1C5ywagsnJWEOGVEa5CPgst0Isa8QLH1XEFEa2GVrjScadgqtP8a_FPXIawOO8mH-lCQbzDKe2JSFsSziefsL0NsW_lzbq-fSOCWDzhL5u_pm-I0-OPWWewYvKfTjc-tg-zud_drM6Q9HDhu9vB7xu39eSLM"/>
+</div>
+</div>
+<div class="absolute bottom-[25%] left-[15%] w-14 h-14 rounded-full p-[2px] bg-secondary/20 hover:scale-125 transition-transform cursor-pointer group/node">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-secondary shadow-2xl">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD54mHK0j9W5G6WAALND1Qs7lCcOvZPuzOX3Qw6uqjkJpE2IztRHAsCeLqq5rK_zlruJ1AtT804HimhCy8SgjrmV24Qv3TnN5mP9gpkAqRfEOde5d9FAG3NND7aIdaAXhV0f5gefjg434EQtBp31Yacwh28vZsdklVpvbCZLy_snsBKsi1rNP__yvMoQku25d7C8bTVUOypF1EGL8qbge0oIsw57yKHZ2EuKu_h5zqEFD2_3IgwTPKjpeG_7afjD2wXAC8RY2x05BQ"/>
+</div>
+</div>
+<div class="absolute top-[55%] left-[5%] w-10 h-10 rounded-full p-[1px] bg-on-background/20 hover:scale-125 transition-transform cursor-pointer group/node">
+<div class="w-full h-full rounded-full overflow-hidden border-2 border-on-background shadow-2xl">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRS5c30b93zCOjvjzv1C3IdtRpP5c2FAEySI5byVugNLeSPJ1eOqo1AHNmrlQiV96bStI10tWHxeC-RIwvKVVWDp2KkFbEp0ZsCikBubWdjr9hW0wmGo9w7vaznqE6TEEXtDr7MlATI8jdoL0-FuZUKzcaWpSfbozC7CDg49v222wBbk-TuaQwzADKbcpvNouImjMB449lM3ooYqUJaXpwAP4HqgoOP0Qef78mgHISHugHQebosNk1UcdtzM0WvzRzNILdL10RcT4"/>
+</div>
+</div>
+<!-- Core -->
+<div class="z-10 w-6 h-6 bg-primary rounded-full animate-ping opacity-20"></div>
+<div class="z-10 w-4 h-4 bg-primary rounded-full absolute shadow-[0_0_15px_rgba(51,35,204,0.5)]"></div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-6">
+<div class="p-4 bg-surface-container-low/50 rounded-2xl border border-outline-variant/10">
+<span class="text-[10px] font-bold text-outline uppercase block mb-1 tracking-widest">Alpha Edge</span>
+<span class="font-mono text-sm font-bold text-primary">+12.4% vs Avg</span>
+</div>
+<div class="p-4 bg-surface-container-low/50 rounded-2xl border border-outline-variant/10">
+<span class="text-[10px] font-bold text-outline uppercase block mb-1 tracking-widest">Saturation</span>
+<span class="font-mono text-sm font-bold text-primary">Nominal</span>
+</div>
+</div>
+</div>
+<!-- Strategy Pivot Posters -->
+<div class="col-span-12 lg:col-span-7 grid grid-cols-2 gap-8 stagger-item" style="animation-delay: 0.6s">
+<div class="col-span-2">
+<div class="flex items-center gap-4 mb-2">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-headline-md text-3xl">Strategy Pivots</h3>
+</div>
+</div>
+<!-- Pivot Poster 1 -->
+<div class="pivot-card glass-panel p-2 rounded-[2.5rem] h-full flex flex-col group border-[1px] border-white/40">
+<div class="bg-primary h-56 rounded-[2rem] p-8 text-white relative overflow-hidden flex flex-col justify-between transition-transform duration-500 group-hover:scale-[0.98]">
+<div class="absolute -right-8 -top-8 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+<span class="font-label-caps text-[10px] tracking-[0.3em] border border-white/30 self-start px-3 py-1.5 rounded-full uppercase">Priority 01</span>
+<h4 class="font-display-lg text-4xl leading-[1.1] tracking-tighter">AGGRESSIVE SCALE.</h4>
+</div>
+<div class="p-8">
+<p class="text-on-surface-variant mb-6 leading-relaxed">Market conditions indicate a 12-week window for rapid horizontal expansion in APAC sectors.</p>
+<button class="w-full py-4 border border-primary/20 rounded-2xl text-primary font-bold hover:bg-primary hover:text-white hover:shadow-xl transition-all duration-300 text-sm tracking-wide">Review Blueprint</button>
+</div>
+</div>
+<!-- Pivot Poster 2 -->
+<div class="pivot-card glass-panel p-2 rounded-[2.5rem] h-full flex flex-col group border-[1px] border-white/40">
+<div class="bg-on-background h-56 rounded-[2rem] p-8 text-white relative overflow-hidden flex flex-col justify-between transition-transform duration-500 group-hover:scale-[0.98]">
+<div class="absolute -left-16 bottom-0 w-full h-1/2 bg-gradient-to-t from-primary/40 to-transparent blur-2xl"></div>
+<span class="font-label-caps text-[10px] tracking-[0.3em] border border-white/10 self-start px-3 py-1.5 rounded-full uppercase text-white/60">Priority 02</span>
+<h4 class="font-display-lg text-4xl leading-[1.1] tracking-tighter">CONSOLIDATE EQUITY.</h4>
+</div>
+<div class="p-8">
+<p class="text-on-surface-variant mb-6 leading-relaxed">Reduce operational burn by 14% through automated node validation deployment.</p>
+<button class="w-full py-4 border border-primary/20 rounded-2xl text-primary font-bold hover:bg-primary hover:text-white hover:shadow-xl transition-all duration-300 text-sm tracking-wide">Review Blueprint</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-auto bg-background dark:bg-on-background border-t border-outline-variant/10 py-10 px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center z-10">
+<div class="flex items-center gap-6 mb-6 md:mb-0">
+<span class="font-display-lg text-body-lg font-bold text-secondary dark:text-secondary-fixed">BizVision AI</span>
+<span class="text-on-surface-variant/40 font-label-caps text-label-caps">© 2024 Illuminated Intelligence.</span>
+</div>
+<div class="flex gap-10">
+<a class="font-label-caps text-label-caps text-on-surface-variant/50 hover:text-primary transition-all uppercase tracking-widest" href="#">Privacy</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant/50 hover:text-primary transition-all uppercase tracking-widest" href="#">Terms</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant/50 hover:text-primary transition-all uppercase tracking-widest" href="#">Security</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant/50 hover:text-primary transition-all uppercase tracking-widest" href="#">API</a>
+</div>
+</footer>
+<!-- FAB Contextual -->
+<button class="fixed bottom-10 right-10 bg-primary text-on-primary w-16 h-16 rounded-[1.25rem] shadow-[0_20px_50px_rgba(51,35,204,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 z-50 group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-180 transition-transform duration-500">add</span>
+</button>
+<script>
+    // Pivot card hover effect handler
+    document.querySelectorAll('.pivot-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
+    // Metric count up animation
+    const animateMetrics = () => {
+        const metrics = document.querySelectorAll('.count-metric');
+        metrics.forEach(metric => {
+            const target = parseFloat(metric.getAttribute('data-target'));
+            let current = 0;
+            const duration = 2000;
+            const increment = target / (duration / 16);
+            
+            const update = () => {
+                current += increment;
+                if (current < target) {
+                    metric.textContent = current.toFixed(target % 1 === 0 ? 0 : 2);
+                    requestAnimationFrame(update);
+                } else {
+                    metric.textContent = target;
+                }
+            };
+            update();
+        });
+    };
+
+    // Stagger bar entrance
+    const animateBars = () => {
+        const bars = document.querySelectorAll('.stagger-bar');
+        bars.forEach(bar => {
+            bar.classList.remove('scale-x-0');
+            bar.classList.add('scale-x-100');
+            bar.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        });
+    };
+
+    // Initialize animations on load
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(animateMetrics, 500);
+        setTimeout(animateBars, 800);
+    });
+
+    // Search focus effect
+    const searchInput = document.querySelector('input[type="text"]');
+    searchInput.addEventListener('focus', () => {
+        searchInput.parentElement.classList.add('scale-105', 'shadow-lg');
+    });
+    searchInput.addEventListener('blur', () => {
+        searchInput.parentElement.classList.remove('scale-105', 'shadow-lg');
+    });
+</script>
+</body></html>

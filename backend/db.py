@@ -57,14 +57,21 @@ def init_db():
         schema_sql = f.read()
 
     for statement in schema_sql.split(";"):
-        statement = statement.strip()
-        if statement and not statement.startswith("--"):
+        # Strip comments line by line
+        clean_lines = []
+        for line in statement.split("\n"):
+            clean_line = line.split("--")[0].strip()
+            if clean_line:
+                clean_lines.append(clean_line)
+        
+        exec_stmt = " ".join(clean_lines).strip()
+        if exec_stmt:
             try:
-                cursor.execute(statement)
+                cursor.execute(exec_stmt)
             except Error as e:
-                if "Duplicate key name" in str(e) or "already exists" in str(e).lower():
+                if "Duplicate key name" in str(e) or "already exists" in str(e).lower() or "Duplicate entry" in str(e):
                     continue
-                logger.warning(f"Schema warning: {e}")
+                logger.warning(f"Schema warning: {e} | Query: {exec_stmt[:80]}")
     conn.commit()
     cursor.close()
     conn.close()

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrainCircuit, AlertTriangle } from 'lucide-react';
 import LandingPage from './components/LandingPage';
 import Dashboard from './components/Dashboard';
@@ -9,8 +9,30 @@ export default function App() {
   const [page, setPage] = useState('landing');
   const [loadingStep, setLoadingStep] = useState(0);
   const [activeReport, setActiveReport] = useState(null);
+  const [latestReport, setLatestReport] = useState(null);
   const [error, setError] = useState(null);
   const [currentIdea, setCurrentIdea] = useState('');
+
+  useEffect(() => {
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/history');
+        if (res.ok) {
+          const list = await res.json();
+          if (list && list.length > 0) {
+            const reportRes = await fetch(`http://localhost:5000/report/${list[0].report_id}`);
+            if (reportRes.ok) {
+              const fullReport = await reportRes.json();
+              setLatestReport(fullReport);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load latest report:", e);
+      }
+    };
+    fetchLatest();
+  }, [page]);
 
   const steps = [
     'Parsing idea with NLP engine…',
@@ -77,30 +99,63 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell">
-      <header className="nav">
-        <div className="nav-brand" onClick={() => setPage('landing')}>
-          <BrainCircuit className="nav-brand-icon" />
-          <span className="nav-brand-text">BizVision AI</span>
+    <div className="app-shell" style={{ paddingLeft: '80px' }}>
+      {/* Aurora Background */}
+      <div className="aurora-bg">
+        <div className="aurora-element"></div>
+      </div>
+
+      {/* Collapsible Sidebar Navigation */}
+      <aside className="fixed left-0 top-0 h-screen w-20 hover:w-64 transition-all duration-500 z-50 bg-white/40 dark:bg-on-background/40 backdrop-blur-xl border-r border-outline-variant/10 flex flex-col group overflow-hidden">
+        <div className="p-6 mb-10 flex items-center gap-4">
+          <div className="min-w-[40px] h-10 bg-primary rounded-lg flex items-center justify-center shadow-xl">
+            <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>insights</span>
+          </div>
+          <span className="font-display text-xl font-bold tracking-tight opacity-0 group-hover:opacity-100 transition-opacity text-primary">BizVision</span>
         </div>
-        <nav className="nav-links">
-          <span className={`nav-link ${page === 'landing' ? 'active' : ''}`} onClick={() => setPage('landing')}>Home</span>
-          <span className={`nav-link ${page === 'dashboard' ? 'active' : ''}`} onClick={() => setPage('dashboard')}>Dashboard</span>
+        <nav className="flex-grow flex flex-col gap-4 px-4">
+          <button 
+            className={`flex items-center gap-4 p-3 rounded-xl transition-all text-left border-none bg-transparent cursor-pointer w-full ${page === 'landing' ? 'nav-active text-primary bg-primary/5' : 'text-secondary hover:text-primary hover:bg-primary/5'}`} 
+            onClick={() => setPage('landing')}
+            style={{ border: 'none', background: 'transparent', outline: 'none' }}
+          >
+            <span className="material-symbols-outlined text-2xl">home</span>
+            <span className="font-medium opacity-0 group-hover:opacity-100 whitespace-nowrap">Home Portal</span>
+          </button>
+          <button 
+            className={`flex items-center gap-4 p-3 rounded-xl transition-all text-left border-none bg-transparent cursor-pointer w-full ${page === 'dashboard' ? 'nav-active text-primary bg-primary/5' : 'text-secondary hover:text-primary hover:bg-primary/5'}`} 
+            onClick={() => setPage('dashboard')}
+            style={{ border: 'none', background: 'transparent', outline: 'none' }}
+          >
+            <span className="material-symbols-outlined text-2xl">dashboard</span>
+            <span className="font-medium opacity-0 group-hover:opacity-100 whitespace-nowrap">Command Center</span>
+          </button>
         </nav>
-      </header>
+        <div className="mt-auto p-4 border-t border-outline-variant/10">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0">
+              <span className="material-symbols-outlined text-primary">person</span>
+            </div>
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
+              <p className="text-sm font-bold truncate text-on-surface">Helena Vance</p>
+              <p className="text-[10px] text-primary uppercase font-mono-label font-bold">Active VC</p>
+            </div>
+          </div>
+        </div>
+      </aside>
 
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {error && (
-          <div className="page-container no-print" style={{ paddingBottom: 0 }}>
-            <div className="error-banner">
-              <AlertTriangle size={16} />
-              <span>{error}</span>
+          <div style={{ maxWidth: '1200px', width: '100%', margin: '1.5rem auto 0', padding: '0 2rem' }} className="no-print animate-fade-in">
+            <div className="error-banner" style={{ marginBottom: 0 }}>
+              <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+              <span style={{ marginLeft: '0.5rem' }}>{error}</span>
               <button onClick={() => setError(null)}>✕</button>
             </div>
           </div>
         )}
 
-        {page === 'landing' && <LandingPage onAnalyze={handleAnalyze} onDashboard={() => setPage('dashboard')} />}
+        {page === 'landing' && <LandingPage onAnalyze={handleAnalyze} onDashboard={() => setPage('dashboard')} latestReport={latestReport} />}
         {page === 'dashboard' && <Dashboard onSelect={handleSelectReport} onAnalyze={handleAnalyze} />}
 
         {page === 'loading' && (
@@ -120,7 +175,7 @@ export default function App() {
         )}
 
         {page === 'report' && activeReport && (
-          <div className="page-container">
+          <div className="page-container" style={{ maxWidth: '1440px', padding: '4rem 2rem' }}>
             <ReportView report={activeReport} onBack={() => setPage('dashboard')} />
           </div>
         )}

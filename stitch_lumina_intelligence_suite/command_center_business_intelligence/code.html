@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BizVision AI | Command Center</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#4d44e3",
+                    "surface-container-high": "#dce9ff",
+                    "surface-dim": "#cbdbf5",
+                    "primary": "#3525cd",
+                    "primary-container": "#4f46e5",
+                    "on-tertiary-fixed": "#191c1e",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-secondary-container": "#5c647a",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "background": "#f8f9ff",
+                    "secondary-fixed": "#dae2fd",
+                    "secondary-container": "#dae2fd",
+                    "on-primary-fixed": "#0f0069",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "outline-variant": "#c7c4d8",
+                    "tertiary-container": "#5e6163",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#213145",
+                    "secondary": "#565e74",
+                    "on-primary-container": "#dad7ff",
+                    "on-error": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "surface-bright": "#f8f9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-primary": "#c3c0ff",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "tertiary": "#46494b",
+                    "on-tertiary-container": "#dadcde",
+                    "surface-variant": "#d3e4fe",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-surface-variant": "#464555",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "primary-fixed": "#e2dfff",
+                    "tertiary-fixed": "#e0e3e5",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface": "#f8f9ff",
+                    "on-surface": "#0b1c30",
+                    "on-background": "#0b1c30",
+                    "on-primary": "#ffffff",
+                    "outline": "#777587",
+                    "surface-container-highest": "#d3e4fe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "48px",
+                    "container-max": "1280px",
+                    "unit": "4px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Geist"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-label": ["Geist"],
+                    "display-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.04em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "mono-label": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "500"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["15px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body { background-color: #f8f9ff; }
+      .glass { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(226, 232, 240, 0.8); }
+      .insight-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+      .insight-card:hover { border-color: #4f46e5; transform: translateY(-2px); }
+      .status-pulse { animation: pulse 2s infinite; }
+      @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+      .nav-active { background: #4f46e5; color: white !important; font-weight: 700; box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.39); }
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #d3e4fe; border-radius: 10px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-40 bg-surface-container-lowest border-r border-outline-variant/20 flex flex-col py-stack-lg px-stack-md gap-stack-md">
+<div class="mb-10 px-stack-sm flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<h1 class="font-display-lg text-headline-md text-on-surface tracking-tighter">BizVision</h1>
+</div>
+<div class="flex-grow flex flex-col gap-1">
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg nav-active transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-label-caps text-label-caps">Command Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-container hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-label-caps text-label-caps">Market Insights</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-container hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+<span class="font-label-caps text-label-caps">Validation</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-container hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">query_stats</span>
+<span class="font-label-caps text-label-caps">Venture Pulse</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-container hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</nav>
+<div class="mt-stack-lg">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-xl font-semibold shadow-md hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span class="font-label-caps text-label-caps">New Analysis</span>
+</button>
+</div>
+</div>
+<div class="border-t border-outline-variant/20 pt-stack-md space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-secondary-container hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span class="font-label-caps text-label-caps">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-secondary-container hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">code</span>
+<span class="font-label-caps text-label-caps">API</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-4 mt-2">
+<img class="w-10 h-10 rounded-full border-2 border-primary/20" data-alt="A professional headshot of a female entrepreneur in her late 30s, looking directly at the camera with a confident smile. She is wearing a modern charcoal blazer over a white blouse. The background is a blurred, high-end office interior with warm lighting and soft bokeh. The overall photographic style is sharp, clean, and corporate chic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQmQ66X14wloXAo9C-FaI0hpRA9uiIlIsHQmkCAiqmnNa37iYjKhpEyXld--YVuvBrzkmnDeQBm34xoahq7SmVTXNBAGwcXT7ue5ZAW6foiDZ8QaBxjRkThBiD0t_AolU1BgK03Xi7Ddh9c_Jm0jvipJ9Et95vd8qW3knkk9v_rfwNcZp4HJ5rSZsoMduFECHSPd_TTFFOpue1nQddiS4FoX3xXtTSO_ZbUo7Tk3P2eGd-48KLpQUdPc6d-NkfjQcjvrNM16WhLxE"/>
+<div class="flex flex-col">
+<span class="text-[13px] font-bold">Helena Vance</span>
+<span class="text-[11px] text-secondary opacity-70">Intelligence Active</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen relative p-8">
+<!-- Dashboard Header -->
+<header class="flex justify-between items-end mb-stack-lg">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-green-500 status-pulse"></span>
+<span class="text-xs font-mono-label text-primary font-bold uppercase tracking-widest">System Online</span>
+</div>
+<h2 class="font-display-lg text-display-lg tracking-tight text-on-surface">Intelligence Stream</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex bg-white rounded-full px-4 py-2 border border-slate-200 items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-slate-400 text-[18px]">calendar_today</span>
+<span class="text-xs font-medium text-slate-600">Last 30 Days</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
+</div>
+<button class="bg-white p-2.5 rounded-full border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+</div>
+</header>
+<!-- Top Row Stats (Bento Grid) -->
+<div class="grid grid-cols-12 gap-gutter mb-gutter">
+<!-- Startup Scorecard -->
+<div class="col-span-8 glass rounded-3xl p-8 flex items-center justify-between overflow-hidden relative group">
+<div class="relative z-10 flex-1">
+<p class="text-sm font-label-caps text-secondary mb-2">Startup Scorecard</p>
+<div class="flex items-baseline gap-4 mb-6">
+<span class="font-display-lg text-6xl tracking-tighter text-on-surface" data-counter="84.2">0</span>
+<span class="text-primary font-bold text-lg bg-primary-container/20 px-3 py-1 rounded-full">+12.4%</span>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div>
+<p class="text-xs text-secondary font-medium uppercase tracking-wider mb-1">Velocity</p>
+<p class="text-lg font-bold text-on-surface">High-Growth</p>
+</div>
+<div>
+<p class="text-xs text-secondary font-medium uppercase tracking-wider mb-1">Stability</p>
+<p class="text-lg font-bold text-on-surface">92/100</p>
+</div>
+<div>
+<p class="text-xs text-secondary font-medium uppercase tracking-wider mb-1">Burn Rate</p>
+<p class="text-lg font-bold text-on-surface">Optimized</p>
+</div>
+</div>
+</div>
+<div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-20 pointer-events-none overflow-hidden">
+
+</div>
+</div>
+<!-- Risk Assessment -->
+<div class="col-span-4 glass rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+<p class="text-sm font-label-caps text-secondary mb-6">Risk Profile</p>
+<div class="relative w-40 h-40 mb-4 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-100" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary transition-all duration-1000" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="110" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-bold text-on-surface">LOW</span>
+<span class="text-xs text-secondary">25% Prob.</span>
+</div>
+</div>
+<p class="text-xs text-slate-500 max-w-[180px]">Exposure minimal in current market volatility clusters.</p>
+</div>
+</div>
+<!-- Middle Row: Market Demand & Industry Trends -->
+<div class="grid grid-cols-12 gap-gutter mb-gutter">
+<!-- Market Demand Analysis -->
+<div class="col-span-7 glass rounded-3xl p-8 flex flex-col min-h-[400px]">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface">Market Demand Analysis</h3>
+<div class="flex gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[11px] font-bold text-primary">RETAIL TECH</span>
+<span class="bg-slate-100 px-3 py-1 rounded-full text-[11px] font-bold text-slate-600">GLOBAL</span>
+</div>
+</div>
+<div class="flex-grow relative overflow-hidden rounded-2xl bg-slate-50/50">
+<!-- Placeholder for interactive area chart visualization -->
+<div class="absolute inset-0 flex items-end px-4 pb-8 space-x-1">
+<div class="flex-1 bg-primary/20 rounded-t-md hover:bg-primary/40 transition-all cursor-pointer" style="height: 40%"></div>
+<div class="flex-1 bg-primary/20 rounded-t-md hover:bg-primary/40 transition-all cursor-pointer" style="height: 45%"></div>
+<div class="flex-1 bg-primary/20 rounded-t-md hover:bg-primary/40 transition-all cursor-pointer" style="height: 42%"></div>
+<div class="flex-1 bg-primary/20 rounded-t-md hover:bg-primary/40 transition-all cursor-pointer" style="height: 55%"></div>
+<div class="flex-1 bg-primary/30 rounded-t-md hover:bg-primary/50 transition-all cursor-pointer" style="height: 65%"></div>
+<div class="flex-1 bg-primary/40 rounded-t-md hover:bg-primary/60 transition-all cursor-pointer" style="height: 80%"></div>
+<div class="flex-1 bg-primary/30 rounded-t-md hover:bg-primary/50 transition-all cursor-pointer" style="height: 70%"></div>
+<div class="flex-1 bg-primary/40 rounded-t-md hover:bg-primary/60 transition-all cursor-pointer" style="height: 85%"></div>
+<div class="flex-1 bg-primary/60 rounded-t-md hover:bg-primary/80 transition-all cursor-pointer" style="height: 95%"></div>
+<div class="flex-1 bg-primary/40 rounded-t-md hover:bg-primary/60 transition-all cursor-pointer" style="height: 75%"></div>
+<div class="flex-1 bg-primary/30 rounded-t-md hover:bg-primary/50 transition-all cursor-pointer" style="height: 60%"></div>
+<div class="flex-1 bg-primary/20 rounded-t-md hover:bg-primary/40 transition-all cursor-pointer" style="height: 50%"></div>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[200px] text-primary">trending_up</span>
+</div>
+</div>
+</div>
+<!-- News Sentiment & Industry Trends -->
+<div class="col-span-5 flex flex-col gap-gutter">
+<div class="glass rounded-3xl p-6 flex-1 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-sm font-label-caps text-secondary mb-1">News Sentiment</p>
+<h4 class="text-xl font-bold">Bullish Market</h4>
+</div>
+<div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">mood</span>
+</div>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[78%]"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Negative</span>
+<span class="text-[10px] font-bold text-green-600 uppercase tracking-tighter">Positive (78%)</span>
+</div>
+</div>
+<div class="glass rounded-3xl p-6 flex-1 flex items-center gap-6">
+<div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">hub</span>
+</div>
+<div>
+<p class="text-sm font-label-caps text-secondary mb-1">Industry Convergence</p>
+<h4 class="text-xl font-bold">AI x Logistics</h4>
+<p class="text-xs text-slate-500 mt-1">High correlation found in current Q3 venture flows.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Competitor Overview & AI Recommendations -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Competitor Overview -->
+<div class="col-span-8 glass rounded-3xl p-8">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface">Competitor Overview</h3>
+<button class="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+                        SEE FULL MAP <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- High Density Competitor List -->
+<div class="flex items-center justify-between p-4 bg-white/50 rounded-2xl border border-slate-100 hover:border-primary/20 transition-all cursor-default">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400">N</div>
+<div>
+<h5 class="text-sm font-bold">NexGen Systems</h5>
+<p class="text-xs text-slate-500">Cloud Infrastructure</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-xs font-label-caps text-secondary mb-1">VALUATION</p>
+<p class="text-sm font-bold">$12.4M</p>
+</div>
+<div class="text-right w-24">
+<span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-[10px] font-bold">HIGH RISK</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/50 rounded-2xl border border-slate-100 hover:border-primary/20 transition-all cursor-default">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400">V</div>
+<div>
+<h5 class="text-sm font-bold">Velox Core</h5>
+<p class="text-xs text-slate-500">Edge Computing</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-xs font-label-caps text-secondary mb-1">VALUATION</p>
+<p class="text-sm font-bold">$8.2M</p>
+</div>
+<div class="text-right w-24">
+<span class="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold">NEUTRAL</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/50 rounded-2xl border border-slate-100 hover:border-primary/20 transition-all cursor-default">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400">S</div>
+<div>
+<h5 class="text-sm font-bold">Synthetix AI</h5>
+<p class="text-xs text-slate-500">Generative SaaS</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-xs font-label-caps text-secondary mb-1">VALUATION</p>
+<p class="text-sm font-bold">$42.0M</p>
+</div>
+<div class="text-right w-24">
+<span class="px-3 py-1 rounded-full bg-green-100 text-green-600 text-[10px] font-bold">OPPORTUNITY</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Recommendations -->
+<div class="col-span-4 flex flex-col gap-gutter">
+<div class="flex items-center gap-3 mb-2 px-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-headline-md text-[18px] text-on-surface">AI Recommendations</h3>
+</div>
+<div class="insight-card glass rounded-2xl p-5 border-l-4 border-l-primary relative overflow-hidden">
+<p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">Strategy Pivot</p>
+<h6 class="text-sm font-bold mb-2">Scale Retail Operations</h6>
+<p class="text-xs text-slate-600 leading-relaxed">Aggressive user acquisition trends in APAC suggest a 15% ROI increase if scaled by Q4.</p>
+<div class="absolute bottom-0 right-0 opacity-10 -rotate-12 translate-y-2 translate-x-2">
+<span class="material-symbols-outlined text-6xl">rocket_launch</span>
+</div>
+</div>
+<div class="insight-card glass rounded-2xl p-5 border-l-4 border-l-teal-500 relative overflow-hidden">
+<p class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-2">Cost Optimization</p>
+<h6 class="text-sm font-bold mb-2">API Consolidation</h6>
+<p class="text-xs text-slate-600 leading-relaxed">Detected redundancy in vector DB providers. Potential $4k monthly savings identified.</p>
+<div class="absolute bottom-0 right-0 opacity-10 -rotate-12 translate-y-2 translate-x-2">
+<span class="material-symbols-outlined text-6xl">savings</span>
+</div>
+</div>
+<div class="insight-card glass rounded-2xl p-5 border-l-4 border-l-amber-500 relative overflow-hidden">
+<p class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2">Defense Alert</p>
+<h6 class="text-sm font-bold mb-2">Patent Filing Imminent</h6>
+<p class="text-xs text-slate-600 leading-relaxed">Competitor "NexGen" is filing core patents. Legal defense recommended for Module B.</p>
+<div class="absolute bottom-0 right-0 opacity-10 -rotate-12 translate-y-2 translate-x-2">
+<span class="material-symbols-outlined text-6xl">shield</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Statistic Count-up animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const counters = document.querySelectorAll('[data-counter]');
+            
+            const animateCounter = (el) => {
+                const target = parseFloat(el.getAttribute('data-counter'));
+                let current = 0;
+                const increment = target / 60;
+                
+                const updateCount = () => {
+                    if (current < target) {
+                        current += increment;
+                        el.innerText = current.toFixed(1);
+                        requestAnimationFrame(updateCount);
+                    } else {
+                        el.innerText = target;
+                    }
+                };
+                updateCount();
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach(counter => observer.observe(counter));
+        });
+
+        // Simple Dashboard Interactions
+        document.querySelectorAll('.insight-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateX(4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateX(0)';
+            });
+        });
+    </script>
+</body></html>

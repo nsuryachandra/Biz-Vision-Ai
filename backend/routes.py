@@ -118,6 +118,8 @@ def analyze():
         competitor_analysis = prompt_engine.generate_competitor_analysis(idea_data, competitor_list)
         name_validation_list = prompt_engine.generate_business_names(idea_data)
         risk_analysis = prompt_engine.generate_risk_assessment(idea_data, scores["risk"])
+        trend_analysis = prompt_engine.generate_trend_analysis(idea_data, trends_raw.get("growth_rate", 10.0))
+        opportunity_analysis = prompt_engine.generate_opportunity_analysis(idea_data, scores["opportunity"])
         final_recommendation = prompt_engine.generate_final_report(idea_data, scores)
 
         # 7. Write consolidated Consulting Report to Database
@@ -127,7 +129,7 @@ def analyze():
                 executive_summary, market_analysis, competitor_analysis, trend_analysis, risk_analysis, opportunity_analysis, name_validation, final_recommendation) 
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (idea_id, scores["demand"], scores["trend"], scores["competition"], scores["sentiment"], scores["opportunity"], scores["risk"], scores["viability"],
-             exec_summary, market_analysis, competitor_analysis, "Detailed historical analysis saved.", risk_analysis, "Consolidated opportunities calculated.", json.dumps(name_validation_list), final_recommendation),
+             exec_summary, market_analysis, competitor_analysis, trend_analysis, risk_analysis, opportunity_analysis, json.dumps(name_validation_list), final_recommendation),
             commit=True
         )
 
@@ -141,6 +143,8 @@ def analyze():
                 "executive_summary": exec_summary,
                 "market_analysis": market_analysis,
                 "competitor_analysis": competitor_analysis,
+                "trend_analysis": trend_analysis,
+                "opportunity_analysis": opportunity_analysis,
                 "risk_analysis": risk_analysis,
                 "final_recommendation": final_recommendation
             },
@@ -282,6 +286,8 @@ def get_report(report_id):
                 "executive_summary": report["executive_summary"],
                 "market_analysis": report["market_analysis"],
                 "competitor_analysis": report["competitor_analysis"],
+                "trend_analysis": report["trend_analysis"],
+                "opportunity_analysis": report["opportunity_analysis"],
                 "risk_analysis": report["risk_analysis"],
                 "final_recommendation": report["final_recommendation"]
             },

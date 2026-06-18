@@ -23,8 +23,8 @@ RESET  = "\033[0m"
 
 
 def _check(label, ok, detail=""):
-    tick  = f"{GREEN}✓{RESET}"
-    cross = f"{RED}✗{RESET}"
+    tick  = f"{GREEN}[OK]{RESET}"
+    cross = f"{RED}[FAIL]{RESET}"
     sym   = tick if ok else cross
     tail  = f"  {YELLOW}({detail}){RESET}" if detail and not ok else (f"  {CYAN}({detail}){RESET}" if detail else "")
     print(f"  {sym}  {label}{tail}")
@@ -34,14 +34,14 @@ def _check(label, ok, detail=""):
 def startup_checks():
     """Print a boot status banner to the console."""
     print()
-    print(f"{BOLD}{'─' * 46}{RESET}")
-    print(f"{BOLD}       BizVision AI  —  Startup Diagnostics     {RESET}")
-    print(f"{BOLD}{'─' * 46}{RESET}")
+    print(f"{BOLD}{'-' * 46}{RESET}")
+    print(f"{BOLD}       BizVision AI  -  Startup Diagnostics     {RESET}")
+    print(f"{BOLD}{'-' * 46}{RESET}")
 
     # 1. MySQL
     mysql_ok = check_db_health()
     _check(
-        f"MySQL  →  {Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_NAME}",
+        f"MySQL  ->  {Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_NAME}",
         mysql_ok,
         "add DB_PASSWORD to .env" if not mysql_ok else "",
     )
@@ -51,26 +51,33 @@ def startup_checks():
     _check(
         "SerpAPI Key",
         serp_ok,
-        "add SERPAPI_KEY to .env  →  serpapi.com" if not serp_ok else "",
+        "add SERPAPI_KEY to .env  ->  serpapi.com" if not serp_ok else "",
     )
 
-    # 3. Gemini key
+    # 3. LLM API Key (Groq or Gemini)
+    groq_ok = bool(Config.GROQ_API_KEY and Config.GROQ_API_KEY not in ("", "YOUR_GROQ_API_KEY_HERE"))
     gem_ok = bool(Config.GEMINI_API_KEY and Config.GEMINI_API_KEY not in ("", "YOUR_GEMINI_API_KEY_HERE"))
+    llm_ok = groq_ok or gem_ok
+    
+    _check(
+        "Groq API Key",
+        groq_ok,
+        "add GROQ_API_KEY to .env  ->  console.groq.com" if not groq_ok else "Primary client ready",
+    )
     _check(
         "Gemini API Key",
         gem_ok,
-        "add GEMINI_API_KEY to .env  →  aistudio.google.com" if not gem_ok else "",
+        "add GEMINI_API_KEY to .env  ->  aistudio.google.com" if not gem_ok else "Secondary fallback ready",
     )
 
-    print(f"{BOLD}{'─' * 46}{RESET}")
+    print(f"{BOLD}{'-' * 46}{RESET}")
 
     if not mysql_ok:
-        print(f"\n{RED}{BOLD}  ✗  MySQL is required. Update .env and restart.{RESET}\n")
-    if not serp_ok or not gem_ok:
-        print(f"\n{YELLOW}{BOLD}  ⚠  Missing API keys — /analyze endpoint will return 503.{RESET}\n")
-
-    if mysql_ok and serp_ok and gem_ok:
-        print(f"\n{GREEN}{BOLD}  All systems operational. Starting server…{RESET}\n")
+        print(f"\n{RED}{BOLD}  [FAIL]  MySQL is required. Update .env and restart.{RESET}\n")
+    if not serp_ok or not llm_ok:
+        print(f"\n{YELLOW}{BOLD}  [WARNING]  Missing API keys - /analyze endpoint will return 503.{RESET}\n")
+    else:
+        print(f"\n{GREEN}{BOLD}  All systems operational. Starting server...{RESET}\n")
 
 
 def create_app():
@@ -79,11 +86,7 @@ def create_app():
 
     CORS(
         app,
-        resources={r"/*": {"origins": [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:3000",
-        ]}},
+        resources={r"/*": {"origins": "*"}},
     )
 
     app.register_blueprint(routes_bp)
