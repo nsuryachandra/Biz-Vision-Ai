@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/react.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Material Symbols & Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700;800&amp;family=Geist+Mono:wght@400;500;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      h1, h2, h3, h4, h5, h6, .font-heading {
+        font-family: 'Bricolage Grotesque', sans-serif !important;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1;
+      }
+    </style>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#4d44e3",
+              "surface-container-high": "#dce9ff",
+              "surface-dim": "#cbdbf5",
+              "primary": "#3525cd",
+              "primary-container": "#4f46e5",
+              "on-tertiary-fixed": "#191c1e",
+              "tertiary-fixed-dim": "#c4c7c9",
+              "primary-fixed-dim": "#c3c0ff",
+              "on-secondary-container": "#5c647a",
+              "on-tertiary-fixed-variant": "#444749",
+              "background": "#f8f9ff",
+              "secondary-fixed": "#dae2fd",
+              "secondary-container": "#dae2fd",
+              "on-primary-fixed": "#0f0069",
+              "on-tertiary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "outline-variant": "#c7c4d8",
+              "tertiary-container": "#5e6163",
+              "on-primary-fixed-variant": "#3323cc",
+              "on-error-container": "#93000a",
+              "error": "#ba1a1a",
+              "inverse-surface": "#213145",
+              "secondary": "#565e74",
+              "on-primary-container": "#dad7ff",
+              "on-error": "#ffffff",
+              "surface-container": "#e5eeff",
+              "surface-bright": "#f8f9ff",
+              "surface-container-lowest": "#ffffff",
+              "inverse-primary": "#c3c0ff",
+              "secondary-fixed-dim": "#bec6e0",
+              "tertiary": "#46494b",
+              "on-tertiary-container": "#dadcde",
+              "on-tertiary-container": "#dadcde",
+              "surface-variant": "#d3e4fe",
+              "inverse-on-surface": "#eaf1ff",
+              "on-surface-variant": "#464555",
+              "on-secondary-fixed-variant": "#3f465c",
+              "primary-fixed": "#e2dfff",
+              "tertiary-fixed": "#e0e3e5",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed": "#131b2e",
+              "surface": "#f8f9ff",
+              "on-surface": "#0b1c30",
+              "on-background": "#0b1c30",
+              "on-primary": "#ffffff",
+              "outline": "#777587",
+              "surface-container-highest": "#d3e4fe"
+            },
+            borderRadius: {
+              "DEFAULT": "4px",
+              "lg": "8px",
+              "xl": "12px",
+              "2xl": "16px",
+              "3xl": "24px",
+              "full": "9999px"
+            },
+            spacing: {
+              "stack-sm": "8px",
+              "gutter": "24px",
+              "margin-mobile": "16px",
+              "margin-desktop": "48px",
+              "container-max": "1280px",
+              "unit": "4px",
+              "stack-md": "16px",
+              "stack-lg": "32px"
+            },
+            fontFamily: {
+              sans: ["Plus Jakarta Sans", "Inter", "sans-serif"],
+              body: ["Plus Jakarta Sans", "Inter", "sans-serif"],
+              "body-md": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+              "display-lg": ["Bricolage Grotesque", "sans-serif"],
+              "headline-md": ["Bricolage Grotesque", "sans-serif"],
+              "mono-label": ["Geist Mono", "monospace"]
+            }
+          }
+        }
+      }
+    </script>
+    <title>BizVision AI - Startup Intelligence & Market Validation Platform</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -56,9 +56,9 @@ Return a JSON array of objects. Each object MUST have these keys:
 - "popularity": "High" / "Medium" / "Low"
 - "competition": "High" / "Medium" / "Low"
 - "brand_uniqueness": 0-100 score
-- "rationale": 1-sentence brand reasoning
+- "rationale": "Linguistic root and symbolic meaning of the name + why this is a highly strategic and brandable choice for this startup concept."
 
-Ensure names are catchy and modern (like Stripe, Vercel, Linear). Return ONLY raw valid JSON, nothing else.
+Ensure names are extremely catchy, modern, and memorable. Return ONLY raw valid JSON array, nothing else.
 """
 
 RISK_ASSESSMENT_TEMPLATE = """
