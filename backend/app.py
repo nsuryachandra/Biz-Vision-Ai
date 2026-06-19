@@ -32,8 +32,16 @@ def startup_checks() -> bool:
     print(f"{B}{'-'*46}{X}")
 
     mysql_ok = check_db_health()
-    _check(f"MySQL  ->  {Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_NAME}", mysql_ok,
-           "check DB_HOST / DB_PASSWORD in .env" if not mysql_ok else "")
+    from urllib.parse import urlparse
+    if Config.DATABASE_URL:
+        parsed = urlparse(Config.DATABASE_URL)
+        host = parsed.hostname
+        port = parsed.port or 3306
+        db_name = parsed.path.lstrip("/") if parsed.path else Config.DB_NAME
+        _check(f"MySQL (Aiven) -> {host}:{port}/{db_name}", mysql_ok)
+    else:
+        _check(f"MySQL (Local) -> {Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_NAME}", mysql_ok,
+               "check DB_HOST / DB_PASSWORD in .env" if not mysql_ok else "")
 
     serp_ok = bool(Config.SERPAPI_KEY and Config.SERPAPI_KEY != "YOUR_SERPAPI_KEY_HERE")
     _check("SerpAPI Key", serp_ok,

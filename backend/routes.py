@@ -116,7 +116,9 @@ def analyze():
             commit=True,
         )
     except Exception as exc:
-        logger.warning(f"DB persist of idea failed (analysis continues): {exc}")
+        msg = f"[DATABASE ERROR] DB persist of idea/search_history failed: {exc}"
+        print(msg)
+        logger.warning(msg)
 
     # ── 3. SerpAPI Intelligence Collection ───────────────────────────────────
     # Each call is fully independent; any failure returns a safe empty dict.
@@ -174,7 +176,9 @@ def analyze():
                     commit=True,
                 )
         except Exception as exc:
-            logger.warning(f"Failed to save competitors: {exc}")
+            msg = f"[DATABASE ERROR] Failed to save competitors: {exc}"
+            print(msg)
+            logger.warning(msg)
 
         try:
             execute_query(
@@ -183,7 +187,9 @@ def analyze():
                 commit=True,
             )
         except Exception as exc:
-            logger.warning(f"Failed to save trend data: {exc}")
+            msg = f"[DATABASE ERROR] Failed to save trend data: {exc}"
+            print(msg)
+            logger.warning(msg)
 
         try:
             for art in news_raw.get("news_results", []):
@@ -202,7 +208,9 @@ def analyze():
                     commit=True,
                 )
         except Exception as exc:
-            logger.warning(f"Failed to save news articles: {exc}")
+            msg = f"[DATABASE ERROR] Failed to save news articles: {exc}"
+            print(msg)
+            logger.warning(msg)
 
     # ── 5. Score Calculation ──────────────────────────────────────────────────
     scores = {
@@ -256,7 +264,9 @@ def analyze():
                 commit=True,
             )
         except Exception as exc:
-            logger.warning(f"Failed to persist report to DB: {exc}")
+            msg = f"[DATABASE ERROR] Failed to persist report to DB: {exc}"
+            print(msg)
+            logger.warning(msg)
 
     return jsonify({
         "report_id": report_id,

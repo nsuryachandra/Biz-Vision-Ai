@@ -2,23 +2,44 @@ import mysql.connector
 from mysql.connector import Error
 import os
 import logging
+from urllib.parse import urlparse, parse_qs
 from config import Config
 
 logger = logging.getLogger(__name__)
 
 
 def get_db_connection(include_db=True):
-    """Establish a connection to the MySQL server."""
-    connection_args = {
-        "host": Config.DB_HOST,
-        "port": Config.DB_PORT,
-        "user": Config.DB_USER,
-        "password": Config.DB_PASSWORD,
-        "auth_plugin": "mysql_native_password",
-        "connect_timeout": 5,
-    }
-    if include_db:
-        connection_args["database"] = Config.DB_NAME
+    """Establish a connection to MySQL (supports DATABASE_URL for Aiven cloud)."""
+    if Config.DATABASE_URL:
+        parsed = urlparse(Config.DATABASE_URL)
+        connection_args = {
+            "host": parsed.hostname,
+            "port": parsed.port or 3306,
+            "user": parsed.username,
+            "password": parsed.password or "",
+            "connect_timeout": 10,
+        }
+        db_name = parsed.path.lstrip("/") if parsed.path else Config.DB_NAME
+        if include_db:
+            connection_args["database"] = db_name
+        if parsed.query:
+            params = parse_qs(parsed.query)
+            ssl_mode = params.get("sslmode", params.get("ssl-mode", [""]))[0].lower()
+            if ssl_mode == "require" or ssl_mode == "required":
+                connection_args["ssl_disabled"] = False
+            if params.get("ssl_ca"):
+                connection_args["ssl_ca"] = params["ssl_ca"][0]
+    else:
+        connection_args = {
+            "host": Config.DB_HOST,
+            "port": Config.DB_PORT,
+            "user": Config.DB_USER,
+            "password": Config.DB_PASSWORD,
+            "auth_plugin": "mysql_native_password",
+            "connect_timeout": 5,
+        }
+        if include_db:
+            connection_args["database"] = Config.DB_NAME
     return mysql.connector.connect(**connection_args)
 
 
@@ -38,13 +59,14 @@ def check_db_health():
 
 def init_db():
     """Create database and tables from schema.sql. Raises on failure."""
-    # Step 1: create database if it doesn't exist
-    conn = get_db_connection(include_db=False)
-    cursor = conn.cursor()
-    cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{Config.DB_NAME}`")
-    conn.commit()
-    cursor.close()
-    conn.close()
+    # Step 1: create database if it doesn't exist (skip for Aiven cloud — avnadmin may not have CREATE privilege)
+    if not Config.DATABASE_URL:
+        conn = get_db_connection(include_db=False)
+        cursor = conn.cursor()
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{Config.DB_NAME}`")
+        conn.commit()
+        cursor.close()
+        conn.close()
 
     # Step 2: run schema
     conn = get_db_connection(include_db=True)
@@ -65,13 +87,21 @@ def init_db():
                 clean_lines.append(clean_line)
         
         exec_stmt = " ".join(clean_lines).strip()
-        if exec_stmt:
-            try:
-                cursor.execute(exec_stmt)
-            except Error as e:
-                if "Duplicate key name" in str(e) or "already exists" in str(e).lower() or "Duplicate entry" in str(e):
-                    continue
-                logger.warning(f"Schema warning: {e} | Query: {exec_stmt[:80]}")
+        if not exec_stmt:
+            continue
+
+        # Skip CREATE DATABASE and USE for Aiven cloud — the URL already specifies the DB
+        if Config.DATABASE_URL:
+            upper = exec_stmt.upper()
+            if upper.startswith("CREATE DATABASE") or upper.startswith("USE "):
+                continue
+
+        try:
+            cursor.execute(exec_stmt)
+        except Error as e:
+            if "Duplicate key name" in str(e) or "already exists" in str(e).lower() or "Duplicate entry" in str(e):
+                continue
+            logger.warning(f"Schema warning: {e} | Query: {exec_stmt[:80]}")
     conn.commit()
     cursor.close()
     conn.close()

@@ -111,9 +111,9 @@ CREATE TABLE IF NOT EXISTS api_logs (
 CREATE TABLE IF NOT EXISTS prompt_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prompt_name VARCHAR(100) NOT NULL,
-    input_variables TEXT NULL,
-    prompt_text TEXT NULL,
-    response_text TEXT NULL,
+    input_variables LONGTEXT NULL,
+    prompt_text LONGTEXT NULL,
+    response_text LONGTEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

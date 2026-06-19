@@ -1,13 +1,16 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables from .env file, overriding system variables
-load_dotenv(override=True)
+# Load .env from the backend/ directory regardless of working directory
+dotenv_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path, override=True)
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "bizvision_ai_super_secret_key_12345")
     
-    # Database configuration
+    # Database configuration (use DATABASE_URL for Aiven cloud, or individual settings for local)
+    DATABASE_URL = os.getenv("DATABASE_URL", "")
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = int(os.getenv("DB_PORT", 3306))
     DB_NAME = os.getenv("DB_NAME", "bizvision_ai")
