@@ -56,25 +56,25 @@ class AnalysisEngine:
                 elif n > p:
                     neg += 1
                 else:
-                    pos += 1  # neutral → optimistic default
+                    pass  # neutral: do not increment pos or neg
 
         total_news = len(articles)
         if total_news > 0:
             sentiment_score    = round((pos / total_news) * 100)
             negative_sentiment = 100 - sentiment_score
         else:
-            sentiment_score    = 75
-            negative_sentiment = 25
+            sentiment_score    = 50
+            negative_sentiment = 50
 
         # ── 3. Demand (Google Search) ─────────────────────────────────────────
-        total_results = search_data.get("search_information", {}).get("total_results", 100_000)
+        total_results = search_data.get("search_information", {}).get("total_results", 0)
         if isinstance(total_results, str):
             # SerpAPI sometimes returns "About 1,230,000 results" as a string
-            total_results = int("".join(filter(str.isdigit, total_results)) or "100000")
+            total_results = int("".join(filter(str.isdigit, total_results)) or "0")
         if total_results and total_results > 0:
             demand_score = min(100, max(10, round(math.log10(max(total_results, 1)) * 12 + 10)))
         else:
-            demand_score = 40
+            demand_score = 15
 
         # ── 4. Trend Score (Google Trends) ────────────────────────────────────
         growth_rate  = float(trends_data.get("growth_rate") or 0.0)

@@ -161,6 +161,11 @@ def analyze():
     if idea_id:
         try:
             for comp in competitor_list:
+                # Clarify mappings: SerpAPI uses 'reviews' for the number of reviews
+                # and we store the list of individual reviews under 'reviews_list'.
+                count_val = comp.get("reviews")
+                reviews_list_val = comp.get("reviews_list", [])
+                
                 execute_query(
                     """INSERT INTO competitor_data
                        (idea_id, name, rating, review_count, address, reviews)
@@ -169,9 +174,9 @@ def analyze():
                         idea_id,
                         comp.get("title"),
                         comp.get("rating"),
-                        comp.get("reviews"),
+                        count_val,
                         comp.get("address"),
-                        json.dumps(comp.get("reviews_list", [])),
+                        json.dumps(reviews_list_val),
                     ),
                     commit=True,
                 )
@@ -231,7 +236,7 @@ def analyze():
     logger.info("Running AI consulting evaluation via Groq...")
 
     exec_summary       = _safe_generate(lambda: prompt_engine.generate_startup_validation(idea_data), fallback_text, "Executive summary")
-    market_analysis    = _safe_generate(lambda: prompt_engine.generate_market_analysis(idea_data, search_raw.get("search_information", {}).get("total_results", 120000), growth_rate), fallback_text, "Market analysis")
+    market_analysis    = _safe_generate(lambda: prompt_engine.generate_market_analysis(idea_data, search_raw.get("search_information", {}).get("total_results", 0), growth_rate), fallback_text, "Market analysis")
     competitor_analysis= _safe_generate(lambda: prompt_engine.generate_competitor_analysis(idea_data, competitor_list), fallback_text, "Competitor analysis")
     name_validation    = _safe_generate(lambda: prompt_engine.generate_business_names(idea_data), [], "Business names")
     risk_analysis      = _safe_generate(lambda: prompt_engine.generate_risk_assessment(idea_data, scores.get("risk", 50)), fallback_text, "Risk assessment")

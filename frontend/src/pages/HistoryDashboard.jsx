@@ -36,9 +36,7 @@ const Header = ({ onNewAnalysis, onProfileClick }) => (
   <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/60 shadow-sm">
     <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-md">
-          <Icon icon="lucide:sparkles" className="text-white text-sm" />
-        </div>
+        <img src="/logo.jpeg" alt="BizVision AI" className="w-8 h-8 rounded-lg object-cover shadow-md" />
         <span className="text-lg font-extrabold tracking-tight text-foreground">
           BizVision<span className="text-primary">AI</span>
         </span>

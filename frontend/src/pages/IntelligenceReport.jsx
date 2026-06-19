@@ -41,7 +41,8 @@ const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
         <div className="h-4 w-px bg-border"></div>
         <div className="flex flex-col">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Intelligence Report</span>
-          <span className="text-sm font-bold text-indigo-600">BizVision AI</span>
+          <img src="/logo.jpeg" alt="BizVision AI" className="h-5 inline-block rounded object-cover" />
+          <span className="text-sm font-bold text-indigo-600 ml-1">BizVision AI</span>
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -111,9 +112,9 @@ const ExecutiveSummary = ({ text }) => (
     </div>
     
     <div className="flex-1 flex flex-col justify-center">
-      <p className="text-lg leading-relaxed text-foreground font-normal mb-8">
+      <div className="text-base leading-relaxed text-foreground font-normal mb-8 whitespace-pre-wrap">
         {text}
-      </p>
+      </div>
       
       <div className="flex flex-wrap gap-3">
         {["Favorable Demographics", "Low Entry Barrier", "High Margin Potential"].map((tag) => (
@@ -294,7 +295,7 @@ const MarketIntelligenceChart = ({ trends, timeRange, onRangeChange }) => {
   );
 };
 
-const CompetitorIntelligence = ({ competitors }) => {
+const CompetitorIntelligence = ({ competitors, analysis }) => {
   const defaultCompetitors = [
     {
       initials: 'PB',
@@ -336,59 +337,166 @@ const CompetitorIntelligence = ({ competitors }) => {
     : defaultCompetitors;
 
   return (
-    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-          <Icon icon="lucide:crosshair" className="text-xl text-amber-600" />
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col justify-between">
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+            <Icon icon="lucide:crosshair" className="text-xl text-amber-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-extrabold tracking-tight">Competitor Intelligence</h3>
+            <p className="text-sm text-muted-foreground font-medium">Top players in the region</p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-xl font-extrabold tracking-tight">Competitor Intelligence</h3>
-          <p className="text-sm text-muted-foreground font-medium">Top players in the region</p>
+
+        <div className="space-y-4">
+          {mappedCompetitors.map((comp, idx) => (
+            <div key={idx} className="p-4 rounded-xl border border-border/50 hover:shadow-md transition-shadow bg-background/50">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-3">
+                  <div className={cn("w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold text-sm", comp.colorClass)}>
+                    {comp.initials}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm">{comp.name}</h4>
+                    <div className="flex items-center gap-1 text-xs text-amber-500 font-bold mt-0.5">
+                      <Icon icon="lucide:star" /> {comp.rating} <span className="text-muted-foreground font-medium">({comp.reviews} reviews)</span>
+                    </div>
+                  </div>
+                </div>
+                {comp.badge && (
+                  <span className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-indigo-100">
+                    {comp.badge}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {comp.tags.map((tag, tIdx) => (
+                  <span 
+                    key={tIdx} 
+                    className={cn(
+                      "text-[10px] px-2 py-1 rounded font-bold",
+                      tag.type === 'success' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
+                    )}
+                  >
+                    {tag.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="space-y-4 flex-1">
-        {mappedCompetitors.map((comp, idx) => (
-          <div key={idx} className="p-4 rounded-xl border border-border/50 hover:shadow-md transition-shadow bg-background/50">
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center gap-3">
-                <div className={cn("w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold text-sm", comp.colorClass)}>
-                  {comp.initials}
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm">{comp.name}</h4>
-                  <div className="flex items-center gap-1 text-xs text-amber-500 font-bold mt-0.5">
-                    <Icon icon="lucide:star" /> {comp.rating} <span className="text-muted-foreground font-medium">({comp.reviews} reviews)</span>
-                  </div>
-                </div>
-              </div>
-              {comp.badge && (
-                <span className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-indigo-100">
-                  {comp.badge}
-                </span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              {comp.tags.map((tag, tIdx) => (
-                <span 
-                  key={tIdx} 
-                  className={cn(
-                    "text-[10px] px-2 py-1 rounded font-bold",
-                    tag.type === 'success' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
-                  )}
-                >
-                  {tag.label}
-                </span>
-              ))}
-            </div>
+      {analysis?.competitor_analysis && (
+        <div className="mt-6 pt-6 border-t border-border/60">
+          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Market Observations</h4>
+          <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-normal">
+            {analysis.competitor_analysis}
           </div>
-        ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MarketInsightsCard = ({ text }) => (
+  <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col justify-between">
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+          <Icon icon="lucide:trending-up" className="text-xl text-indigo-600" />
+        </div>
+        <div>
+          <h3 className="text-xl font-extrabold tracking-tight">Key Insights</h3>
+          <p className="text-sm text-muted-foreground font-medium">Trends & momentum</p>
+        </div>
+      </div>
+      <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-normal">
+        {text || "No insights analyzed."}
+      </div>
+    </div>
+  </div>
+);
+
+const KeyOpportunities = ({ text }) => (
+  <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
+    <div className="flex items-center gap-3 mb-6">
+      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+        <Icon icon="lucide:lightbulb" className="text-xl text-indigo-600" />
+      </div>
+      <div>
+        <h3 className="text-xl font-extrabold tracking-tight">Key Opportunities</h3>
+        <p className="text-sm text-muted-foreground font-medium">Strategic avenues for growth</p>
+      </div>
+    </div>
+    <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap flex-1 font-normal">
+      {text || "No opportunities analyzed."}
+    </div>
+  </div>
+);
+
+const RiskAnalysis = ({ text, riskScore }) => {
+  const riskLevel = riskScore >= 70 ? "High" : riskScore >= 35 ? "Moderate" : "Low";
+  const riskColor = riskScore >= 70 ? "text-red-600 bg-red-50 border-red-100" : riskScore >= 35 ? "text-amber-600 bg-amber-50 border-amber-100" : "text-emerald-600 bg-emerald-50 border-emerald-100";
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+            <Icon icon="lucide:shield-alert" className="text-xl text-red-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-extrabold tracking-tight">Risk Analysis</h3>
+            <p className="text-sm text-muted-foreground font-medium">Key operational challenges</p>
+          </div>
+        </div>
+        <span className={`text-[10px] font-bold px-2 py-1 rounded border uppercase tracking-wider ${riskColor}`}>
+          Risk: {riskLevel}
+        </span>
+      </div>
+      <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap flex-1 font-normal">
+        {text || "No risk analysis analyzed."}
       </div>
     </div>
   );
 };
 
-const ProductDemandAnalysis = ({ isIndia, currencySymbol, currencyUnit, tamVal, samVal, somVal }) => {
+const ProductDemandAnalysis = ({ scores, metadata }) => {
+  const isLocal = /hotel|veg|restaurant|shop|cafe|store|salon|bakery|dhabha|spa|boutique|delivery/i.test(metadata?.idea_text || '');
+  const demand = scores?.demand || 50;
+  const viability = scores?.viability || 50;
+
+  // Potential Customers calculation
+  const custCount = isLocal 
+    ? Math.round(demand * 120 + 2000).toLocaleString('en-IN') + "+"
+    : Math.round(demand * 8500 + 50000).toLocaleString('en-IN') + "+";
+
+  // Average Customer Spending (INR only)
+  const spending = isLocal
+    ? "₹250 – ₹1,500"
+    : "₹1,200 – ₹15,000";
+
+  // Revenue Potential calculation (INR only)
+  const revSmall = isLocal
+    ? "₹45,000/month"
+    : "₹1.2 Lakh/month";
+  const revMed = isLocal
+    ? "₹2.5 Lakh/month"
+    : "₹8 Lakh/month";
+  const revLarge = isLocal
+    ? "₹12 Lakh+/month"
+    : "₹45 Lakh+/month";
+
+  // Market Demand
+  const demandLevel = demand >= 75 ? "High" : demand >= 45 ? "Medium" : "Low";
+  const demandColor = demand >= 75 ? "text-emerald-600 bg-emerald-50 border border-emerald-100" : demand >= 45 ? "text-amber-600 bg-amber-50 border border-amber-100" : "text-red-600 bg-red-50 border border-red-100";
+
+  // Business Opportunity
+  const oppLevel = viability >= 75 ? "Strong" : viability >= 50 ? "Moderate" : "Limited";
+  const oppColor = viability >= 75 ? "text-indigo-600 bg-indigo-50 border border-indigo-100" : viability >= 50 ? "text-cyan-600 bg-cyan-50 border border-cyan-100" : "text-slate-600 bg-slate-50 border border-slate-100";
+
   return (
     <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
       <div className="flex items-center gap-3 mb-6">
@@ -396,41 +504,62 @@ const ProductDemandAnalysis = ({ isIndia, currencySymbol, currencyUnit, tamVal, 
           <Icon icon="lucide:shopping-bag" className="text-xl text-cyan-600" />
         </div>
         <div>
-          <h3 className="text-xl font-extrabold tracking-tight">Product Demand & TAM</h3>
-          <p className="text-sm text-muted-foreground font-medium">Shopping interest & market sizes</p>
+          <h3 className="text-xl font-extrabold tracking-tight">Demand & Revenue Potential</h3>
+          <p className="text-sm text-muted-foreground font-medium">Customer base & sales projections</p>
         </div>
       </div>
 
-      <div className="space-y-6 flex-1 justify-center flex flex-col">
-        <div>
-          <div className="flex justify-between text-sm font-bold mb-1">
-            <span>TAM (Total Addressable Market)</span>
-            <span className="text-indigo-600">{currencySymbol}{tamVal}{currencyUnit}</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-            <div className="h-full rounded-full bg-indigo-600" style={{ width: '100%' }}></div>
+      <div className="grid grid-cols-2 gap-4 flex-1">
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center">
+          <span className="text-xs font-bold text-muted-foreground block mb-1">Potential Customers</span>
+          <span className="text-xl font-extrabold text-indigo-600 flex items-center gap-1.5">
+            <span className="text-lg">👥</span> {custCount}
+          </span>
+        </div>
+
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center">
+          <span className="text-xs font-bold text-muted-foreground block mb-1">Average Customer Spending</span>
+          <span className="text-xl font-extrabold text-foreground flex items-center gap-1.5">
+            <span className="text-lg">💰</span> {spending}
+          </span>
+        </div>
+
+        <div className="col-span-2 p-4 rounded-xl border border-border/50 bg-background/30 space-y-2">
+          <span className="text-xs font-bold text-muted-foreground block">Revenue Potential (INR Only)</span>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="flex flex-col p-2 bg-card rounded-lg border border-border/30">
+              <span className="text-muted-foreground font-medium">Small Scale</span>
+              <span className="font-extrabold text-foreground mt-0.5">{revSmall}</span>
+            </div>
+            <div className="flex flex-col p-2 bg-indigo-50/50 rounded-lg border border-indigo-100">
+              <span className="text-indigo-600 font-bold">Medium Scale</span>
+              <span className="font-extrabold text-indigo-700 mt-0.5">{revMed}</span>
+            </div>
+            <div className="flex flex-col p-2 bg-emerald-50/50 rounded-lg border border-emerald-100">
+              <span className="text-emerald-600 font-bold">Large Scale</span>
+              <span className="font-extrabold text-emerald-700 mt-0.5">{revLarge}</span>
+            </div>
           </div>
         </div>
 
-        <div>
-          <div className="flex justify-between text-sm font-bold mb-1">
-            <span>SAM (Serviceable Addressable Market)</span>
-            <span className="text-cyan-600">{currencySymbol}{samVal}{currencyUnit}</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-            <div className="h-full rounded-full bg-cyan-500" style={{ width: `${Math.min(100, Math.round((samVal / tamVal) * 100))}%` }}></div>
-          </div>
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-between">
+          <span className="text-xs font-bold text-muted-foreground block mb-1">Market Demand</span>
+          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold w-fit border ${demandColor}`}>
+            <span>📈</span> {demandLevel}
+          </span>
         </div>
 
-        <div>
-          <div className="flex justify-between text-sm font-bold mb-1">
-            <span>SOM (Serviceable Obtainable Market)</span>
-            <span className="text-purple-600">{currencySymbol}{somVal}{currencyUnit}</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-            <div className="h-full rounded-full bg-purple-600" style={{ width: `${Math.min(100, Math.round((somVal / tamVal) * 100))}%` }}></div>
-          </div>
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-between">
+          <span className="text-xs font-bold text-muted-foreground block mb-1">Business Opportunity</span>
+          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold w-fit border ${oppColor}`}>
+            <span>⭐</span> {oppLevel}
+          </span>
         </div>
+      </div>
+
+      <div className="mt-6 pt-4 border-t border-border/60 text-[11px] font-bold text-muted-foreground flex items-center gap-2">
+        <Icon icon="lucide:check-circle-2" className="text-emerald-500 text-sm flex-shrink-0" />
+        <span>Key Takeaway: Healthy customer demand with attractive revenue opportunities.</span>
       </div>
     </div>
   );
@@ -438,8 +567,8 @@ const ProductDemandAnalysis = ({ isIndia, currencySymbol, currencyUnit, tamVal, 
 
 const BrandNameRationale = ({ businessNames }) => {
   const defaultNames = [
-    { name: 'NaturaPet.com', brand_uniqueness: 85, popularity: 8, competition: 3, rationale: 'Fits organic positioning perfectly, signaling trust and natural ingredients.' },
-    { name: 'Pawganic.in', brand_uniqueness: 72, popularity: 7, competition: 4, rationale: 'Highly relevant regional suffix with direct connection to organic pet lifestyle.' }
+    { name: 'NaturaPet.com', brand_uniqueness: 85, rationale: '• Easy to remember\n• Strong brand identity\n• Suitable for target audience' },
+    { name: 'Pawganic.in', brand_uniqueness: 72, rationale: '• Highly relevant regional suffix\n• Easy to pronounce\n• Fits organic niche' }
   ];
 
   const names = businessNames && businessNames.length > 0 ? businessNames : defaultNames;
@@ -451,8 +580,8 @@ const BrandNameRationale = ({ businessNames }) => {
           <Icon icon="lucide:tags" className="text-xl text-indigo-600" />
         </div>
         <div>
-          <h3 className="text-xl font-extrabold tracking-tight">AI Suggested Names & Rationale</h3>
-          <p className="text-sm text-muted-foreground font-medium">Detailed meaning and target suitability check</p>
+          <h3 className="text-xl font-extrabold tracking-tight">AI Suggested Names</h3>
+          <p className="text-sm text-muted-foreground font-medium">Recommended branding with uniqueness scores</p>
         </div>
       </div>
 
@@ -460,24 +589,18 @@ const BrandNameRationale = ({ businessNames }) => {
         {names.map((n, idx) => (
           <div key={idx} className="p-5 rounded-2xl border border-border/50 bg-background/50 hover:shadow-md transition-all flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between gap-4 mb-3">
+              <div className="flex items-center justify-between gap-4 mb-4">
                 <span className="text-lg font-extrabold text-foreground">{n.name}</span>
                 <span className="bg-indigo-50 text-indigo-600 border border-indigo-100 text-xs font-bold px-2.5 py-1 rounded-lg">
                   Uniqueness: {n.brand_uniqueness}%
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed font-normal">
-                {n.rationale || "AI validation suggests high relevance and brand potential for your business domain."}
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/40 text-xs font-semibold text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Icon icon="lucide:star" className="text-amber-500" /> Popularity: {n.popularity}/10
-              </span>
-              <span className="flex items-center gap-1">
-                <Icon icon="lucide:swords" className="text-red-500" /> Competition: {n.competition}/10
-              </span>
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">Highlights:</span>
+                <div className="text-sm text-muted-foreground leading-relaxed font-normal whitespace-pre-wrap">
+                  {n.rationale || "• Easy to remember\n• Strong brand identity\n• Suitable for target audience"}
+                </div>
+              </div>
             </div>
           </div>
         ))}
@@ -505,9 +628,9 @@ const FinalRecommendation = ({ verdict, score, onGenerate, onSave, isLoading }) 
         {score > 60 ? "Proceed with Launch" : "Proceed with Caution"}
       </h2>
       
-      <p className="text-lg text-white/90 max-w-2xl leading-relaxed font-light">
+      <div className="text-base text-white/90 max-w-2xl leading-relaxed font-light whitespace-pre-wrap">
         {verdict}
-      </p>
+      </div>
     </div>
 
     <div className="relative z-10 flex flex-col gap-3 w-full md:w-auto">
@@ -586,40 +709,7 @@ const IntelligenceReport = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const isIndia = 
-    (metadata.location && /india|hyderabad|mumbai|delhi|bangalore|pune|chennai|kolkata/i.test(metadata.location)) ||
-    (metadata.idea_text && /india|hyderabad|mumbai|delhi|bangalore|pune|chennai|kolkata/i.test(metadata.idea_text));
-
-  const isLocal = /hotel|veg|restaurant|shop|cafe|store|salon|bakery|dhabha|spa|boutique|delivery/i.test(metadata.idea_text || '');
-
-  let currencySymbol;
-  let currencyUnit;
-  let tamValue;
-  
-  if (isIndia) {
-    currencySymbol = '₹';
-    if (isLocal) {
-      tamValue = 25; 
-      currencyUnit = ' Cr';
-    } else {
-      tamValue = 4500; 
-      currencyUnit = ' Cr';
-    }
-  } else {
-    currencySymbol = '$';
-    if (isLocal) {
-      tamValue = 12; 
-      currencyUnit = 'M';
-    } else {
-      tamValue = 84; 
-      currencyUnit = 'B';
-    }
-  }
-
-  const demand = scores?.demand || 50;
-  const tamVal = tamValue;
-  const samVal = Math.round(tamVal * (demand / 100));
-  const somVal = Math.round(samVal * 0.15); 
+ 
 
   const handleDownloadPDF = useCallback(() => {
     window.print();
@@ -727,23 +817,30 @@ const IntelligenceReport = () => {
           />
         </div>
 
-        {/* Market Intelligence Chart */}
-        <MarketIntelligenceChart 
-          trends={trends}
-          timeRange={selectedTimeRange} 
-          onRangeChange={handleTimeRangeChange} 
-        />
+        {/* Market Intelligence Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <MarketIntelligenceChart 
+              trends={trends}
+              timeRange={selectedTimeRange} 
+              onRangeChange={handleTimeRangeChange} 
+            />
+          </div>
+          <MarketInsightsCard text={analysis?.market_analysis} />
+        </div>
+
+        {/* Opportunities & Risks Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <KeyOpportunities text={analysis?.opportunity_analysis} />
+          <RiskAnalysis text={analysis?.risk_analysis} riskScore={scores?.risk || 50} />
+        </div>
 
         {/* Competitor & Product Demand Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <CompetitorIntelligence competitors={competitors} />
+          <CompetitorIntelligence competitors={competitors} analysis={analysis} />
           <ProductDemandAnalysis 
-            isIndia={isIndia}
-            currencySymbol={currencySymbol}
-            currencyUnit={currencyUnit}
-            tamVal={tamVal}
-            samVal={samVal}
-            somVal={somVal}
+            scores={scores}
+            metadata={metadata}
           />
         </div>
 

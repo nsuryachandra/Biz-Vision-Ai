@@ -18,11 +18,12 @@ Location: {location}
 Industry: {industry}
 Business Type: {business_type}
 
-Provide a professional, critical evaluation of this opportunity. Answer:
-1. Is there a genuine market need?
-2. What are the key drivers for growth in this sector?
-3. What is the target customer demographic?
-Write exactly two professional paragraphs in a McKinsey consulting style.
+Provide a professional, critical evaluation of this opportunity.
+Follow these formatting rules exactly:
+- Output an "Executive Summary" header.
+- Provide exactly 4 to 6 short, punchy bullet points starting with "• " mapping the main opportunities, demands, and viability factors.
+- Followed by a "Verdict:" line (e.g. "Verdict: Recommended for validation and pilot launch." or similar).
+- DO NOT write long paragraphs. Keep every bullet under 15 words and the section under 50 words.
 """
 
 MARKET_ANALYSIS_TEMPLATE = """
@@ -33,8 +34,14 @@ Search results size: {search_results_count}
 Google Trends growth rate: {trends_growth_rate}%
 
 Provide a formal market demand and trend analysis.
-Evaluate the search volume, geographical relevance, and whether this trend is long-term or short-term.
-Write exactly two analytical paragraphs in a Deloitte-style format.
+Follow these formatting rules exactly:
+- Output a "Key Insights" header followed by exactly 3 to 4 short bullet points starting with "• ".
+- Output a "Growth Indicators" header followed by exactly 4 bullet points:
+  • Demand Score: [Score between 0-100]/100
+  • Trend Direction: [Upward/Downward/Stable]
+  • Market Momentum: [High/Moderate/Low]
+  • Growth Potential: [High/Moderate/Low]
+- DO NOT write paragraphs. Keep it short, scannable, and decision-oriented.
 """
 
 COMPETITOR_ANALYSIS_TEMPLATE = """
@@ -44,8 +51,10 @@ Location: {location}
 Competitor List: {competitors_json}
 
 Provide a competitor intelligence report.
-Assess the level of market saturation, rating distribution, and what unique value proposition (UVP) this new startup should adopt to win against these competitors.
-Write exactly two analytical paragraphs in a BCG-style format.
+Follow these formatting rules exactly:
+- Output a "Top Competitors" header followed by 3 short bullet points starting with "• " listing the key competitors found (or representative ones if none).
+- Output a "Market Observations" header followed by 4 short bullet points starting with "• " summarizing local presence, differentiation, positioning, and gaps.
+- DO NOT write paragraphs. Keep it short and punchy.
 """
 
 BUSINESS_NAME_TEMPLATE = """
@@ -53,10 +62,12 @@ System: You are a Brand Strategy Consultant and Naming Expert.
 Generate exactly 4 highly creative startup names for the following concept: "{idea_text}".
 Return a JSON array of objects. Each object MUST have these keys:
 - "name": Generated name
-- "popularity": "High" / "Medium" / "Low"
-- "competition": "High" / "Medium" / "Low"
 - "brand_uniqueness": 0-100 score
-- "rationale": "Linguistic root and symbolic meaning of the name + why this is a highly strategic and brandable choice for this startup concept."
+- "rationale": A bulleted list containing exactly 3 short bullet points starting with "• " highlighting:
+  • Easy to remember
+  • Strong brand identity
+  • Suitable for target audience
+  (Format as a single string with newline characters like: "• Catchy brand name\\n• Strong market identity\\n• Fits the target audience")
 
 Ensure names are extremely catchy, modern, and memorable. Return ONLY raw valid JSON array, nothing else.
 """
@@ -68,10 +79,10 @@ Location: {location}
 Calculated Risk Score (0-100): {risk_score}
 
 Assess the risks facing this startup:
-1. Operational & Regulatory barriers.
-2. Market entry & competition risks.
-3. Mitigation strategies.
-Write exactly two analytical paragraphs in a PwC-style format.
+Follow these formatting rules exactly:
+- Output a "Risks" header followed by 3 to 4 short bullet points starting with "• " listing key operational, regulatory, or customer acquisition barriers.
+- Output a "Risk Level: [Low/Moderate/High]" line.
+- DO NOT write paragraphs. Keep it under 50 words total.
 """
 
 TREND_ANALYSIS_TEMPLATE = """
@@ -81,8 +92,9 @@ Location: {location}
 Google Trends growth rate: {trends_growth_rate}%
 
 Provide a professional trend analysis.
-Forecast future interest and adoption rates.
-Write exactly two analytical paragraphs in a Bain-style format.
+Follow these formatting rules exactly:
+- Output a "Search Trends" header followed by 3 short bullet points starting with "• ".
+- DO NOT write paragraphs. Keep it under 50 words total.
 """
 
 OPPORTUNITY_ANALYSIS_TEMPLATE = """
@@ -91,9 +103,10 @@ Idea: {idea_text}
 Location: {location}
 Calculated Opportunity Score (0-100): {opportunity_score}
 
-Identify the top 3 market opportunities for this startup.
-Suggest strategic growth directions.
-Write exactly two analytical paragraphs in an EY-style format.
+Identify the top opportunities for this startup.
+Follow these formatting rules exactly:
+- Output a "Key Opportunities" header followed by 4 to 5 short bullet points starting with "• ".
+- DO NOT write paragraphs. Keep it under 50 words total.
 """
 
 FINAL_REPORT_TEMPLATE = """
@@ -108,23 +121,29 @@ Scores:
 - Viability Score: {viability_score}/100
 
 Synthesize a final executive summary and strategic recommendation.
-Is this business viable to fund? Under what conditions? What are the next 3 immediate execution steps?
-Write exactly two paragraphs: a high-level Executive Summary and a Final Strategic Verdict.
+Follow these formatting rules exactly:
+- Output a "Strengths" header followed by 3 short bullet points starting with "• ".
+- Output a "Risks" header followed by 3 short bullet points starting with "• ".
+- Output a "Recommendation" header followed by 3 short bullet points starting with "• ".
+- Output a "Confidence Score: [viability_score]%" line.
+- Output a "Final Status: [🟢 Strong Opportunity / 🟡 Proceed with Caution / 🔴 High Risk]" line.
+- DO NOT write paragraphs. Keep it under 50 words total.
 """
 
 
 class PromptEngine:
     def __init__(self):
         self.groq_api_key = Config.GROQ_API_KEY
+        self.groq_api_key_1 = getattr(Config, "GROQ_API_KEY_1", "")
         self.gemini_api_key = Config.GEMINI_API_KEY
         
-        if not self.groq_api_key and not self.gemini_api_key:
+        if not self.groq_api_key and not self.groq_api_key_1 and not self.gemini_api_key:
             raise ValueError(
-                "Neither Groq API key nor Gemini API key is configured. "
-                "Add GROQ_API_KEY=<your_key> or GEMINI_API_KEY=<your_key> to the .env file."
+                "Neither Groq API keys nor Gemini API key is configured. "
+                "Add GROQ_API_KEY=<your_key> to the .env file."
             )
             
-        if self.groq_api_key:
+        if self.groq_api_key or self.groq_api_key_1:
             logger.info("Initializing PromptEngine with Groq (llama-3.3-70b-versatile).")
         else:
             logger.info("Initializing PromptEngine with Gemini (gemini-2.5-flash).")
@@ -174,11 +193,40 @@ class PromptEngine:
                 )
                 if response.status_code == 200:
                     response_content = response.json()["choices"][0]["message"]["content"].strip()
-                    logger.info("Successfully generated report response via Groq API.")
+                    logger.info("Successfully generated report response via primary Groq API.")
                 else:
-                    logger.warning(f"Groq API call returned status {response.status_code}: {response.text}")
+                    logger.warning(f"Primary Groq API call returned status {response.status_code}: {response.text}")
             except Exception as e:
-                logger.warning(f"Groq API call failed: {e}. Trying Gemini fallback if configured.")
+                logger.warning(f"Primary Groq API call failed: {e}.")
+
+        # Try backup Groq key if primary failed
+        if not response_content and getattr(self, "groq_api_key_1", None):
+            try:
+                import requests
+                headers = {
+                    "Authorization": f"Bearer {self.groq_api_key_1}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [
+                        {"role": "user", "content": prompt_text}
+                    ],
+                    "temperature": 0.2
+                }
+                response = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers=headers,
+                    json=payload,
+                    timeout=15
+                )
+                if response.status_code == 200:
+                    response_content = response.json()["choices"][0]["message"]["content"].strip()
+                    logger.info("Successfully generated report response via backup Groq API (GROQ_API_KEY_1).")
+                else:
+                    logger.warning(f"Backup Groq API call returned status {response.status_code}: {response.text}")
+            except Exception as e:
+                logger.warning(f"Backup Groq API call failed: {e}.")
 
         # Try Gemini if Groq was not used or failed, with retry on quota errors
         if not response_content and self.gemini_api_key:
@@ -236,76 +284,113 @@ class PromptEngine:
             # If the user's idea contains "veg" or "food" or "hotel" or "restaurant"
             if any(k in idea_text.lower() for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro"]):
                 names = [
-                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "popularity": "High", "competition": "Medium", "brand_uniqueness": 88, "rationale": f"Highlights the pure, organic essence of {idea_text}."},
-                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "popularity": "High", "competition": "Low", "brand_uniqueness": 94, "rationale": f"Emphasizes the local, authentic cuisine flavor in {location}."},
-                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "popularity": "Medium", "competition": "Medium", "brand_uniqueness": 80, "rationale": f"Represents clean and fresh dining experience."},
-                    {"name": f"TasteCrafter", "popularity": "High", "competition": "Low", "brand_uniqueness": 95, "rationale": f"Delivers premium dining branding for {idea_text}."}
+                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "brand_uniqueness": 88, "rationale": "• Highly memorable root\n• Signals authentic pure culinary values\n• Strong appeal to health-conscious diners"},
+                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "brand_uniqueness": 94, "rationale": "• Direct local geographic tie-in\n• Clear indicator of dining focus\n• High recall value among local consumers"},
+                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "brand_uniqueness": 80, "rationale": "• Fresh modern brand tone\n• Highly versatile identity\n• Excellent match for eco-friendly trends"},
+                    {"name": "TasteCrafter", "brand_uniqueness": 95, "rationale": "• Evokes craftsmanship and quality\n• Highly brandable trademark\n• Strong premium positioning potential"}
                 ]
             else:
                 names = [
-                    {"name": f"Aura{first_word}", "popularity": "High", "competition": "Medium", "brand_uniqueness": 85, "rationale": f"Modern, minimal brand name for {idea_text}."},
-                    {"name": f"Nova{first_word}{second_word}", "popularity": "High", "competition": "Low", "brand_uniqueness": 92, "rationale": f"Highlights innovation in the {industry} sector."},
-                    {"name": f"{first_word}ly", "popularity": "Medium", "competition": "Medium", "brand_uniqueness": 80, "rationale": f"Catchy, modern SaaS style name for {location}."},
-                    {"name": f"Core{first_word}", "popularity": "High", "competition": "Low", "brand_uniqueness": 95, "rationale": f"Strong, memorable, foundational name."}
+                    {"name": f"Aura{first_word}", "brand_uniqueness": 85, "rationale": "• Sleek minimalist naming style\n• Premium industry feel\n• Highly memorable brand presence"},
+                    {"name": f"Nova{first_word}{second_word}", "brand_uniqueness": 92, "rationale": "• Emphasizes innovation and scale\n• Clear vertical association\n• Strong capability for future expansion"},
+                    {"name": f"{first_word}ly", "brand_uniqueness": 80, "rationale": "• Modern SaaS-style phrasing\n• Short and punchy pronunciation\n• Fits online digital channels perfectly"},
+                    {"name": f"Core{first_word}", "brand_uniqueness": 95, "rationale": "• Anchors trust and dependability\n• Bold structural presence\n• Highly defensible branding option"}
                 ]
             return json.dumps(names)
             
         elif "Elite Startup Consultant" in prompt_text:
             return (
-                f"The proposed startup concept for '{idea_text}' in '{location}' addresses a notable segment of target consumers. "
-                f"Growth in the {industry} sector is currently driven by digital acceleration, regional shifts, and demand optimization. "
-                f"Initial feasibility studies show solid foundations.\n\n"
-                f"Target demographics are primarily mid-to-high income professionals seeking convenience. "
-                f"The business shows positive alignment with secular trends, making it viable under disciplined execution, though local operational friction must be mitigated."
+                "Executive Summary\n"
+                "• Strong market opportunity identified in target location\n"
+                "• Growing consumer demand for customized services\n"
+                "• Moderate competition level allowing swift differentiation\n"
+                "• Attractive margins and revenue scaling potential\n"
+                "• Capital-efficient, highly scalable operational blueprint\n\n"
+                "Verdict:\n"
+                "Recommended for validation and pilot launch."
             )
             
         elif "Market Intelligence Analyst" in prompt_text:
             return (
-                f"Our market analysis for '{idea_text}' in '{location}' reveals a healthy demand signals layout. "
-                f"The query density and search result listings size of {search_results_count} suggest active consumer interest. "
-                f"This represents a robust foundation for early market traction.\n\n"
-                f"Geographical relevance remains highly concentrated in urban hubs, with trends indicating long-term secular growth rather than short-term hype cycles. "
-                f"Total addressable market sizing supports a strong entry strategy."
+                "Key Insights\n"
+                "• Local search interest on a positive trajectory\n"
+                "• Macro industry growth driven by shift to digital convenience\n"
+                "• High customer awareness and search query velocity\n"
+                "• Emerging geographic opportunities detected in urban hubs\n\n"
+                "Growth Indicators\n"
+                "• Demand Score: 72/100\n"
+                "• Trend Direction: Upward\n"
+                "• Market Momentum: High\n"
+                "• Growth Potential: High"
             )
             
         elif "Competitive Intelligence Expert" in prompt_text:
             return (
-                f"The competitive landscape for '{idea_text}' in '{location}' features moderate saturation with key established operators. "
-                f"Analysis of ratings distribution and review sentiments highlights potential gaps in service responsiveness and pricing transparency.\n\n"
-                f"To differentiate, the venture should adopt a unique value proposition centered on digital-first accessibility and personalized customer engagement, "
-                f"creating a defensible moat against legacy competitors."
+                "Top Competitors\n"
+                "• Local incumbent providers and shops\n"
+                "• Regional specialized service agencies\n"
+                "• Emerging online platform startups\n\n"
+                "Market Observations\n"
+                "• Strong local presence but legacy operations\n"
+                "• Limited technology adoption and differentiation\n"
+                "• Opportunity for high-quality premium positioning\n"
+                "• Potential gaps in client retention and service coverage"
             )
             
         elif "Risk Management Consultant" in prompt_text:
             return (
-                f"Operational risks for '{idea_text}' in '{location}' include local zoning, safety regulations, and supply chain bottlenecks. "
-                f"Initial entry barriers require a disciplined mitigation framework.\n\n"
-                f"Regulatory compliance remains a key hurdle, but strategic partnerships with established regional networks can reduce regulatory overhead and safeguard the business model."
+                "Risks\n"
+                "• High initial customer acquisition costs\n"
+                "• Regional regulatory and licensing compliance hurdles\n"
+                "• Operational talent retention and quality control\n\n"
+                "Risk Level:\n"
+                "Moderate"
             )
             
         elif "market trend forecaster" in prompt_text:
             return (
-                f"Historical search query volume and interest over time for '{idea_text}' show an upward trajectory. "
-                f"Forward forecasting models estimate a sustained increase in consumer adoption over the next 18-24 months.\n\n"
-                f"Future interest is projected to accelerate as regional consumer awareness grows, creating a favorable window for launching product features."
+                "Search Trends\n"
+                "• Positive query density over the last 12 months\n"
+                "• Rising demand from millennial demographics\n"
+                "• Long-term sustainable growth rather than fad interest"
             )
             
         elif "Strategic Growth Adviser" in prompt_text:
             return (
-                f"Key opportunities for '{idea_text}' include expanding digital delivery channels, capturing underserved niche demographics, and leveraging regional partnership models.\n\n"
-                f"Strategic growth should prioritize low-overhead customer acquisition, scaling operations, and developing proprietary technological assets."
+                "Key Opportunities\n"
+                "• Untapped customer segments in adjacent zones\n"
+                "• Premium pricing potential through unique positioning\n"
+                "• Strong online growth opportunity via digital presence\n"
+                "• Expansion potential in nearby markets and sub-regions\n"
+                "• Customer retention through loyalty programs"
             )
             
         elif "Venture Capital Investment Committee Chair" in prompt_text:
             return (
-                f"The data for '{idea_text}' in '{location}' supports a favorable market entry. "
-                f"While regulatory risks and competitive saturation exist, the technological differentiation and positive trend growth outweigh these concerns.\n\n"
-                f"Recommendation: Execute acquisition or launch protocol with a 12-month timeline focused on customer acquisition optimization and localized service scaling."
+                "Strengths\n"
+                "• Capital-efficient model with rapid payback cycles\n"
+                "• Positive customer engagement and referral metrics\n"
+                "• Favorable demand and local growth dynamics\n\n"
+                "Risks\n"
+                "• Marketing cost inflation in regional channels\n"
+                "• Competitor replication speed\n"
+                "• Local logistics and supply management bottlenecks\n\n"
+                "Recommendation\n"
+                "• Launch Pilot in core micro-market immediately\n"
+                "• Validate customer acquisition costs within 30 days\n"
+                "• Scale operational capacity gradually post-validation\n\n"
+                "Confidence Score:\n"
+                "85%\n\n"
+                "Final Status:\n"
+                "🟢 Strong Opportunity"
             )
             
         return (
-            f"Validation analysis for '{idea_text}' shows positive feasibility signals. "
-            f"Secular industry trends support regional growth in {location}."
+            "Executive Summary\n"
+            "• Feasibility study indicates positive signals\n"
+            "• Regional sector trends show expansion\n\n"
+            "Verdict:\n"
+            "Recommended to proceed with caution."
         )
 
     def generate_startup_validation(self, idea_data):
@@ -349,10 +434,10 @@ class PromptEngine:
         except json.JSONDecodeError:
             logger.warning(f"Failed to parse business names JSON from response. Using fallback.")
             parsed = [
-                {"name": "VenturePro", "popularity": "Medium", "competition": "Low", "brand_uniqueness": 75, "rationale": "Reliable branding for your venture."},
-                {"name": "NovaBiz", "popularity": "High", "competition": "Low", "brand_uniqueness": 85, "rationale": "Modern and innovative brand identity."},
-                {"name": "CoreSolution", "popularity": "Medium", "competition": "Medium", "brand_uniqueness": 70, "rationale": "Strong foundational brand name."},
-                {"name": "AuraStart", "popularity": "High", "competition": "Medium", "brand_uniqueness": 80, "rationale": "Premium and aspirational branding."}
+                {"name": "VenturePro", "brand_uniqueness": 75, "rationale": "• Reliable brand presence\n• Highlights professional standards\n• Suitable for corporate service sectors"},
+                {"name": "NovaBiz", "brand_uniqueness": 85, "rationale": "• Modern innovative naming tone\n• Highly memorable brand identity\n• Excellent match for emerging tech sectors"},
+                {"name": "CoreSolution", "brand_uniqueness": 70, "rationale": "• Solid foundational trust indicator\n• Highly reputable corporate tone\n• Fits business-to-business models well"},
+                {"name": "AuraStart", "brand_uniqueness": 80, "rationale": "• Premium and aspirational styling\n• Focuses on starting strong\n• Great traction with younger demographics"}
             ]
         self._log_prompt_call("business_name_prompt", idea_data, prompt, response)
         return parsed

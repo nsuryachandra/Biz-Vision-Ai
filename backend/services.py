@@ -65,12 +65,17 @@ class SerpAPIService:
 
     def fetch_google_search(self, keywords: str, location: str) -> dict:
         """Web search demand signal. Falls back to neutral defaults on any error."""
-        query = f"{keywords} {location} business market"
+        loc_lower = location.lower().strip() if location else ""
+        if not loc_lower or any(val in loc_lower for val in ["global / online", "global", "online", "virtual", "remote", "worldwide"]):
+            query = f"{keywords} business market"
+        else:
+            query = f"{keywords} {location} business market"
+            
         try:
             return self._get({"engine": "google", "q": query}, "Google Search")
         except Exception as exc:
-            logger.warning(f"[SerpAPI] Google Search failed ({exc}). Returning default demand signal.")
-            return {"search_information": {"total_results": 150_000}}
+            logger.warning(f"[SerpAPI] Google Search failed ({exc}). Returning zero results default.")
+            return {"search_information": {"total_results": 0}}
 
     def fetch_google_trends(self, keywords: str) -> dict:
         """12-month interest timeline. Falls back to empty timeline on any error."""
@@ -95,7 +100,12 @@ class SerpAPIService:
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
         """Local competitor discovery. Falls back to empty list on any error."""
-        query = f"{keywords} near {location}"
+        loc_lower = location.lower().strip() if location else ""
+        if not loc_lower or any(val in loc_lower for val in ["global / online", "global", "online", "virtual", "remote", "worldwide"]):
+            query = keywords
+        else:
+            query = f"{keywords} near {location}"
+            
         try:
             return self._get({"engine": "google_maps", "q": query}, "Google Maps")
         except Exception as exc:

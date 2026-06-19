@@ -35,7 +35,6 @@ def get_db_connection(include_db=True):
             "port": Config.DB_PORT,
             "user": Config.DB_USER,
             "password": Config.DB_PASSWORD,
-            "auth_plugin": "mysql_native_password",
             "connect_timeout": 5,
         }
         if include_db:
@@ -44,11 +43,14 @@ def get_db_connection(include_db=True):
 
 
 def check_db_health():
-    """Returns True if MySQL is reachable and the database exists."""
+    """Returns True if MySQL is reachable and all required tables exist."""
     try:
         conn = get_db_connection(include_db=True)
         cursor = conn.cursor()
-        cursor.execute("SELECT 1")
+        # Verify core tables exist by selecting from them
+        cursor.execute("SELECT 1 FROM business_ideas LIMIT 1")
+        cursor.fetchone()
+        cursor.execute("SELECT 1 FROM analysis_reports LIMIT 1")
         cursor.fetchone()
         cursor.close()
         conn.close()

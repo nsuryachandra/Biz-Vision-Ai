@@ -34,9 +34,7 @@ const StatusBadge = () => (
 const Navigation = ({ onSignIn, onGetStarted }) => (
   <nav className="w-full px-8 py-6 flex items-center justify-between z-20 relative">
     <Link to="/" className="flex items-center gap-3 cursor-pointer group">
-      <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-        <Icon icon="lucide:sparkles" className="text-white text-xl" />
-      </div>
+      <img src="/logo.jpeg" alt="BizVision AI" className="w-10 h-10 rounded-xl object-cover shadow-lg group-hover:scale-110 transition-transform" />
       <span className="text-2xl font-extrabold tracking-tight">BizVision AI</span>
     </Link>
     <div className="hidden md:flex items-center gap-8">

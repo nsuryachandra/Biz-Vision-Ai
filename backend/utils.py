@@ -11,9 +11,9 @@ STOP_WORDS = {
 
 # Industry keyword dictionary
 INDUSTRIES = {
-    "Pet Care": ["pet", "dog", "cat", "animal", "vet", "veterinary", "pets", "dogs", "cats"],
+    "Pet Care": ["pet", "dog", "cat", "animal", "vet", "veterinary", "pets", "dogs", "cats", "pet food"],
     "Food & Beverage": ["food", "beverage", "restaurant", "cafe", "organic", "bakery", "meal", "coffee", "juice", "dining", "eats", "cook"],
-    "Healthcare & Wellness": ["health", "fitness", "gym", "wellness", "medical", "clinic", "therapy", "yoga", "nutrition", "supplement", "organic", "pet food"],
+    "Healthcare & Wellness": ["health", "fitness", "gym", "wellness", "medical", "clinic", "therapy", "yoga", "nutrition", "supplement"],
     "Technology & SaaS": ["software", "saas", "tech", "ai", "platform", "cloud", "app", "mobile app", "digital", "iot", "vr", "ar", "api"],
     "Retail & E-commerce": ["retail", "ecommerce", "e-commerce", "shop", "store", "boutique", "market", "clothing", "fashion", "apparel", "goods"],
     "Education & EdTech": ["education", "school", "course", "learning", "tutorial", "tutor", "academy", "training", "edtech", "study"],
