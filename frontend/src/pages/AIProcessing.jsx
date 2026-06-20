@@ -129,7 +129,6 @@ const AIProcessing2 = () => {
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(15);
   const apiResultRef = useRef(null);
   const isFinishedRef = useRef(false);
 
@@ -198,17 +197,11 @@ const AIProcessing2 = () => {
 
     triggerAnalysis();
 
-    // Timers
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
     const transitionTimer = setInterval(() => {
       handleStepTransition();
     }, 2500); // Transition step every 2.5s
 
     return () => {
-      clearInterval(timer);
       clearInterval(transitionTimer);
     };
   }, [ideaText, navigate, handleStepTransition]);
@@ -272,17 +265,8 @@ const AIProcessing2 = () => {
           </div>
         </div>
 
-        <p className="mt-8 text-sm font-semibold text-muted-foreground uppercase tracking-widest animate-pulse">
-          Estimated time remaining: {timeRemaining}s
-        </p>
 
-        {/* Manual Trigger for Demo Purposes */}
-        <button 
-          onClick={handleStepTransition}
-          className="mt-6 px-4 py-2 text-xs font-bold text-indigo-600/40 hover:text-indigo-600 transition-colors uppercase tracking-widest"
-        >
-          Force Next Step
-        </button>
+
       </div>
     </div>
   );

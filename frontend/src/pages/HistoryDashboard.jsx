@@ -32,7 +32,7 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-const Header = ({ onNewAnalysis, onProfileClick }) => (
+const Header = ({ onNewAnalysis }) => (
   <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/60 shadow-sm">
     <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -49,12 +49,6 @@ const Header = ({ onNewAnalysis, onProfileClick }) => (
         >
           <Icon icon="lucide:plus" /> New Analysis
         </button>
-        <div 
-          onClick={onProfileClick}
-          className="w-9 h-9 rounded-full bg-muted border border-border overflow-hidden cursor-pointer hover:ring-2 ring-primary/20 transition-all"
-        >
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" className="w-full h-full object-cover" />
-        </div>
       </div>
     </div>
   </header>
@@ -299,13 +293,9 @@ const HistoryDashboard = () => {
     }
   };
 
-  const handleProfileClick = () => {
-    alert("Opening user profile settings...");
-  };
-
   return (
     <div className="min-h-screen w-full bg-background flex flex-col relative font-sans text-foreground">
-      <Header onNewAnalysis={handleNewAnalysis} onProfileClick={handleProfileClick} />
+      <Header onNewAnalysis={handleNewAnalysis} />
 
       <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-8 space-y-8 pb-32">
         

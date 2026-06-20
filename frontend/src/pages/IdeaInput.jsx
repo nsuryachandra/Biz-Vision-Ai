@@ -31,7 +31,7 @@ const StatusBadge = () => (
   </motion.div>
 );
 
-const Navigation = ({ onSignIn, onGetStarted }) => (
+const Navigation = ({ onGetStarted }) => (
   <nav className="w-full px-8 py-6 flex items-center justify-between z-20 relative">
     <Link to="/" className="flex items-center gap-3 cursor-pointer group">
       <img src="/logo.jpeg" alt="BizVision AI" className="w-10 h-10 rounded-xl object-cover shadow-lg group-hover:scale-110 transition-transform" />
@@ -40,13 +40,6 @@ const Navigation = ({ onSignIn, onGetStarted }) => (
     <div className="hidden md:flex items-center gap-8">
       <Link to="/" className="text-sm font-bold text-foreground transition-colors">New Idea</Link>
       <Link to="/history-dashboard" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
-      <div className="h-5 w-px bg-border"></div>
-      <button 
-        onClick={onSignIn}
-        className="text-sm font-semibold text-foreground hover:text-indigo-600 transition-colors"
-      >
-        Sign In
-      </button>
       <button 
         onClick={onGetStarted}
         className="text-sm font-bold bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
@@ -108,7 +101,7 @@ const OneIdeaInput = () => {
 
   return (
     <div className="min-h-screen w-full bg-background flex flex-col relative overflow-hidden font-sans text-foreground">
-      <Navigation onSignIn={handleSignIn} onGetStarted={handleGetStarted} />
+      <Navigation onGetStarted={handleGetStarted} />
 
       <main className="flex-1 flex flex-col items-center justify-center relative px-6 z-10 w-full max-w-7xl mx-auto pb-20">
         <BackgroundGradients />

@@ -199,10 +199,7 @@ const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
         <div className="h-4 w-px bg-border"></div>
         <div className="flex flex-col">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Intelligence Report</span>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <img src="/logo.jpeg" alt="BizVision AI" className="h-5 inline-block rounded object-cover" />
-            <span className="text-sm font-bold text-indigo-600">BizVision AI</span>
-          </div>
+          <span className="text-sm font-bold text-indigo-600 mt-0.5">BizVision AI</span>
         </div>
       </div>
       <div className="flex items-center gap-3">
