@@ -31,6 +31,164 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+// ─── HELPER FUNCTIONS FOR CLEAN JSON PARSING & BUSINESS CATEGORIES ──────────
+const parseJSON = (raw, defaultValue) => {
+  if (!raw) return defaultValue;
+  try {
+    let clean = raw.trim();
+    if (clean.startsWith("```")) {
+      clean = clean.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+    }
+    return JSON.parse(clean);
+  } catch (e) {
+    return defaultValue;
+  }
+};
+
+const getBusinessCategory = (ideaText) => {
+  const text = (ideaText || "").toLowerCase();
+  if (/candle|soap|perfume|gift|craft|furniture|home decor|clothing|fashion|apparel|jewelry|bag|shoes|book|toy|hardware/i.test(text)) {
+    return { type: "physical_product", label: "Consumer Packaged Goods" };
+  }
+  if (/hotel|veg|restaurant|shop|cafe|store|salon|bakery|dhabha|spa|boutique|delivery|gym|clinic|dentist|laundry/i.test(text)) {
+    return { type: "local_service", label: "Local Brick & Mortar" };
+  }
+  if (/saas|software|crm|billing|api|platform|dashboard|cloud|database|erp|analytics|ai tool/i.test(text)) {
+    return { type: "saas", label: "Software as a Service (SaaS)" };
+  }
+  if (/app|mobile|game|delivery app|marketplace|dating|social network|e-commerce/i.test(text)) {
+    return { type: "digital_platform", label: "Digital Platform" };
+  }
+  return { type: "general", label: "Business Services" };
+};
+
+// ─── DYNAMIC COGNITIVE GENERATORS FOR RESILIENT OFF-LINE FALLBACKS ──────────
+const generateFallbackSWOT = (ideaText, category) => {
+  const isSaaS = category.type === "saas" || category.type === "digital_platform";
+  const isLocal = category.type === "local_service";
+  
+  if (isSaaS) {
+    return {
+      strengths: [
+        "High gross margins and recurring subscription revenue potential.",
+        "Global market reach with low product distribution and replication friction."
+      ],
+      weaknesses: [
+        "High developer resource cost and product onboarding friction.",
+        "Dependence on technical infrastructure and cloud provider pricing."
+      ],
+      opportunities: [
+        "B2B corporate subscription licensing and white-label packages.",
+        "Integration into existing platform ecosystems via open API endpoints."
+      ],
+      threats: [
+        "Low barrier to entry for clone products and software duplication.",
+        "Rapidly changing technology stacks and security compliance costs."
+      ]
+    };
+  } else if (isLocal) {
+    return {
+      strengths: [
+        "Direct customer relationships and immediate cash flow collection.",
+        "Local geographic presence helps build community trust and loyalty."
+      ],
+      weaknesses: [
+        "High physical location overhead and lease commitments.",
+        "Operational scalability capped by geographical service footprint."
+      ],
+      opportunities: [
+        "Cross-promotional partnerships with nearby complementary merchants.",
+        "Online pre-ordering and localized home-delivery services."
+      ],
+      threats: [
+        "Local municipal regulation or zoning restriction adjustments.",
+        "Incumbent local price wars and aggressive advertising campaigns."
+      ]
+    };
+  } else {
+    return {
+      strengths: [
+        "Strong emotional appeal and tangible consumer touchpoints.",
+        "Low initial manufacturing complexity for starting production batches."
+      ],
+      weaknesses: [
+        "Inventory storage overhead and supply chain shipping delays.",
+        "Limited brand awareness compared to mass-market manufacturers."
+      ],
+      opportunities: [
+        "Customized corporate gifting sets and seasonal festival boxes.",
+        "E-commerce marketplace expansion on Amazon, Shopify, or Etsy."
+      ],
+      threats: [
+        "Volatile raw material costs and packaging supply shortages.",
+        "Low-cost mass-manufactured imports undercutting price points."
+      ]
+    };
+  }
+};
+
+const generateFallbackRoadmap = (ideaText, category) => {
+  const isSaaS = category.type === "saas" || category.type === "digital_platform";
+  const isLocal = category.type === "local_service";
+  
+  if (isSaaS) {
+    return [
+      { phase: "Week 1–2", title: "MVP Validation", tasks: ["Conduct target user interviews", "Launch landing page with email waitlist signups"] },
+      { phase: "Week 3–4", title: "Feature Refinement", tasks: ["Build core prototype dashboard", "Setup billing integration and auth system"] },
+      { phase: "Month 2", title: "Pilot Launch", tasks: ["Deploy beta build to early waitlist users", "Gather bug reports and user feedback"] },
+      { phase: "Month 3", title: "User Acquisition", tasks: ["Launch targeted search ads", "Roll out organic content marketing campaign"] }
+    ];
+  } else if (isLocal) {
+    return [
+      { phase: "Week 1–2", title: "Market Survey", tasks: ["Analyze local competitor density", "Conduct foot-traffic surveys near target area"] },
+      { phase: "Week 3–4", title: "Site & Permits", tasks: ["Finalize commercial space lease terms", "Submit local business licensing requests"] },
+      { phase: "Month 2", title: "Soft Launch", tasks: ["Open doors for preview tastings/sessions", "Gather operations feedback and train staff"] },
+      { phase: "Month 3", title: "Local Expansion", tasks: ["Launch regional coupon & flyer campaign", "Partner with local grand opening events"] }
+    ];
+  } else {
+    return [
+      { phase: "Week 1–2", title: "Product Testing", tasks: ["Conduct formulation and durability tests", "Gather feedback from friends and family trials"] },
+      { phase: "Week 3–4", title: "Small Batch Launch", tasks: ["Order raw materials for first 100 units", "Set up e-commerce store page on Shopify/Etsy"] },
+      { phase: "Month 2", title: "Local Sales", tasks: ["Pitch products to local boutique retail stores", "Host pop-up stands at weekend flea markets"] },
+      { phase: "Month 3", title: "Marketplace Onboarding", tasks: ["Apply for Amazon Seller Central registry", "Scale batch size and run social media ads"] }
+    ];
+  }
+};
+
+const generateFallbackVerdictReasons = (scores) => {
+  const viability = scores?.viability || 50;
+  const demand = scores?.demand || 50;
+  const comp = scores?.competition || 50;
+  
+  const reasons = [];
+  if (demand >= 75) {
+    reasons.push("Robust search query density and active consumer query velocity reflect strong market interest.");
+  } else if (demand >= 45) {
+    reasons.push("Steady search query velocity indicates a stable but niche market demand.");
+  } else {
+    reasons.push("Conservative search volume suggests a niche segment requiring targeted user education.");
+  }
+  
+  if (comp < 50) {
+    reasons.push("Low competitor density and positive reviews suggest a high entry capability and clear market gaps.");
+  } else if (comp < 70) {
+    reasons.push("Moderate competitive saturation requires clear differentiator positioning to win market share.");
+  } else {
+    reasons.push("Intense competitive density requires building a high-barrier operational or technology moat.");
+  }
+  
+  if (viability >= 80) {
+    reasons.push("Excellent unit economics and high scalability potential support a rapid capital payback period.");
+  } else if (viability >= 60) {
+    reasons.push("Feasibility metrics support pilot activities, requiring validation of customer acquisition costs.");
+  } else {
+    reasons.push("Significant market entry barriers or high operating costs require adjustments to the business model.");
+  }
+  
+  return reasons;
+};
+
+// ─── HEADER COMPONENT ───────────────────────────────────────────────────────
 const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
   <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/60 shadow-sm">
     <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
@@ -41,8 +199,10 @@ const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
         <div className="h-4 w-px bg-border"></div>
         <div className="flex flex-col">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Intelligence Report</span>
-          <img src="/logo.jpeg" alt="BizVision AI" className="h-5 inline-block rounded object-cover" />
-          <span className="text-sm font-bold text-indigo-600 ml-1">BizVision AI</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <img src="/logo.jpeg" alt="BizVision AI" className="h-5 inline-block rounded object-cover" />
+            <span className="text-sm font-bold text-indigo-600">BizVision AI</span>
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -76,108 +236,270 @@ const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
   </header>
 );
 
-const KPICard = ({ title, value, subtitle, icon, trend, colorClass, bgClass }) => (
-  <div className="bg-card border border-border/50 shadow-[0_4px_20px_rgb(0,0,0,0.03)] rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
-    <div className={cn("absolute top-0 right-0 w-24 h-24 rounded-bl-full -z-10 transition-colors opacity-10", bgClass)}></div>
-    <div className="flex justify-between items-start mb-4">
-      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", bgClass, colorClass)}>
-        <Icon icon={icon} className="text-xl" />
-      </div>
-      {trend && (
-        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-md flex items-center gap-1">
-          <Icon icon="lucide:trending-up" /> {trend}
-        </span>
-      )}
-    </div>
-    <div>
-      <p className="text-sm font-semibold text-muted-foreground mb-1">{title}</p>
-      <div className="flex items-baseline gap-1">
-        <h3 className="text-3xl font-extrabold text-foreground">{value}</h3>
-        {subtitle && <span className="text-sm text-muted-foreground font-medium">{subtitle}</span>}
-      </div>
-    </div>
-  </div>
-);
+// ─── SECTION 1: BUSINESS HEALTH OVERVIEW ───────────────────────────────────
+const BusinessHealthOverview = ({ scores }) => {
+  const metrics = [
+    {
+      label: "Health Score",
+      value: scores?.viability || 50,
+      icon: "lucide:activity",
+      color: "indigo"
+    },
+    {
+      label: "Demand Score",
+      value: scores?.demand || 50,
+      icon: "lucide:users",
+      color: "cyan"
+    },
+    {
+      label: "Competition Score",
+      value: 100 - (scores?.competition || 50),
+      icon: "lucide:target",
+      color: "amber"
+    },
+    {
+      label: "Risk Score",
+      value: 100 - (scores?.risk || 50),
+      icon: "lucide:shield-check",
+      color: "emerald"
+    }
+  ];
 
-const ExecutiveSummary = ({ text }) => (
-  <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 lg:col-span-2 flex flex-col">
-    <div className="flex items-center gap-3 mb-6">
-      <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
-        <Icon icon="lucide:file-text" className="text-2xl text-indigo-600" />
-      </div>
-      <div>
-        <h3 className="text-2xl font-extrabold tracking-tight">Executive Summary</h3>
-        <p className="text-sm text-muted-foreground font-medium">AI Consulting Insight</p>
-      </div>
-    </div>
-    
-    <div className="flex-1 flex flex-col justify-center">
-      <div className="text-base leading-relaxed text-foreground font-normal mb-8 whitespace-pre-wrap">
-        {text}
-      </div>
+  // Map assessment levels dynamically from actual scores, maintaining strict logic consistency
+  const assessmentLevels = {
+    market: scores?.demand >= 75 ? "High" : scores?.demand >= 45 ? "Medium" : "Low",
+    readiness: scores?.viability >= 80 ? "High" : scores?.viability >= 60 ? "Medium" : "Low",
+    growth: scores?.trend >= 75 ? "High" : scores?.trend >= 45 ? "Medium" : "Low"
+  };
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
+      <h2 className="text-lg font-bold text-foreground mb-6">Business Health Overview</h2>
       
-      <div className="flex flex-wrap gap-3">
-        {["Favorable Demographics", "Low Entry Barrier", "High Margin Potential"].map((tag) => (
-          <div key={tag} className="flex items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50/50 border border-indigo-100 px-4 py-2 rounded-lg">
-            <Icon icon="lucide:check-circle-2" className="text-emerald-500" /> {tag}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {metrics.map((metric, idx) => (
+          <div key={idx} className={cn(
+            "p-4 rounded-xl border border-border/50",
+            metric.color === "indigo" && "bg-indigo-50/20 border-indigo-100/50",
+            metric.color === "cyan" && "bg-cyan-50/20 border-cyan-100/50",
+            metric.color === "amber" && "bg-amber-50/20 border-amber-100/50",
+            metric.color === "emerald" && "bg-emerald-50/20 border-emerald-100/50"
+          )}>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{metric.label}</p>
+            <p className={cn(
+              "text-2xl font-extrabold",
+              metric.color === "indigo" && "text-indigo-600",
+              metric.color === "cyan" && "text-cyan-600",
+              metric.color === "amber" && "text-amber-600",
+              metric.color === "emerald" && "text-emerald-600"
+            )}>{metric.value}</p>
+            <p className="text-xs text-muted-foreground font-medium">/100</p>
           </div>
         ))}
       </div>
-    </div>
-  </div>
-);
 
-const ViabilityScore = ({ score, demand, risk }) => {
-  const radius = 45;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-
-  const strokeColorClass = score >= 80 
-    ? "text-emerald-500" 
-    : score >= 60 
-      ? "text-indigo-600" 
-      : "text-amber-500";
-
-  return (
-    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col items-center justify-center relative overflow-hidden">
-      <h3 className="text-lg font-bold text-foreground mb-6 text-center w-full">Overall Viability</h3>
-      
-      <div className="relative w-52 h-52 mx-auto mb-6">
-        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-muted" />
-          <circle 
-            cx="50" 
-            cy="50" 
-            r={radius} 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="8" 
-            className={cn("drop-shadow-md transition-all duration-1000 ease-out", strokeColorClass)} 
-            strokeDasharray={circumference} 
-            strokeDashoffset={offset} 
-            strokeLinecap="round" 
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-5xl font-extrabold tracking-tighter text-foreground">{score}</span>
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Score</span>
-        </div>
-      </div>
-      
-      <div className="w-full grid grid-cols-2 gap-4">
-        <div className="text-center bg-indigo-50/50 rounded-xl p-3 border border-indigo-100/50">
-          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Demand</p>
-          <p className="text-lg font-extrabold text-indigo-600">{demand}<span className="text-xs text-muted-foreground font-medium">/100</span></p>
-        </div>
-        <div className="text-center bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/50">
-          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Risk</p>
-          <p className="text-lg font-extrabold text-emerald-600">{risk}<span className="text-xs text-muted-foreground font-medium">/100</span></p>
+      <div className="pt-6 border-t border-border/50">
+        <p className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest mb-4">Quick Assessment</p>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Market Potential</p>
+            <p className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border ${
+              assessmentLevels.market === "High" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : 
+              assessmentLevels.market === "Medium" ? "bg-amber-50 text-amber-600 border-amber-100" :
+              "bg-red-50 text-red-600 border-red-100"
+            }`}>{assessmentLevels.market}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Growth Outlook</p>
+            <p className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border ${
+              assessmentLevels.growth === "High" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+              assessmentLevels.growth === "Medium" ? "bg-amber-50 text-amber-600 border-amber-100" :
+              "bg-red-50 text-red-600 border-red-100"
+            }`}>{assessmentLevels.growth}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Investment Readiness</p>
+            <p className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border ${
+              assessmentLevels.readiness === "High" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+              assessmentLevels.readiness === "Medium" ? "bg-amber-50 text-amber-600 border-amber-100" :
+              "bg-red-50 text-red-600 border-red-100"
+            }`}>{assessmentLevels.readiness}</p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
+// ─── SECTION 2: EXECUTIVE SUMMARY ──────────────────────────────────────────
+const ExecutiveSummary = ({ scores, analysis, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  
+  // Dynamic fallback setup in case JSON parsing fails
+  const fallbackParagraph = `The ${category.label.toLowerCase()} market presents a viable opportunity based on local demand trends. Success in this category requires focused branding, operational quality control, and robust client acquisition strategies. Competition remains manageable but requires clear service differentiation.`;
+  const fallbackInsights = [
+    "Demand Insight: Consistent query velocity highlights active local customer interest.",
+    "Customer Insight: Target customers prioritize quality, speed, and premium service options.",
+    "Revenue Insight: Service pricing support healthy operating margins post-launch.",
+    "Competition Insight: Fragmented competitors rely on traditional marketing channels.",
+    "Growth Insight: Micro-location scaling provides a clear path to larger regional capture."
+  ];
+  const fallbackRecommendation = scores?.viability >= 80
+    ? "Initiate pilot testing immediately and launch localized social media booking campaigns."
+    : "Validate product packages with target customers to optimize pricing strategies first.";
+
+  // Dynamic Parsing with clean JSON handling
+  const parsed = parseJSON(analysis?.executive_summary, {
+    paragraph: fallbackParagraph,
+    insights: fallbackInsights,
+    recommendation: fallbackRecommendation
+  });
+
+  const paragraph = parsed.paragraph || fallbackParagraph;
+  const insights = parsed.insights && parsed.insights.length === 5 ? parsed.insights : fallbackInsights;
+  const recommendation = parsed.recommendation || fallbackRecommendation;
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 lg:col-span-2 flex flex-col">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+          <Icon icon="lucide:file-text" className="text-2xl text-indigo-600" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-extrabold tracking-tight">Executive Summary</h2>
+          <p className="text-sm text-muted-foreground font-medium">Critical Business Insights</p>
+        </div>
+      </div>
+      
+      <div className="mb-8 pb-8 border-b border-border/50">
+        <p className="text-sm leading-relaxed text-foreground font-normal">
+          {paragraph}
+        </p>
+      </div>
+
+      <div className="mb-8">
+        <div className="pl-6 border-l-2 border-emerald-200/60 space-y-3.5">
+          {insights.map((point, idx) => (
+            <div key={idx} className="flex gap-3.5 items-start group">
+              <span className="text-emerald-500 font-bold text-lg -ml-6 flex-shrink-0 leading-none group-hover:scale-125 transition-transform duration-200">●</span>
+              <span className="text-sm text-foreground leading-relaxed pt-0.5">{point}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="mt-auto pt-6 border-t border-border/50">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2.5">Recommendation</p>
+        <p className="text-sm font-semibold text-indigo-600 leading-relaxed">
+          {recommendation}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ─── SECTION 3: BUSINESS RATING ─────────────────────────────────────────────
+const BusinessRatingCard = ({ score, confidence }) => {
+  const stars = score >= 90 ? 5 : score >= 80 ? 5 : score >= 70 ? 4 : score >= 60 ? 3 : score >= 45 ? 2 : 1;
+  const fullStars = Math.floor(stars);
+  
+  // Map Grade (A+ to D) dynamically
+  const grade = score >= 90 ? "A+" : score >= 80 ? "A" : score >= 70 ? "B+" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
+
+  // Map Opportunity Level dynamically
+  const opportunityLevel = score >= 75 ? "Strong Opportunity" : score >= 60 ? "Moderate Opportunity" : score >= 45 ? "Limited Opportunity" : "High Risk";
+  
+  const statusColor = score >= 75 
+    ? "from-emerald-50 to-emerald-100/50 border-emerald-200 text-emerald-700" 
+    : score >= 45 
+      ? "from-amber-50 to-amber-100/50 border-amber-200 text-amber-700" 
+      : "from-red-50 to-red-100/50 border-red-200 text-red-700";
+      
+  const statusBgHover = score >= 75 
+    ? "hover:from-emerald-100 hover:to-emerald-200/50" 
+    : score >= 45 
+      ? "hover:from-amber-100 hover:to-amber-200/50" 
+      : "hover:from-red-100 hover:to-red-200/50";
+      
+  const statusIcon = score >= 75 ? "🟢" : score >= 45 ? "🟡" : "🔴";
+  
+  const tooltips = [
+    "High Risk (D)",
+    "Limited Opportunity (C)",
+    "Moderate Opportunity (B)",
+    "Strong Opportunity (B+/A)",
+    "Excellent Business Opportunity (A+)"
+  ];
+
+  const renderStars = () => (
+    <div className="flex gap-2 justify-center">
+      {Array(5).fill(0).map((_, i) => {
+        const isFilled = i < fullStars;
+        return (
+          <div
+            key={i}
+            className="relative group cursor-default"
+          >
+            <div className="transform transition-all duration-300 ease-out group-hover:scale-115 hover:drop-shadow-lg">
+              <Icon 
+                icon={isFilled ? "lucide:star" : "lucide:star"} 
+                className={cn(
+                  "text-3xl transition-all duration-300",
+                  isFilled ? "text-amber-400 drop-shadow-md" : "text-muted-foreground/30"
+                )}
+              />
+            </div>
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
+              <div className="bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+                {tooltips[i]}
+              </div>
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-slate-900"></div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col items-center justify-center relative overflow-hidden group">
+      <h2 className="text-lg font-bold text-foreground mb-8 text-center w-full">Business Rating</h2>
+      
+      <div className="mb-10 transform transition-all duration-300 group-hover:scale-110">
+        {renderStars()}
+      </div>
+      
+      <div className="text-center mb-10 w-full space-y-2">
+        <div className="flex items-baseline justify-center gap-1">
+          <p className="text-5xl font-extrabold text-foreground">{score}</p>
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">/100</p>
+        </div>
+        <p className="text-sm font-extrabold text-indigo-600">Grade {grade}</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-widest">Business Score</p>
+      </div>
+
+      <div className="w-full space-y-3.5">
+        <div className="text-center p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 hover:border-indigo-300 transition-all duration-200 group/confidence">
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1.5">Confidence Level</p>
+          <p className="text-3xl font-extrabold text-indigo-600 transition-transform duration-300 group-hover/confidence:scale-105">{confidence}%</p>
+        </div>
+        
+        <div className={cn(
+          "rounded-xl p-4 border text-center cursor-default transition-all duration-300 bg-gradient-to-r hover:shadow-md",
+          statusColor,
+          statusBgHover
+        )}>
+          <p className="text-sm font-bold flex items-center justify-center gap-2">
+            <span className="text-lg">{statusIcon}</span>
+            {opportunityLevel}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── SECTION 4: MARKET INTELLIGENCE CHART ──────────────────────────────────
 const MarketIntelligenceChart = ({ trends, timeRange, onRangeChange }) => {
   const chartRef = useRef(null);
 
@@ -295,7 +617,10 @@ const MarketIntelligenceChart = ({ trends, timeRange, onRangeChange }) => {
   );
 };
 
-const CompetitorIntelligence = ({ competitors, analysis }) => {
+// ─── SECTION 5: COMPETITOR INTELLIGENCE ─────────────────────────────────────
+const CompetitorIntelligence = ({ competitors, analysis, scores, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  
   const defaultCompetitors = [
     {
       initials: 'PB',
@@ -304,190 +629,405 @@ const CompetitorIntelligence = ({ competitors, analysis }) => {
       reviews: '2.4k',
       badge: 'Market Leader',
       colorClass: 'bg-indigo-600',
-      tags: [
-        { label: 'Brand Loyalty', type: 'success' },
-        { label: 'High Price', type: 'destructive' }
-      ]
+      differentiator: "Highly established local player with premium formulations but limited home delivery coverage."
     },
     {
       initials: 'GN',
-      name: 'GreenNose',
+      name: 'GreenNose Feeders',
       rating: 4.2,
       reviews: '842',
       colorClass: 'bg-cyan-500',
-      tags: [
-        { label: 'Eco-friendly', type: 'success' },
-        { label: 'Limited Range', type: 'destructive' }
-      ]
+      differentiator: "Eco-friendly branding with a moderate customer review rate, limited product customization."
     }
   ];
 
+  const defaultGapAnalysis = {
+    premium_segment: `Premium ${category.label.toLowerCase()} choices are limited in this sub-region, providing pricing leverage.`,
+    differentiation_potential: "Strong potential to differentiate using high-quality local ingredients and fast delivery.",
+    market_saturation: "Moderate competitive saturation with established players focused on physical shop sales.",
+    expansion_opportunity: "Excellent opportunity to scale online subscription services to adjacent high-income areas."
+  };
+
+  // Dynamic Parsing of LLM analysis
+  const parsed = parseJSON(analysis?.competitor_analysis, {
+    competitors: [],
+    gap_analysis: defaultGapAnalysis
+  });
+
+  const parsedComps = parsed.competitors || [];
+  const gapAnalysis = parsed.gap_analysis || defaultGapAnalysis;
+
   const mappedCompetitors = competitors && competitors.length > 0
-    ? competitors.slice(0, 4).map((c, idx) => ({
-        initials: c.title ? c.title.slice(0, 2).toUpperCase() : 'CO',
-        name: c.title || 'Competitor',
-        rating: Number(c.rating) || 4.0,
-        reviews: c.reviews ? String(c.reviews) : '0',
-        badge: idx === 0 ? 'Market Leader' : undefined,
-        colorClass: idx % 2 === 0 ? 'bg-indigo-600' : 'bg-cyan-500',
-        tags: [
-          { label: c.address ? c.address.split(',')[0] : 'Local', type: 'success' }
-        ]
-      }))
+    ? competitors.slice(0, 3).map((c, idx) => {
+        const matchingParsed = parsedComps.find(pc => pc.name && pc.name.toLowerCase().includes((c.title || "").toLowerCase()));
+        return {
+          initials: c.title ? c.title.slice(0, 2).toUpperCase() : 'CO',
+          name: c.title || 'Competitor',
+          rating: Number(c.rating) || 4.0,
+          reviews: c.reviews ? String(c.reviews) : '0',
+          badge: idx === 0 ? 'Market Leader' : undefined,
+          colorClass: idx % 2 === 0 ? 'bg-indigo-600' : 'bg-cyan-500',
+          differentiator: matchingParsed?.differentiator || c.differentiator || "Local incumbent servicing general customer segments.",
+          tags: [
+            { label: c.address ? c.address.split(',')[0] : 'Local', type: 'success' }
+          ]
+        };
+      })
     : defaultCompetitors;
+
+  const avgRating = mappedCompetitors.reduce((sum, c) => sum + c.rating, 0) / mappedCompetitors.length;
+  const saturation = competitors?.length > 5 ? "High" : competitors?.length > 2 ? "Medium" : "Low";
+  const differentiation = scores?.competition < 50 ? "Strong" : scores?.competition < 70 ? "Moderate" : "Weak";
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+          <Icon icon="lucide:crosshair" className="text-xl text-amber-600" />
+        </div>
+        <div>
+          <h3 className="text-lg font-bold tracking-tight">Competitor Intelligence</h3>
+          <p className="text-sm text-muted-foreground font-medium">Top market players & differentiator gaps</p>
+        </div>
+      </div>
+
+      <div className="space-y-4 mb-8">
+        {mappedCompetitors.map((comp, idx) => (
+          <div key={idx} className="p-4 rounded-xl border border-border/50 hover:shadow-md transition-shadow bg-background/50">
+            <div className="flex justify-between items-start">
+              <div className="flex items-start gap-3">
+                <div className={cn("w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold text-sm mt-0.5", comp.colorClass)}>
+                  {comp.initials}
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">{comp.name}</h4>
+                  <div className="flex items-center gap-1 text-xs text-amber-500 font-bold mt-0.5 mb-1.5">
+                    <Icon icon="lucide:star" /> {comp.rating} <span className="text-muted-foreground font-medium">({comp.reviews})</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-normal">{comp.differentiator}</p>
+                </div>
+              </div>
+              {comp.badge && (
+                <span className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-indigo-100">
+                  {comp.badge}
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Market Gap Analysis (Section 5 Addition) */}
+      <div className="mb-8 pt-6 border-t border-border/50">
+        <h4 className="text-sm font-bold text-foreground mb-4">Market Gap Analysis</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl border border-border/30 bg-background/25">
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Premium Segment Availability</span>
+            <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.premium_segment}</p>
+          </div>
+          <div className="p-4 rounded-xl border border-border/30 bg-background/25">
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Differentiation Potential</span>
+            <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.differentiation_potential}</p>
+          </div>
+          <div className="p-4 rounded-xl border border-border/30 bg-background/25">
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Market Saturation</span>
+            <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.market_saturation}</p>
+          </div>
+          <div className="p-4 rounded-xl border border-border/30 bg-background/25">
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expansion Opportunity</span>
+            <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.expansion_opportunity}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="pt-6 border-t border-border/50 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="text-center">
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Competitors Found</p>
+          <p className="text-lg font-extrabold text-foreground">{competitors?.length || 2}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Avg Rating</p>
+          <p className="text-lg font-extrabold text-amber-600">{avgRating.toFixed(1)}★</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Market Saturation</p>
+          <p className={`text-xs font-bold px-2 py-1 rounded border inline-block ${
+            saturation === "High" ? "bg-red-50 text-red-600 border-red-100" :
+            saturation === "Medium" ? "bg-amber-50 text-amber-600 border-amber-100" :
+            "bg-emerald-50 text-emerald-600 border-emerald-100"
+          }`}>{saturation}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Differentiation</p>
+          <p className={`text-xs font-bold px-2 py-1 rounded border inline-block ${
+            differentiation === "Strong" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+            differentiation === "Moderate" ? "bg-amber-50 text-amber-600 border-amber-100" :
+            "bg-red-50 text-red-600 border-red-100"
+          }`}>{differentiation}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── SECTION 4 Addition: MARKET INSIGHTS CARD ──────────────────────────────
+const MarketInsightsCard = ({ text, scores, trends }) => {
+  const trendDirection = trends && trends.length > 1 
+    ? trends[trends.length - 1].value > trends[0].value 
+      ? "Upward ↗"
+      : "Downward ↘"
+    : "Stable →";
+
+  // Dynamic Parsing of LLM analysis
+  const defaultInsights = [
+    `Search interest trend shows ${trendDirection} momentum.`,
+    `Industry demand indicator: ${scores?.demand >= 75 ? "Strong" : scores?.demand >= 45 ? "Moderate" : "Weak"}.`,
+    `Market query volume signal: ${scores?.demand || 50}/100.`,
+    "Customer search query velocity remains consistent."
+  ];
+
+  const parsed = parseJSON(text, {
+    insights: defaultInsights,
+    interpretation: `Current query analysis shows stable category search rates. The local market remains receptive to products aligned with premium and organic lifestyle trends.`
+  });
+
+  const insightsList = parsed.insights || defaultInsights;
+  const interpretationText = parsed.interpretation || "";
 
   return (
     <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col justify-between">
       <div>
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-            <Icon icon="lucide:crosshair" className="text-xl text-amber-600" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+            <Icon icon="lucide:trending-up" className="text-xl text-indigo-600" />
           </div>
           <div>
-            <h3 className="text-xl font-extrabold tracking-tight">Competitor Intelligence</h3>
-            <p className="text-sm text-muted-foreground font-medium">Top players in the region</p>
+            <h3 className="text-lg font-bold tracking-tight">Market Intelligence</h3>
+            <p className="text-sm text-muted-foreground font-medium">Demand & Growth Signals</p>
           </div>
         </div>
-
-        <div className="space-y-4">
-          {mappedCompetitors.map((comp, idx) => (
-            <div key={idx} className="p-4 rounded-xl border border-border/50 hover:shadow-md transition-shadow bg-background/50">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold text-sm", comp.colorClass)}>
-                    {comp.initials}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm">{comp.name}</h4>
-                    <div className="flex items-center gap-1 text-xs text-amber-500 font-bold mt-0.5">
-                      <Icon icon="lucide:star" /> {comp.rating} <span className="text-muted-foreground font-medium">({comp.reviews} reviews)</span>
-                    </div>
-                  </div>
-                </div>
-                {comp.badge && (
-                  <span className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-indigo-100">
-                    {comp.badge}
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                {comp.tags.map((tag, tIdx) => (
-                  <span 
-                    key={tIdx} 
-                    className={cn(
-                      "text-[10px] px-2 py-1 rounded font-bold",
-                      tag.type === 'success' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
-                    )}
-                  >
-                    {tag.label}
-                  </span>
-                ))}
-              </div>
+        
+        <div className="space-y-3">
+          {insightsList.slice(0, 4).map((insight, idx) => (
+            <div key={idx} className="flex gap-3 items-start">
+              <span className="text-emerald-500 font-bold text-lg mt-0.5 flex-shrink-0 leading-none">●</span>
+              <span className="text-sm text-foreground pt-0.5 leading-relaxed font-normal">{insight}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {analysis?.competitor_analysis && (
-        <div className="mt-6 pt-6 border-t border-border/60">
-          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Market Observations</h4>
-          <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-normal">
-            {analysis.competitor_analysis}
-          </div>
+      {/* Market Interpretation paragraph (Section 4 Addition) */}
+      {interpretationText && (
+        <div className="mt-6 pt-6 border-t border-border/50">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Market Interpretation</p>
+          <p className="text-xs leading-relaxed text-foreground font-medium">{interpretationText}</p>
         </div>
       )}
     </div>
   );
 };
 
-const MarketInsightsCard = ({ text }) => (
-  <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col justify-between">
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-          <Icon icon="lucide:trending-up" className="text-xl text-indigo-600" />
-        </div>
-        <div>
-          <h3 className="text-xl font-extrabold tracking-tight">Key Insights</h3>
-          <p className="text-sm text-muted-foreground font-medium">Trends & momentum</p>
-        </div>
-      </div>
-      <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-normal">
-        {text || "No insights analyzed."}
-      </div>
-    </div>
-  </div>
-);
+// ─── SECTION 7: SWOT ANALYSIS ──────────────────────────────────────────────
+const SWOTAnalysis = ({ scores, competitors, analysis, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  const fallbacks = generateFallbackSWOT(metadata?.idea_text, category);
 
-const KeyOpportunities = ({ text }) => (
-  <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
-    <div className="flex items-center gap-3 mb-6">
-      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-        <Icon icon="lucide:lightbulb" className="text-xl text-indigo-600" />
-      </div>
-      <div>
-        <h3 className="text-xl font-extrabold tracking-tight">Key Opportunities</h3>
-        <p className="text-sm text-muted-foreground font-medium">Strategic avenues for growth</p>
-      </div>
-    </div>
-    <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap flex-1 font-normal">
-      {text || "No opportunities analyzed."}
-    </div>
-  </div>
-);
+  // Parse Strengths & Opportunities from opportunity_analysis
+  const parsedOpp = parseJSON(analysis?.opportunity_analysis, {
+    strengths: fallbacks.strengths,
+    opportunities: fallbacks.opportunities
+  });
 
-const RiskAnalysis = ({ text, riskScore }) => {
-  const riskLevel = riskScore >= 70 ? "High" : riskScore >= 35 ? "Moderate" : "Low";
-  const riskColor = riskScore >= 70 ? "text-red-600 bg-red-50 border-red-100" : riskScore >= 35 ? "text-amber-600 bg-amber-50 border-amber-100" : "text-emerald-600 bg-emerald-50 border-emerald-100";
+  // Parse Weaknesses & Threats from risk_analysis
+  const parsedRisk = parseJSON(analysis?.risk_analysis, {
+    weaknesses: fallbacks.weaknesses,
+    threats: fallbacks.threats
+  });
+
+  const swot = {
+    strengths: parsedOpp.strengths && parsedOpp.strengths.length === 2 ? parsedOpp.strengths : fallbacks.strengths,
+    weaknesses: parsedRisk.weaknesses && parsedRisk.weaknesses.length === 2 ? parsedRisk.weaknesses : fallbacks.weaknesses,
+    opportunities: parsedOpp.opportunities && parsedOpp.opportunities.length === 2 ? parsedOpp.opportunities : fallbacks.opportunities,
+    threats: parsedRisk.threats && parsedRisk.threats.length === 2 ? parsedRisk.threats : fallbacks.threats
+  };
+
+  const SWOT_SECTION = [
+    { title: "Strengths", items: swot.strengths, icon: "lucide:zap", color: "emerald", dotColor: "text-emerald-500" },
+    { title: "Weaknesses", items: swot.weaknesses, icon: "lucide:alert-circle", color: "amber", dotColor: "text-amber-500" },
+    { title: "Opportunities", items: swot.opportunities, icon: "lucide:lightbulb", color: "indigo", dotColor: "text-indigo-500" },
+    { title: "Threats", items: swot.threats, icon: "lucide:shield-alert", color: "red", dotColor: "text-red-500" }
+  ];
 
   return (
-    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-            <Icon icon="lucide:shield-alert" className="text-xl text-red-600" />
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
+      <h2 className="text-lg font-bold text-foreground mb-8">SWOT Analysis</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {SWOT_SECTION.map((section, idx) => (
+          <div key={idx} className={cn(
+            "p-6 rounded-xl border-2 bg-gradient-to-br",
+            section.color === "emerald" && "bg-emerald-50/20 border-emerald-200/50",
+            section.color === "amber" && "bg-amber-50/20 border-amber-200/50",
+            section.color === "indigo" && "bg-indigo-50/20 border-indigo-200/50",
+            section.color === "red" && "bg-red-50/20 border-red-200/50"
+          )}>
+            <div className="flex items-center gap-2 mb-4">
+              <Icon icon={section.icon} className={cn(
+                "text-xl",
+                section.color === "emerald" && "text-emerald-600",
+                section.color === "amber" && "text-amber-600",
+                section.color === "indigo" && "text-indigo-600",
+                section.color === "red" && "text-red-600"
+              )} />
+              <h3 className={cn(
+                "font-bold",
+                section.color === "emerald" && "text-emerald-700",
+                section.color === "amber" && "text-amber-700",
+                section.color === "indigo" && "text-indigo-700",
+                section.color === "red" && "text-red-700"
+              )}>{section.title}</h3>
+            </div>
+            <ul className="space-y-2.5">
+              {section.items.slice(0, 2).map((item, i) => (
+                <li key={i} className="text-xs leading-relaxed text-foreground flex gap-2.5 font-normal">
+                  <span className={cn(section.dotColor, "font-bold text-lg flex-shrink-0 leading-none")}>●</span>
+                  <span className="pt-0.5">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div>
-            <h3 className="text-xl font-extrabold tracking-tight">Risk Analysis</h3>
-            <p className="text-sm text-muted-foreground font-medium">Key operational challenges</p>
-          </div>
-        </div>
-        <span className={`text-[10px] font-bold px-2 py-1 rounded border uppercase tracking-wider ${riskColor}`}>
-          Risk: {riskLevel}
-        </span>
-      </div>
-      <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap flex-1 font-normal">
-        {text || "No risk analysis analyzed."}
+        ))}
       </div>
     </div>
   );
 };
 
-const ProductDemandAnalysis = ({ scores, metadata }) => {
-  const isLocal = /hotel|veg|restaurant|shop|cafe|store|salon|bakery|dhabha|spa|boutique|delivery/i.test(metadata?.idea_text || '');
+// ─── SECTION 8: KEY OPPORTUNITIES ──────────────────────────────────────────
+const KeyOpportunities = ({ text, analysis, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  const fallbackOpps = [
+    `Launch a premium custom product collection targeting high-income ${category.label.toLowerCase()} segments.`,
+    "Build a recurring subscription plan or membership structure to stabilize client lifetime value.",
+    "Form strategic distribution partnerships with complementary local boutique storefronts.",
+    "Deploy social media video marketing to showcase production craftsmanship and quality.",
+    "Introduce white-label corporate gift packaging collections for seasonal festivals."
+  ];
+
+  // Dynamic Parsing of LLM analysis
+  const parsed = parseJSON(analysis?.opportunity_analysis, {
+    key_opportunities: fallbackOpps
+  });
+
+  const opportunities = parsed.key_opportunities && parsed.key_opportunities.length > 0 
+    ? parsed.key_opportunities 
+    : fallbackOpps;
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+          <Icon icon="lucide:lightbulb" className="text-xl text-indigo-600" />
+        </div>
+        <div>
+          <h3 className="text-lg font-bold tracking-tight">Key Opportunities</h3>
+          <p className="text-sm text-muted-foreground font-medium">Strategic growth avenues</p>
+        </div>
+      </div>
+      
+      <div className="space-y-2.5">
+        {opportunities.slice(0, 5).map((opp, idx) => (
+          <div key={idx} className="flex gap-3 items-start p-3 rounded-lg bg-indigo-50/40 border border-indigo-100/50 hover:bg-indigo-50/60 hover:border-indigo-100 transition-colors">
+            <span className="text-emerald-500 font-bold text-lg mt-0.5 flex-shrink-0 leading-none">●</span>
+            <span className="text-sm text-foreground pt-0.5 leading-relaxed font-normal">{opp}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── SECTION 9: RECOMMENDED ACTION PLAN ────────────────────────────────────
+const RecommendedActionPlan = ({ scores, analysis, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  const fallbackRoadmap = generateFallbackRoadmap(metadata?.idea_text, category);
+
+  // Dynamic Parsing of LLM analysis
+  const parsed = parseJSON(analysis?.opportunity_analysis, {
+    roadmap: fallbackRoadmap
+  });
+
+  const phases = parsed.roadmap && parsed.roadmap.length === 4 ? parsed.roadmap : fallbackRoadmap;
+
+  return (
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
+      <h2 className="text-lg font-bold text-foreground mb-8">Recommended Action Plan</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {phases.map((phase, idx) => (
+          <div key={idx} className="relative">
+            <div className="p-5 rounded-xl border-2 border-indigo-100 bg-indigo-50/20">
+              <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">{phase.phase}</p>
+              <h4 className="text-sm font-bold text-foreground mb-3">{phase.title}</h4>
+              <ul className="space-y-2">
+                {phase.tasks.map((task, t) => (
+                  <li key={t} className="text-xs text-muted-foreground flex gap-2.5 leading-normal font-normal">
+                    <span className="text-emerald-500 font-bold text-base flex-shrink-0 leading-none">●</span>
+                    <span className="pt-0.5">{task}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {idx < phases.length - 1 && (
+              <div className="hidden lg:block absolute -right-2 top-1/2 transform -translate-y-1/2 text-indigo-300">
+                <Icon icon="lucide:arrow-right" className="text-2xl" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── SECTION 6: DEMAND & REVENUE POTENTIAL ─────────────────────────────────
+const DemandRevenueAnalysis = ({ scores, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  const isLocal = category.type === "local_service" || category.type === "physical_product";
   const demand = scores?.demand || 50;
   const viability = scores?.viability || 50;
 
-  // Potential Customers calculation
-  const custCount = isLocal 
-    ? Math.round(demand * 120 + 2000).toLocaleString('en-IN') + "+"
-    : Math.round(demand * 8500 + 50000).toLocaleString('en-IN') + "+";
+  // Potential Customers calculation based strictly on demand score
+  const custCountNum = isLocal 
+    ? Math.round(2000 + demand * 80)
+    : Math.round(5000 + demand * 3000);
+  const custCount = custCountNum.toLocaleString('en-IN') + "+";
 
-  // Average Customer Spending (INR only)
-  const spending = isLocal
-    ? "₹250 – ₹1,500"
-    : "₹1,200 – ₹15,000";
+  // Average Customer Spending (dynamic based on demand tier)
+  let spending = "";
+  if (demand >= 75) {
+    spending = isLocal ? "₹500 – ₹1,500" : "₹1,500 – ₹8,000";
+  } else if (demand >= 45) {
+    spending = isLocal ? "₹300 – ₹800" : "₹500 – ₹2,500";
+  } else {
+    spending = isLocal ? "₹150 – ₹400" : "₹100 – ₹500";
+  }
 
-  // Revenue Potential calculation (INR only)
-  const revSmall = isLocal
-    ? "₹45,000/month"
-    : "₹1.2 Lakh/month";
-  const revMed = isLocal
-    ? "₹2.5 Lakh/month"
-    : "₹8 Lakh/month";
-  const revLarge = isLocal
-    ? "₹12 Lakh+/month"
-    : "₹45 Lakh+/month";
+  // Revenue Potential calculations (dynamic based on demand tier)
+  let revSmall = "", revMed = "", revLarge = "";
+  if (demand >= 75) {
+    revSmall = isLocal ? "₹2 Lakh/month" : "₹4 Lakh/month";
+    revMed = isLocal ? "₹6 Lakh/month" : "₹12 Lakh/month";
+    revLarge = isLocal ? "₹15 Lakh+/month" : "₹35 Lakh+/month";
+  } else if (demand >= 45) {
+    revSmall = isLocal ? "₹80,000/month" : "₹1.5 Lakh/month";
+    revMed = isLocal ? "₹2 Lakh/month" : "₹4 Lakh/month";
+    revLarge = isLocal ? "₹5 Lakh/month" : "₹10 Lakh/month";
+  } else {
+    revSmall = isLocal ? "₹25,000/month" : "₹50,000/month";
+    revMed = isLocal ? "₹60,000/month" : "₹1.2 Lakh/month";
+    revLarge = isLocal ? "₹1.5 Lakh/month" : "₹3 Lakh/month";
+  }
 
   // Market Demand
   const demandLevel = demand >= 75 ? "High" : demand >= 45 ? "Medium" : "Low";
@@ -497,161 +1037,297 @@ const ProductDemandAnalysis = ({ scores, metadata }) => {
   const oppLevel = viability >= 75 ? "Strong" : viability >= 50 ? "Moderate" : "Limited";
   const oppColor = viability >= 75 ? "text-indigo-600 bg-indigo-50 border border-indigo-100" : viability >= 50 ? "text-cyan-600 bg-cyan-50 border border-cyan-100" : "text-slate-600 bg-slate-50 border border-slate-100";
 
+  // Revenue Confidence (Section 6 Addition)
+  const confidenceLevel = demand >= 75 ? "High" : demand >= 45 ? "Medium" : "Low";
+  const confidenceColor = demand >= 75 ? "text-emerald-600 bg-emerald-50 border border-emerald-100" : demand >= 45 ? "text-amber-600 bg-amber-50 border border-amber-100" : "text-red-600 bg-red-50 border border-red-100";
+
+  // Dynamic realistic key insight
+  let keyInsight = "";
+  if (demand >= 75) {
+    keyInsight = "Robust query volumes and market momentum support scalable growth. Focus on rapid customer acquisition and infrastructure preparation.";
+  } else if (demand >= 45) {
+    keyInsight = "Moderate interest signals indicate a viable market entry point. Success depends on clear product differentiation and local marketing efforts.";
+  } else {
+    keyInsight = "Current demand signals suggest a niche opportunity that may require targeted customer acquisition and strong brand positioning.";
+  }
+
   return (
-    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
+      <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center">
           <Icon icon="lucide:shopping-bag" className="text-xl text-cyan-600" />
         </div>
         <div>
-          <h3 className="text-xl font-extrabold tracking-tight">Demand & Revenue Potential</h3>
-          <p className="text-sm text-muted-foreground font-medium">Customer base & sales projections</p>
+          <h2 className="text-lg font-bold tracking-tight">Demand & Revenue Potential</h2>
+          <p className="text-sm text-muted-foreground font-medium">Market sizing & monetization</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 flex-1">
-        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center">
-          <span className="text-xs font-bold text-muted-foreground block mb-1">Potential Customers</span>
-          <span className="text-xl font-extrabold text-indigo-600 flex items-center gap-1.5">
-            <span className="text-lg">👥</span> {custCount}
-          </span>
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30">
+          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">Potential Customers</span>
+          <span className="text-2xl font-extrabold text-indigo-600">👥 {custCount}</span>
         </div>
 
-        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center">
-          <span className="text-xs font-bold text-muted-foreground block mb-1">Average Customer Spending</span>
-          <span className="text-xl font-extrabold text-foreground flex items-center gap-1.5">
-            <span className="text-lg">💰</span> {spending}
-          </span>
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30">
+          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">Avg Customer Spend</span>
+          <span className="text-2xl font-extrabold text-foreground">💰 {spending}</span>
         </div>
+      </div>
 
-        <div className="col-span-2 p-4 rounded-xl border border-border/50 bg-background/30 space-y-2">
-          <span className="text-xs font-bold text-muted-foreground block">Revenue Potential (INR Only)</span>
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="flex flex-col p-2 bg-card rounded-lg border border-border/30">
-              <span className="text-muted-foreground font-medium">Small Scale</span>
-              <span className="font-extrabold text-foreground mt-0.5">{revSmall}</span>
-            </div>
-            <div className="flex flex-col p-2 bg-indigo-50/50 rounded-lg border border-indigo-100">
-              <span className="text-indigo-600 font-bold">Medium Scale</span>
-              <span className="font-extrabold text-indigo-700 mt-0.5">{revMed}</span>
-            </div>
-            <div className="flex flex-col p-2 bg-emerald-50/50 rounded-lg border border-emerald-100">
-              <span className="text-emerald-600 font-bold">Large Scale</span>
-              <span className="font-extrabold text-emerald-700 mt-0.5">{revLarge}</span>
-            </div>
+      <div className="p-4 rounded-xl border border-border/50 bg-background/30 mb-6">
+        <span className="text-xs font-bold text-muted-foreground block mb-3 uppercase tracking-wider">Revenue Potential (INR)</span>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="p-3 bg-card rounded-lg border border-border/30 text-center">
+            <p className="text-muted-foreground font-medium text-[11px] mb-1">Small Scale</p>
+            <p className="font-extrabold text-foreground">{revSmall}</p>
+          </div>
+          <div className="p-3 bg-indigo-50/50 rounded-lg border border-indigo-100 text-center">
+            <p className="text-indigo-600 font-bold text-[11px] mb-1">Medium Scale</p>
+            <p className="font-extrabold text-indigo-700">{revMed}</p>
+          </div>
+          <div className="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 text-center">
+            <p className="text-emerald-600 font-bold text-[11px] mb-1">Large Scale</p>
+            <p className="font-extrabold text-emerald-700">{revLarge}</p>
           </div>
         </div>
+      </div>
 
-        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-between">
-          <span className="text-xs font-bold text-muted-foreground block mb-1">Market Demand</span>
-          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold w-fit border ${demandColor}`}>
-            <span>📈</span> {demandLevel}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center text-center">
+          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">Market Demand</span>
+          <span className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border ${demandColor}`}>
+            📈 {demandLevel}
           </span>
         </div>
 
-        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-between">
-          <span className="text-xs font-bold text-muted-foreground block mb-1">Business Opportunity</span>
-          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold w-fit border ${oppColor}`}>
-            <span>⭐</span> {oppLevel}
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center text-center">
+          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">Business Opportunity</span>
+          <span className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border ${oppColor}`}>
+            ⭐ {oppLevel}
+          </span>
+        </div>
+
+        {/* Revenue Confidence (Section 6 Addition) */}
+        <div className="p-4 rounded-xl border border-border/50 bg-background/30 flex flex-col justify-center text-center">
+          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">Revenue Confidence</span>
+          <span className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border ${confidenceColor}`}>
+            🛡️ {confidenceLevel}
           </span>
         </div>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-border/60 text-[11px] font-bold text-muted-foreground flex items-center gap-2">
-        <Icon icon="lucide:check-circle-2" className="text-emerald-500 text-sm flex-shrink-0" />
-        <span>Key Takeaway: Healthy customer demand with attractive revenue opportunities.</span>
+      <div className="mt-6 pt-4 border-t border-border/60">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Key Insight</p>
+        <p className="text-sm text-foreground font-medium leading-relaxed font-normal">{keyInsight}</p>
       </div>
     </div>
   );
 };
 
-const BrandNameRationale = ({ businessNames }) => {
+// ─── SECTION 10: AI BRAND NAME SUGGESTIONS ──────────────────────────────────
+const BrandNameRationale = ({ businessNames, metadata }) => {
+  const category = getBusinessCategory(metadata?.idea_text);
+  
   const defaultNames = [
-    { name: 'NaturaPet.com', brand_uniqueness: 85, rationale: '• Easy to remember\n• Strong brand identity\n• Suitable for target audience' },
-    { name: 'Pawganic.in', brand_uniqueness: 72, rationale: '• Highly relevant regional suffix\n• Easy to pronounce\n• Fits organic niche' }
+    { name: 'NaturaPet.com', brand_uniqueness: 94, rationale: '• Connection to category: Direct tie-in with pet care formulations.\n• Emotional appeal: Instills confidence and health-focused pure nature.\n• Brand perception: High-end quality pet supplier.\n• Market suitability: Fits urban audience seeking organic food.', why_recommended: "Best Recommended Option: Strongly connects with pure pet care and has a premium commercial sound." },
+    { name: 'Pawganic.in', brand_uniqueness: 88, rationale: '• Connection to category: Pun on paws and organic ingredients.\n• Emotional appeal: Playful and friendly organic feel.\n• Brand perception: Warm and clean.\n• Market suitability: Resonates well with pet-parents.', why_recommended: "Great local option: Suffix tie-in is ideal for launching in regional channels." },
+    { name: 'VitaPaws', brand_uniqueness: 80, rationale: '• Connection to category: Vitality and active paw care.\n• Emotional appeal: Scientific and caring.\n• Brand perception: Trustworthy premium wellness brand.\n• Market suitability: Great for subscription health-packages.', why_recommended: "Excellent alternative: Minimal design-friendly branding potential." }
   ];
 
   const names = businessNames && businessNames.length > 0 ? businessNames : defaultNames;
 
+  // The first item in the list is defined as the best recommendation
+  const recommendedName = names[0] || defaultNames[0];
+
   return (
     <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
           <Icon icon="lucide:tags" className="text-xl text-indigo-600" />
         </div>
         <div>
-          <h3 className="text-xl font-extrabold tracking-tight">AI Suggested Names</h3>
-          <p className="text-sm text-muted-foreground font-medium">Recommended branding with uniqueness scores</p>
+          <h2 className="text-lg font-bold tracking-tight">AI Brand Name Suggestions</h2>
+          <p className="text-sm text-muted-foreground font-medium">AI-generated branding concepts</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {names.map((n, idx) => (
-          <div key={idx} className="p-5 rounded-2xl border border-border/50 bg-background/50 hover:shadow-md transition-all flex flex-col justify-between">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {names.slice(0, 3).map((n, idx) => (
+          <div key={idx} className="p-6 rounded-xl border border-border/50 bg-background/50 hover:shadow-md hover:border-indigo-200 transition-all flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <span className="text-lg font-extrabold text-foreground">{n.name}</span>
-                <span className="bg-indigo-50 text-indigo-600 border border-indigo-100 text-xs font-bold px-2.5 py-1 rounded-lg">
-                  Uniqueness: {n.brand_uniqueness}%
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <h3 className="text-base font-bold text-foreground">{n.name}</h3>
+                <span className="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap">
+                  {n.brand_uniqueness}% Unique
                 </span>
               </div>
+              
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">Highlights:</span>
-                <div className="text-sm text-muted-foreground leading-relaxed font-normal whitespace-pre-wrap">
-                  {n.rationale || "• Easy to remember\n• Strong brand identity\n• Suitable for target audience"}
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Highlights</p>
+                <div className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line font-normal">
+                  {n.rationale}
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Best Recommended Name Section (Section 10 Addition) */}
+      {recommendedName && (
+        <div className="p-6 rounded-xl border-2 border-indigo-200 bg-indigo-50/20 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <span className="text-[10px] text-indigo-600 uppercase font-extrabold tracking-wider block mb-1">Best Recommended Name</span>
+            <h4 className="text-lg font-extrabold text-indigo-900">{recommendedName.name}</h4>
+            <p className="text-xs text-indigo-700/80 mt-1 leading-relaxed font-medium">
+              {recommendedName.why_recommended || "This name offers the strongest combination of category relevance, trademark availability, and brand recall."}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-const FinalRecommendation = ({ verdict, score, onGenerate, onSave, isLoading }) => (
-  <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 text-white">
-    <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-400/25 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
-    <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/20 rounded-full blur-[80px] pointer-events-none translate-y-1/2 -translate-x-1/4"></div>
-    
-    <div className="relative z-10 flex-1">
-      <div className="flex items-center gap-3 mb-4">
-        <span className="bg-white/10 backdrop-blur border border-white/20 text-white px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase">
-          Final Verdict
-        </span>
-        <span className="flex items-center gap-1 text-emerald-400 font-bold text-sm bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-500/25">
-          <Icon icon="lucide:shield-check" className="text-lg text-emerald-400" /> {score}% Confidence
-        </span>
+// ─── SECTION 11: FINAL VERDICT ─────────────────────────────────────────────
+const FinalVerdict = ({ scores, analysis, onGenerate, onSave, isLoading, metadata }) => {
+  const viability = scores?.viability || 50;
+  const stars = viability >= 90 ? 5 : viability >= 80 ? 5 : viability >= 70 ? 4 : viability >= 60 ? 3 : viability >= 45 ? 2 : 1;
+  const fullStars = Math.floor(stars);
+  
+  const statusColor = viability >= 75 ? "from-emerald-600 to-emerald-700" : 
+                      viability >= 45 ? "from-amber-600 to-amber-700" : 
+                      "from-red-600 to-red-700";
+  
+  const statusBadge = viability >= 75 ? "🟢 Strong Opportunity" : 
+                      viability >= 45 ? "🟡 Proceed with Caution" : 
+                      "🔴 High Risk";
+
+  const category = getBusinessCategory(metadata?.idea_text);
+  const fallbackSWOT = generateFallbackSWOT(metadata?.idea_text, category);
+
+  const fallbackReasons = generateFallbackVerdictReasons(scores);
+  const fallbackStrengths = fallbackSWOT.strengths;
+  const fallbackRisks = [
+    "High initial client acquisition costs.",
+    "Potential operational scalability bottleneck."
+  ];
+  const fallbackNextStep = viability >= 75
+    ? "Initiate a localized MVP launch within 14 days."
+    : "Validate unit economic models before launching.";
+
+  // Dynamic Parsing of LLM analysis
+  const parsed = parseJSON(analysis?.final_recommendation, {
+    reasons: fallbackReasons,
+    strengths: fallbackStrengths,
+    risks: fallbackRisks,
+    next_step: fallbackNextStep
+  });
+
+  const reasons = parsed.reasons && parsed.reasons.length === 3 ? parsed.reasons : fallbackReasons;
+  const strengths = parsed.strengths && parsed.strengths.length === 2 ? parsed.strengths : fallbackStrengths;
+  const risks = parsed.risks && parsed.risks.length === 2 ? parsed.risks : fallbackRisks;
+  const nextStep = parsed.next_step || fallbackNextStep;
+
+  return (
+    <div className={`bg-gradient-to-r ${statusColor} rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden flex flex-col gap-8 text-white`}>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] pointer-events-none translate-y-1/2 -translate-x-1/4"></div>
+      
+      <div className="relative z-10">
+        <p className="text-xs font-bold uppercase tracking-widest text-white/80 mb-8">Final Verdict</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-3">Business Potential</p>
+            <div className="flex gap-1">
+              {Array(5).fill(0).map((_, i) => (
+                <span key={i} className="text-2xl">
+                  {i < fullStars ? "★" : "☆"}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Confidence Score</p>
+            <p className="text-3xl font-extrabold">{viability}%</p>
+          </div>
+          
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Status</p>
+            <p className="text-lg font-bold">{statusBadge}</p>
+          </div>
+        </div>
+
+        {/* Why This Rating (Section 11 Addition) */}
+        <div className="mb-8 pb-8 border-b border-white/20">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-white/70 mb-4">Why This Rating?</h3>
+          <ul className="space-y-3 pl-6 border-l border-white/20">
+            {reasons.slice(0, 3).map((reason, idx) => (
+              <li key={idx} className="text-sm leading-relaxed font-medium flex gap-2">
+                <span className="text-white/60 font-bold">•</span>
+                <span>{reason}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white/70 mb-3">Key Strengths</h3>
+            <ul className="space-y-2.5">
+              {strengths.slice(0, 2).map((strength, i) => (
+                <li key={i} className="text-sm flex gap-3 leading-relaxed font-normal">
+                  <span className="text-lg flex-shrink-0 leading-none">●</span> 
+                  <span className="pt-0.5">{strength}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white/70 mb-3">Key Risks</h3>
+            <ul className="space-y-2.5">
+              {risks.slice(0, 2).map((risk, i) => (
+                <li key={i} className="text-sm flex gap-3 leading-relaxed font-normal">
+                  <span className="text-lg flex-shrink-0 leading-none">●</span> 
+                  <span className="pt-0.5">{risk}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Recommended Next Step (Section 11 Addition) */}
+        <div className="pt-6 border-t border-white/25">
+          <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Recommended Next Step</p>
+          <p className="text-sm font-semibold text-white leading-relaxed">{nextStep}</p>
+        </div>
       </div>
-      
-      <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
-        {score > 60 ? "Proceed with Launch" : "Proceed with Caution"}
-      </h2>
-      
-      <div className="text-base text-white/90 max-w-2xl leading-relaxed font-light whitespace-pre-wrap">
-        {verdict}
+
+      <div className="relative z-10 pt-6 border-t border-white/20 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button 
+          onClick={onGenerate}
+          disabled={isLoading}
+          className="bg-white text-indigo-600 hover:bg-indigo-50 px-6 py-3 rounded-lg font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+        >
+          <Icon icon={isLoading ? "lucide:loader-2" : "lucide:rocket"} className={cn("text-lg", isLoading && "animate-spin")} />
+          {isLoading ? "Generating..." : "Generate Business Plan"}
+        </button>
+        <button 
+          onClick={onSave}
+          className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2"
+        >
+          <Icon icon="lucide:bookmark" className="text-lg" /> Save Report
+        </button>
       </div>
     </div>
+  );
+};
 
-    <div className="relative z-10 flex flex-col gap-3 w-full md:w-auto">
-      <button 
-        onClick={onGenerate}
-        disabled={isLoading}
-        className="bg-white text-indigo-600 hover:bg-indigo-50 px-8 py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
-      >
-        <Icon icon={isLoading ? "lucide:loader-2" : "lucide:rocket"} className={cn("text-xl", isLoading && "animate-spin")} />
-        {isLoading ? "Generating Plan..." : "Generate Business Plan"}
-      </button>
-      <button 
-        onClick={onSave}
-        className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap"
-      >
-        <Icon icon="lucide:bookmark" /> Save Report
-      </button>
-    </div>
-  </div>
-);
-
+// ─── MAIN REPORT VIEW ───────────────────────────────────────────────────────
 const IntelligenceReport = () => {
   const location = useLocation();
   const reportPayload = location.state?.report;
@@ -667,19 +1343,103 @@ const IntelligenceReport = () => {
       demand: 91,
       opportunity: 88,
       risk: 14,
-      competition: 50
+      competition: 50,
+      trend: 80
     },
     analysis: {
-      executive_summary: 'This startup shows strong market demand with manageable competition and high product demand signals. Risk remains moderate, and growth potential is highly promising over the next 24 months.',
-      market_analysis: 'The addressable market in Hyderabad is expanding rapidly due to rising disposable income and pet humanization trends.',
-      competitor_analysis: 'A few local brands exist but none offer premium organic-certified formulations, presenting a clear market opening.',
-      trend_analysis: 'Search query analytics show a consistent 25% year-on-year growth in searches for organic dog food in Telangana.',
-      risk_analysis: 'Key exposures include high initial supply chain overhead and ingredient quality assurance standards.',
-      final_recommendation: 'Strong market demand, growing trends, and healthy product demand signals indicate a highly favorable environment for this business model.'
+      executive_summary: JSON.stringify({
+        paragraph: "The organic pet food market in Hyderabad presents a high-growth opportunity driven by localized pet humanization and increasing consumer disposable incomes. Launching a premium manufacturing and e-commerce model satisfies emerging niche expectations, though scaling relies on micro-supply validation.",
+        insights: [
+          "Demand Insight: Extremely high search volume indicates strong organic consumer awareness for healthy pet food.",
+          "Customer Insight: Pet parents seek organic-certified ingredients and direct home delivery convenience.",
+          "Revenue Insight: Direct-to-consumer sales coupled with high margins support scaling operations.",
+          "Competition Insight: Local shops exist but fail to provide specialized organic formulations.",
+          "Growth Insight: Low cost of raw ingredient procurement supports strong early-stage unit economics."
+        ],
+        recommendation: "Build a prototype website and pitch first production batches directly to local vet clinics."
+      }),
+      market_analysis: JSON.stringify({
+        insights: [
+          "Search query density shows 25% year-on-year growth for organic pet products.",
+          "Urban hubs in Telangana show expanding consumer query velocity.",
+          "Pet humanization acts as a strong category macro-growth catalyst.",
+          "Rising premium segment availability supports high initial pricing tiers."
+        ],
+        interpretation: "The Hyderabad pet care segment shows positive growth signals. Increasing query rates suggest that an early entrant focused on certified formulations can secure a durable local brand presence."
+      }),
+      competitor_analysis: JSON.stringify({
+        competitors: [
+          { name: "Pawsome Bites", rating: 4.8, reviews: 240, address: "Jubilee Hills, Hyderabad", differentiator: "Strong brand authority in dry kibble but lacks organic-certified product lines." },
+          { name: "GreenNose Feeders", rating: 4.2, reviews: 84, address: "Gachibowli, Hyderabad", differentiator: "Eco-friendly branding with a moderate customer review rate, limited product customization." }
+        ],
+        gap_analysis: {
+          premium_segment: "Organic-certified formulations are largely unavailable locally, leaving room for a premium product brand.",
+          differentiation_potential: "Strong opportunity to differentiate through custom recipes and subscription meal kits.",
+          market_saturation: "Moderate local competition, primarily focused on offline retail sales.",
+          expansion_opportunity: "High potential to scale delivery routes to adjacent high-density residential hubs."
+        }
+      }),
+      opportunity_analysis: JSON.stringify({
+        strengths: [
+          "Premium product margin levels.",
+          "High customer lifetime value potential."
+        ],
+        opportunities: [
+          "Subscription packaging meal kits.",
+          "Partnership networks with veterinary clinics."
+        ],
+        key_opportunities: [
+          "Develop a monthly recurring subscription pet meal plan.",
+          "Partner with local boutique veterinarians for retail distribution.",
+          "Host weekend pop-up brand awareness stands in dog parks.",
+          "Implement personalized ingredient packages based on pet size.",
+          "Collaborate with pet micro-influencers to lower brand acquisition costs."
+        ],
+        roadmap: [
+          { phase: "Week 1–2", title: "Product Formulation", tasks: ["Source ingredients from organic suppliers", "Run first kitchen test batches with friends' dogs"] },
+          { phase: "Week 3–4", title: "Waitlist Launch", tasks: ["Publish basic landing page with a waitlist form", "Launch local search campaigns"] },
+          { phase: "Month 2", title: "Soft Launch", tasks: ["Fulfill first 50 waitlist subscriber orders", "Collect customer formulation feedback"] },
+          { phase: "Month 3", title: "Subscription Rollout", tasks: ["Launch recurring billing website", "Scale marketing budget and hire packaging assistants"] }
+        ]
+      }),
+      risk_analysis: JSON.stringify({
+        weaknesses: [
+          "Initial raw supply chain friction.",
+          "High early logistics delivery overhead."
+        ],
+        threats: [
+          "Aggressive price cuts by mass brands.",
+          "Strict local licensing requirements."
+        ],
+        key_risks: [
+          "Raw ingredient shelf-life stability.",
+          "Underestimating customer acquisition costs."
+        ]
+      }),
+      final_recommendation: JSON.stringify({
+        potential: 5,
+        confidence: 82,
+        status: "🟢 Strong Opportunity",
+        reasons: [
+          "Strong local search trends show a growing market for pet care.",
+          "Competitors focus on physical retail, leaving e-commerce open.",
+          "Pet food has high repeat-purchase behavior, supporting subscription revenue."
+        ],
+        strengths: [
+          "Certified organic brand positioning",
+          "High repeat purchase behavior"
+        ],
+        risks: [
+          "Raw supply chain ingredient shelf-life",
+          "Customer acquisition cost volume inflation"
+        ],
+        next_step: "Order first small raw batch and launch the waitlist website."
+      })
     },
     business_names: [
-      { name: 'NaturaPet.com', brand_uniqueness: 85, popularity: 8, competition: 3, rationale: 'Premium organic brand name.' },
-      { name: 'Pawganic.in', brand_uniqueness: 72, popularity: 7, competition: 4, rationale: 'Highly relevant regional suffix.' }
+      { name: 'Pawganic.in', brand_uniqueness: 94, rationale: '• Connection to category: Direct pun on pet paws and organic formulations.\n• Emotional appeal: Welcoming and pure.\n• Brand perception: High-end quality care.\n• Market suitability: Fits urban audience seeking organic food.', why_recommended: "Pawganic.in stands out as the most memorable name with clear organic indicators and direct local relevance." },
+      { name: 'NaturaPet.com', brand_uniqueness: 88, rationale: '• Connection to category: Focuses on natural pet nutrition.\n• Emotional appeal: Trustworthy and clean.\n• Brand perception: Premium product brand.\n• Market suitability: Great for e-commerce catalog.', why_recommended: "NaturaPet is a strong global-facing option but requires international shipping preparation." },
+      { name: 'VitaPaws', brand_uniqueness: 80, rationale: '• Connection to category: Vitality and pet health.\n• Emotional appeal: Scientific and active.\n• Brand perception: Veterinary-grade products.\n• Market suitability: Fits pet subscription plans.', why_recommended: "VitaPaws is ideal if the brand shifts towards veterinary medical foods." }
     ],
     competitors: [
       { title: 'Pawsome Bites', rating: 4.8, reviews: 240, address: 'Jubilee Hills, Hyderabad' },
@@ -708,8 +1468,6 @@ const IntelligenceReport = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-
- 
 
   const handleDownloadPDF = useCallback(() => {
     window.print();
@@ -773,51 +1531,16 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Top KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          <KPICard 
-            title="Health Score" 
-            value={scores?.viability || 50} 
-            subtitle="/100" 
-            icon="lucide:activity" 
-            trend="Top 5%" 
-            colorClass="text-indigo-600" 
-            bgClass="bg-indigo-50" 
-          />
-          <KPICard 
-            title="Market Demand" 
-            value={scores?.demand ? `${scores.demand}/100` : "Medium"} 
-            icon="lucide:bar-chart-3" 
-            colorClass="text-cyan-600" 
-            bgClass="bg-cyan-50" 
-          />
-          <KPICard 
-            title="Competition" 
-            value={scores?.competition ? `${scores.competition}/100` : "Medium"} 
-            icon="lucide:swords" 
-            colorClass="text-amber-600" 
-            bgClass="bg-amber-500/10" 
-          />
-          <KPICard 
-            title="Risk Level" 
-            value={scores?.risk ? `${scores.risk}/100` : "Low"} 
-            icon="lucide:shield-check" 
-            colorClass="text-emerald-600" 
-            bgClass="bg-emerald-50" 
-          />
-        </div>
+        {/* Business Health Overview */}
+        <BusinessHealthOverview scores={scores} />
 
-        {/* Main Content Grid */}
+        {/* Executive Summary + Business Rating */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <ExecutiveSummary text={analysis?.executive_summary || "No executive summary available."} />
-          <ViabilityScore 
-            score={scores?.viability || 50} 
-            demand={scores?.demand || 50}
-            risk={scores?.risk || 20}
-          />
+          <ExecutiveSummary scores={scores} analysis={analysis} metadata={metadata} />
+          <BusinessRatingCard score={scores?.viability || 50} confidence={scores?.viability || 50} />
         </div>
 
-        {/* Market Intelligence Grid */}
+        {/* Market Intelligence + Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <MarketIntelligenceChart 
@@ -826,34 +1549,35 @@ const IntelligenceReport = () => {
               onRangeChange={handleTimeRangeChange} 
             />
           </div>
-          <MarketInsightsCard text={analysis?.market_analysis} />
+          <MarketInsightsCard text={analysis?.market_analysis} scores={scores} trends={trends} />
         </div>
 
-        {/* Opportunities & Risks Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <KeyOpportunities text={analysis?.opportunity_analysis} />
-          <RiskAnalysis text={analysis?.risk_analysis} riskScore={scores?.risk || 50} />
-        </div>
+        {/* Competitor Intelligence */}
+        <CompetitorIntelligence competitors={competitors} analysis={analysis} scores={scores} metadata={metadata} />
 
-        {/* Competitor & Product Demand Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <CompetitorIntelligence competitors={competitors} analysis={analysis} />
-          <ProductDemandAnalysis 
-            scores={scores}
-            metadata={metadata}
-          />
-        </div>
+        {/* Demand & Revenue Potential */}
+        <DemandRevenueAnalysis scores={scores} metadata={metadata} />
 
-        {/* Brand Suggested Names & Rationale Card */}
-        <BrandNameRationale businessNames={business_names} />
+        {/* SWOT Analysis */}
+        <SWOTAnalysis scores={scores} competitors={competitors} analysis={analysis} metadata={metadata} />
 
-        {/* Final Recommendation */}
-        <FinalRecommendation 
-          verdict={analysis?.final_recommendation || "Proceed with diligence."}
-          score={scores?.viability || 50}
+        {/* Key Opportunities */}
+        <KeyOpportunities text={analysis?.opportunity_analysis} analysis={analysis} metadata={metadata} />
+
+        {/* Recommended Action Plan */}
+        <RecommendedActionPlan scores={scores} analysis={analysis} metadata={metadata} />
+
+        {/* AI Brand Name Suggestions */}
+        <BrandNameRationale businessNames={business_names} metadata={metadata} />
+
+        {/* Final Verdict */}
+        <FinalVerdict 
+          scores={scores}
+          analysis={analysis}
           onGenerate={handleGenerateBusinessPlan} 
           onSave={handleSaveToWorkspace}
           isLoading={isGenerating}
+          metadata={metadata}
         />
 
       </main>

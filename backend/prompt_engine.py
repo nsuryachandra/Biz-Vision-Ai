@@ -11,124 +11,241 @@ logger = logging.getLogger(__name__)
 # ─── Prompt Templates ────────────────────────────────────────────────────────
 
 STARTUP_VALIDATION_TEMPLATE = """
-System: You are an Elite Startup Consultant and Venture Partner. Analyze this startup idea.
+System: You are a McKinsey-style Business Intelligence Consultant.
+Analyze this startup idea and generate a premium, decision-focused Executive Summary.
+
 Idea: {idea_text}
 Keywords: {keywords}
 Location: {location}
 Industry: {industry}
 Business Type: {business_type}
 
-Provide a professional, critical evaluation of this opportunity.
-Follow these formatting rules exactly:
-- Output an "Executive Summary" header.
-- Provide exactly 4 to 6 short, punchy bullet points starting with "• " mapping the main opportunities, demands, and viability factors.
-- Followed by a "Verdict:" line (e.g. "Verdict: Recommended for validation and pilot launch." or similar).
-- DO NOT write long paragraphs. Keep every bullet under 15 words and the section under 50 words.
+You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap the JSON in ```json markdown blocks, return raw text only. No trailing commas, no extra text.
+{{
+  "paragraph": "One high-quality business insight paragraph (exactly 2-3 sentences explaining: 1. Current market condition & demand outlook, 2. Main business opportunity, 3. Primary challenge & overall viability. Style must be professional, specific, and realistic like Gartner or PitchBook).",
+  "insights": [
+    "Demand Insight: [Specific, actionable customer demand signal for this business idea, no generic filler]",
+    "Customer Insight: [Target customer profile and purchase behaviors, no generic filler]",
+    "Revenue Insight: [Viable monetization strategy and revenue outlook, no generic filler]",
+    "Competition Insight: [Competitive environment assessment for this location/niche]",
+    "Growth Insight: [Primary scalability driver for this business model]"
+  ],
+  "recommendation": "One practical, actionable next step sentence (max 20 words)."
+}}
 """
 
 MARKET_ANALYSIS_TEMPLATE = """
-System: You are a Market Intelligence Analyst. Analyze the market demand and trends.
+System: You are a Premium Market Research Analyst.
+Analyze market demand, search interest, and trends for this concept.
+
 Idea: {idea_text}
 Location: {location}
-Search results size: {search_results_count}
-Google Trends growth rate: {trends_growth_rate}%
+Search results: {search_results_count}
+Growth rate: {trends_growth_rate}%
 
-Provide a formal market demand and trend analysis.
-Follow these formatting rules exactly:
-- Output a "Key Insights" header followed by exactly 3 to 4 short bullet points starting with "• ".
-- Output a "Growth Indicators" header followed by exactly 4 bullet points:
-  • Demand Score: [Score between 0-100]/100
-  • Trend Direction: [Upward/Downward/Stable]
-  • Market Momentum: [High/Moderate/Low]
-  • Growth Potential: [High/Moderate/Low]
-- DO NOT write paragraphs. Keep it short, scannable, and decision-oriented.
+You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap the JSON in ```json markdown blocks, return raw text only.
+{{
+  "insights": [
+    "Market size/interest: [Specific search interest and search query velocity trend, no generic filler]",
+    "Demand trajectory: [How demand is changing, backed by location and keyword context]",
+    "Market maturity: [Whether the market is emerging, mature, or highly local]",
+    "Growth outlook: [Explain growth runway and category viability]"
+  ],
+  "interpretation": "A 2-3 line market interpretation paragraph explaining search interest, demand trend, market maturity, and growth outlook. Do NOT repeat raw score numbers."
+}}
 """
 
 COMPETITOR_ANALYSIS_TEMPLATE = """
-System: You are a Competitive Intelligence Expert. Analyze local competitors.
+System: You are a Competitive Intelligence Expert.
+Analyze the competitive landscape and identify market gaps.
+
 Idea: {idea_text}
 Location: {location}
-Competitor List: {competitors_json}
+Competitors from Google Maps (raw search results): {competitors_json}
 
-Provide a competitor intelligence report.
-Follow these formatting rules exactly:
-- Output a "Top Competitors" header followed by 3 short bullet points starting with "• " listing the key competitors found (or representative ones if none).
-- Output a "Market Observations" header followed by 4 short bullet points starting with "• " summarizing local presence, differentiation, positioning, and gaps.
-- DO NOT write paragraphs. Keep it short and punchy.
+You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap the JSON in ```json markdown blocks, return raw text only.
+{{
+  "competitors": [
+    {{
+      "name": "[Name of Competitor 1]",
+      "rating": 4.5,
+      "reviews": 120,
+      "address": "[Address/Area]",
+      "differentiator": "[Specific, realistic differentiator or operational weakness based on their name/rating/location]"
+    }},
+    {{
+      "name": "[Name of Competitor 2]",
+      "rating": 4.0,
+      "reviews": 45,
+      "address": "[Address/Area]",
+      "differentiator": "[Specific, realistic differentiator or operational weakness]"
+    }},
+    {{
+      "name": "[Name of Competitor 3]",
+      "rating": 3.8,
+      "reviews": 12,
+      "address": "[Address/Area]",
+      "differentiator": "[Specific, realistic differentiator or operational weakness]"
+    }}
+  ],
+  "gap_analysis": {{
+    "premium_segment": "[Explain availability of premium/high-margin services or products in this local/market segment]",
+    "differentiation_potential": "[Highlight the key differentiator potential for a new entrant]",
+    "market_saturation": "[Analyze current competitor density and saturation level]",
+    "expansion_opportunity": "[Identify untapped expansion channels or customer segments]"
+  }}
+}}
 """
 
 BUSINESS_NAME_TEMPLATE = """
-System: You are a Brand Strategy Consultant and Naming Expert.
-Generate exactly 4 highly creative startup names for the following concept: "{idea_text}".
-Return a JSON array of objects. Each object MUST have these keys:
-- "name": Generated name
-- "brand_uniqueness": 0-100 score
-- "rationale": A bulleted list containing exactly 3 short bullet points starting with "• " highlighting:
-  • Easy to remember
-  • Strong brand identity
-  • Suitable for target audience
-  (Format as a single string with newline characters like: "• Catchy brand name\\n• Strong market identity\\n• Fits the target audience")
+System: You are a Premium Brand Strategy and Naming Expert.
+Generate 4 highly creative, modern startup names specific to this business category.
 
-Ensure names are extremely catchy, modern, and memorable. Return ONLY raw valid JSON array, nothing else.
+Concept: "{idea_text}"
+
+You must return a valid JSON array with exactly 4 objects. Each object MUST have:
+- "name": Brand name (modern, brandable)
+- "brand_uniqueness": 70-98 (uniqueness score integer)
+- "rationale": Exactly 4 bullets separated by newlines:
+  Format: "• Connection to category: [Detail]\\n• Emotional appeal: [Detail]\\n• Brand perception: [Detail]\\n• Market suitability: [Detail]"
+- "why_recommended": "Explain why this name is the absolute strongest option if chosen (used for the recommended name highlight)."
+
+The first name in the array MUST be the 'Best Recommended Name' and have the strongest 'why_recommended' justification.
 """
 
 RISK_ASSESSMENT_TEMPLATE = """
-System: You are a Risk Management Consultant and Startup Failure Specialist.
+System: You are a Risk Management Consultant.
+Assess key risks, weaknesses, and threats for this business.
+
 Idea: {idea_text}
 Location: {location}
-Calculated Risk Score (0-100): {risk_score}
+Risk Score: {risk_score}
 
-Assess the risks facing this startup:
-Follow these formatting rules exactly:
-- Output a "Risks" header followed by 3 to 4 short bullet points starting with "• " listing key operational, regulatory, or customer acquisition barriers.
-- Output a "Risk Level: [Low/Moderate/High]" line.
-- DO NOT write paragraphs. Keep it under 50 words total.
-"""
-
-TREND_ANALYSIS_TEMPLATE = """
-System: You are a market trend forecaster. Analyze the historical search trends and growth trajectory for this concept.
-Idea: {idea_text}
-Location: {location}
-Google Trends growth rate: {trends_growth_rate}%
-
-Provide a professional trend analysis.
-Follow these formatting rules exactly:
-- Output a "Search Trends" header followed by 3 short bullet points starting with "• ".
-- DO NOT write paragraphs. Keep it under 50 words total.
+You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap the JSON in ```json markdown blocks, return raw text only.
+{{
+  "weaknesses": [
+    "Weakness #1: [Specific, realistic operational or internal weakness of this idea, max 12 words]",
+    "Weakness #2: [Specific, realistic operational or internal weakness of this idea, max 12 words]"
+  ],
+  "threats": [
+    "Threat #1: [Specific, realistic external threat or regulatory barrier, max 12 words]",
+    "Threat #2: [Specific, realistic external threat or regulatory barrier, max 12 words]"
+  ],
+  "key_risks": [
+    "Key Risk #1: [Primary risk factor, max 12 words]",
+    "Key Risk #2: [Secondary risk factor, max 12 words]"
+  ]
+}}
 """
 
 OPPORTUNITY_ANALYSIS_TEMPLATE = """
-System: You are a Strategic Growth Adviser. Analyze the market opportunities for this concept.
+System: You are a Strategic Growth Advisor.
+Identify growth opportunities, strengths, and map out a realistic 4-phase action plan.
+
 Idea: {idea_text}
 Location: {location}
-Calculated Opportunity Score (0-100): {opportunity_score}
+Opportunity Score: {opportunity_score}
 
-Identify the top opportunities for this startup.
-Follow these formatting rules exactly:
-- Output a "Key Opportunities" header followed by 4 to 5 short bullet points starting with "• ".
-- DO NOT write paragraphs. Keep it under 50 words total.
+You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap the JSON in ```json markdown blocks, return raw text only.
+{{
+  "strengths": [
+    "Strength #1: [Specific, realistic internal strength of this business idea, max 12 words]",
+    "Strength #2: [Specific, realistic internal strength of this business idea, max 12 words]"
+  ],
+  "opportunities": [
+    "Opportunity #1: [Specific, realistic external opportunity, max 12 words]",
+    "Opportunity #2: [Specific, realistic external opportunity, max 12 words]"
+  ],
+  "key_opportunities": [
+    "[Growth Opportunity #1: specific monetization, niche segment, or channel]",
+    "[Growth Opportunity #2: specific monetization, niche segment, or channel]",
+    "[Growth Opportunity #3: specific monetization, niche segment, or channel]",
+    "[Growth Opportunity #4: specific monetization, niche segment, or channel]",
+    "[Growth Opportunity #5: specific monetization, niche segment, or channel]"
+  ],
+  "roadmap": [
+    {{
+      "phase": "Week 1–2",
+      "title": "[Validation Title]",
+      "tasks": [
+        "[Specific task 1]",
+        "[Specific task 2]"
+      ]
+    }},
+    {{
+      "phase": "Week 3–4",
+      "title": "[Setup/MVP Title]",
+      "tasks": [
+        "[Specific task 1]",
+        "[Specific task 2]"
+      ]
+    }},
+    {{
+      "phase": "Month 2",
+      "title": "[Pilot Launch Title]",
+      "tasks": [
+        "[Specific task 1]",
+        "[Specific task 2]"
+      ]
+    }},
+    {{
+      "phase": "Month 3",
+      "title": "[Traction/Scaling Title]",
+      "tasks": [
+        "[Specific task 1]",
+        "[Specific task 2]"
+      ]
+    }}
+  ]
+}}
+"""
+
+TREND_ANALYSIS_TEMPLATE = """
+System: You are a Trend Forecaster.
+Analyze regional search interest trend and momentum for this idea.
+
+Idea: {idea_text}
+Location: {location}
+Growth Rate: {trends_growth_rate}%
+
+Return a simple 2-3 sentence analysis of current search interest and trend trajectory.
 """
 
 FINAL_REPORT_TEMPLATE = """
 System: You are a Venture Capital Investment Committee Chair.
+Synthesize the final verdict on this startup opportunity.
+
 Idea: {idea_text}
 Industry: {industry}
 Location: {location}
 Scores:
-- Demand Score: {demand_score}/100
-- Trend Score: {trend_score}/100
-- Competition Score: {competition_score}/100
-- Viability Score: {viability_score}/100
+- Demand: {demand_score}/100
+- Trend: {trend_score}/100
+- Competition: {competition_score}/100
+- Viability: {viability_score}/100
 
-Synthesize a final executive summary and strategic recommendation.
-Follow these formatting rules exactly:
-- Output a "Strengths" header followed by 3 short bullet points starting with "• ".
-- Output a "Risks" header followed by 3 short bullet points starting with "• ".
-- Output a "Recommendation" header followed by 3 short bullet points starting with "• ".
-- Output a "Confidence Score: [viability_score]%" line.
-- Output a "Final Status: [🟢 Strong Opportunity / 🟡 Proceed with Caution / 🔴 High Risk]" line.
-- DO NOT write paragraphs. Keep it under 50 words total.
+You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap the JSON in ```json markdown blocks, return raw text only.
+{{
+  "potential": [1-5 star rating integer based on viability score: 80+ is 5, 60-79 is 4, 45-59 is 3, less is 2],
+  "confidence": {viability_score},
+  "status": "[🟢 Strong Opportunity / 🟡 Proceed with Caution / 🔴 High Risk based on viability score]",
+  "reasons": [
+    "Rating Reason 1: [Specific, data-justified reason explaining this rating based on demand/competition]",
+    "Rating Reason 2: [Specific, data-justified reason explaining this rating based on market trends]",
+    "Rating Reason 3: [Specific, data-justified reason explaining this rating based on viability/risk]"
+  ],
+  "strengths": [
+    "[Verdict Strength 1, max 12 words]",
+    "[Verdict Strength 2, max 12 words]"
+  ],
+  "risks": [
+    "[Verdict Risk 1, max 12 words]",
+    "[Verdict Risk 2, max 12 words]"
+  ],
+  "next_step": "[One highly practical next action item, max 15 words]"
+}}
 """
+
 
 
 class PromptEngine:
@@ -284,114 +401,175 @@ class PromptEngine:
             # If the user's idea contains "veg" or "food" or "hotel" or "restaurant"
             if any(k in idea_text.lower() for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro"]):
                 names = [
-                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "brand_uniqueness": 88, "rationale": "• Highly memorable root\n• Signals authentic pure culinary values\n• Strong appeal to health-conscious diners"},
-                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "brand_uniqueness": 94, "rationale": "• Direct local geographic tie-in\n• Clear indicator of dining focus\n• High recall value among local consumers"},
-                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "brand_uniqueness": 80, "rationale": "• Fresh modern brand tone\n• Highly versatile identity\n• Excellent match for eco-friendly trends"},
-                    {"name": "TasteCrafter", "brand_uniqueness": 95, "rationale": "• Evokes craftsmanship and quality\n• Highly brandable trademark\n• Strong premium positioning potential"}
+                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "brand_uniqueness": 94, "rationale": "• Connection to category: Reflects purity and clean eating.\n• Emotional appeal: Inspires trust and wholesomeness.\n• Brand perception: Health-focused and high-quality.\n• Market suitability: Fits urban demographic looking for premium dining.", "why_recommended": "It directly communicates clean-eating culinary roots while maintaining a modern, highly brandable trademark."},
+                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "brand_uniqueness": 88, "rationale": "• Connection to category: Locational tie-in with a focus on food.\n• Emotional appeal: Feels generous and inviting.\n• Brand perception: Friendly, high-volume dining brand.\n• Market suitability: High recall value for local consumers.", "why_recommended": "Anchors the business to a high-density regional hub, making it perfect for driving local foot traffic."},
+                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "brand_uniqueness": 80, "rationale": "• Connection to category: Veg-centric sparks of flavor.\n• Emotional appeal: Modern and energetic.\n• Brand perception: Contemporary, eco-friendly lifestyle brand.\n• Market suitability: Appeals to younger, millennial consumer segment.", "why_recommended": "A modern and versatile identity that scales well to franchise models and online delivery apps."},
+                    {"name": "TasteCrafter", "brand_uniqueness": 95, "rationale": "• Connection to category: Highlights culinary craftsmanship.\n• Emotional appeal: Aspirational and premium.\n• Brand perception: Chef-driven, high-quality focus.\n• Market suitability: Fits both fine dining and premium takeout setups.", "why_recommended": "Craftsmanship angle allows for higher menu pricing and stronger margins."}
                 ]
             else:
                 names = [
-                    {"name": f"Aura{first_word}", "brand_uniqueness": 85, "rationale": "• Sleek minimalist naming style\n• Premium industry feel\n• Highly memorable brand presence"},
-                    {"name": f"Nova{first_word}{second_word}", "brand_uniqueness": 92, "rationale": "• Emphasizes innovation and scale\n• Clear vertical association\n• Strong capability for future expansion"},
-                    {"name": f"{first_word}ly", "brand_uniqueness": 80, "rationale": "• Modern SaaS-style phrasing\n• Short and punchy pronunciation\n• Fits online digital channels perfectly"},
-                    {"name": f"Core{first_word}", "brand_uniqueness": 95, "rationale": "• Anchors trust and dependability\n• Bold structural presence\n• Highly defensible branding option"}
+                    {"name": f"Aura{first_word}", "brand_uniqueness": 92, "rationale": "• Connection to category: Elegant and premium tone for the sector.\n• Emotional appeal: Aspirational and calming.\n• Brand perception: Sophisticated and reliable.\n• Market suitability: Perfect for premium lifestyle or service sectors.", "why_recommended": "Minimalist and premium. It conveys sophistication and high-end positioning."},
+                    {"name": f"Nova{first_word}{second_word}", "brand_uniqueness": 85, "rationale": "• Connection to category: Highlights innovation and growth.\n• Emotional appeal: Inspiring and forward-thinking.\n• Brand perception: High-tech and modern.\n• Market suitability: Excellent for digital services or tech products.", "why_recommended": "Highlights modern, future-proof innovation, appealing to tech-savvy early adopters."},
+                    {"name": f"{first_word}ly", "brand_uniqueness": 80, "rationale": "• Connection to category: Clean, punchy name.\n• Emotional appeal: Friendly and approachable.\n• Brand perception: Digital-first and user-friendly.\n• Market suitability: Matches mobile app or SaaS platforms.", "why_recommended": "A modern, single-word brand name that flows easily and is highly memorable in advertising."},
+                    {"name": f"Core{first_word}", "brand_uniqueness": 95, "rationale": "• Connection to category: Represents foundational stability.\n• Emotional appeal: Instills confidence and safety.\n• Brand perception: Extremely trustworthy and corporate.\n• Market suitability: Strong B2B or premium consumer appeal.", "why_recommended": "Evokes security and stability, building long-term institutional trust."}
                 ]
             return json.dumps(names)
             
-        elif "Elite Startup Consultant" in prompt_text:
-            return (
-                "Executive Summary\n"
-                "• Strong market opportunity identified in target location\n"
-                "• Growing consumer demand for customized services\n"
-                "• Moderate competition level allowing swift differentiation\n"
-                "• Attractive margins and revenue scaling potential\n"
-                "• Capital-efficient, highly scalable operational blueprint\n\n"
-                "Verdict:\n"
-                "Recommended for validation and pilot launch."
-            )
+        elif "Elite Startup Consultant" in prompt_text or "startup_validation" in prompt_text:
+            return json.dumps({
+                "paragraph": f"The market for {idea_text} in {location} presents a calculated entry window. While local demand exists among target consumer groups, capital efficiency and service differentiation will be critical to long-term profitability.",
+                "insights": [
+                    "Demand Insight: Consistent search interest indicates stable organic consumer awareness for this category.",
+                    "Customer Insight: Target customers prioritize convenience, quality, and personalized service options.",
+                    "Revenue Insight: Subscription model or unit sales support steady cash flow post-validation.",
+                    "Competition Insight: Local competitors focus on volume, leaving room for a premium provider.",
+                    "Growth Insight: Low-cost initial setup allows for rapid market entry and validation."
+                ],
+                "recommendation": "Launch a small-scale pilot to validate client acquisition costs before expanding marketing spend."
+            })
             
-        elif "Market Intelligence Analyst" in prompt_text:
-            return (
-                "Key Insights\n"
-                "• Local search interest on a positive trajectory\n"
-                "• Macro industry growth driven by shift to digital convenience\n"
-                "• High customer awareness and search query velocity\n"
-                "• Emerging geographic opportunities detected in urban hubs\n\n"
-                "Growth Indicators\n"
-                "• Demand Score: 72/100\n"
-                "• Trend Direction: Upward\n"
-                "• Market Momentum: High\n"
-                "• Growth Potential: High"
-            )
+        elif "Market Intelligence Analyst" in prompt_text or "market_analysis" in prompt_text:
+            return json.dumps({
+                "insights": [
+                    "Market size/interest: Positive search query velocity shows steady local demand signals.",
+                    "Demand trajectory: Consumer shift toward premium digital services drives category interest.",
+                    "Market maturity: Niche market segment remains highly receptive to specialized local offerings.",
+                    "Growth outlook: Favorable long-term runway supported by rising consumer discretionary spending."
+                ],
+                "interpretation": f"Regional search interest for {idea_text} remains stable. Growth indicators support steady consumer interest, making it an opportune time to launch with a focused, premium positioning."
+            })
             
-        elif "Competitive Intelligence Expert" in prompt_text:
-            return (
-                "Top Competitors\n"
-                "• Local incumbent providers and shops\n"
-                "• Regional specialized service agencies\n"
-                "• Emerging online platform startups\n\n"
-                "Market Observations\n"
-                "• Strong local presence but legacy operations\n"
-                "• Limited technology adoption and differentiation\n"
-                "• Opportunity for high-quality premium positioning\n"
-                "• Potential gaps in client retention and service coverage"
-            )
+        elif "Competitive Intelligence Expert" in prompt_text or "competitor_analysis" in prompt_text:
+            return json.dumps({
+                "competitors": [
+                    {
+                        "name": f"Local {industry} Provider",
+                        "rating": 4.2,
+                        "reviews": 32,
+                        "address": f"{location}",
+                        "differentiator": "Established local player with high brand recall but slow service response time."
+                    },
+                    {
+                        "name": "Regional Service Shop",
+                        "rating": 3.8,
+                        "reviews": 18,
+                        "address": f"{location}",
+                        "differentiator": "Broad, mass-market service range but lacks premium personalization."
+                    }
+                ],
+                "gap_analysis": {
+                  "premium_segment": "Premium options are currently underrepresented, leaving room for higher-margin services.",
+                  "differentiation_potential": "Excellent opportunity to win market share via technology-driven scheduling and custom packages.",
+                  "market_saturation": "Moderate local saturation; established incumbents rely on legacy channels.",
+                  "expansion_opportunity": "High potential to expand into neighboring sub-regions once operations stabilize."
+                }
+            })
             
-        elif "Risk Management Consultant" in prompt_text:
-            return (
-                "Risks\n"
-                "• High initial customer acquisition costs\n"
-                "• Regional regulatory and licensing compliance hurdles\n"
-                "• Operational talent retention and quality control\n\n"
-                "Risk Level:\n"
-                "Moderate"
-            )
+        elif "Risk Management Consultant" in prompt_text or "risk_assessment" in prompt_text:
+            return json.dumps({
+                "weaknesses": [
+                    "Weakness #1: High initial customer acquisition costs.",
+                    "Weakness #2: Dependency on key operational staff."
+                ],
+                "threats": [
+                    "Threat #1: Competitor price matching and local advertising campaigns.",
+                    "Threat #2: Shift in local municipal guidelines."
+                ],
+                "key_risks": [
+                    "Key Risk #1: Supply chain instability.",
+                    "Key Risk #2: Low client retention rates."
+                ]
+            })
             
-        elif "market trend forecaster" in prompt_text:
-            return (
-                "Search Trends\n"
-                "• Positive query density over the last 12 months\n"
-                "• Rising demand from millennial demographics\n"
-                "• Long-term sustainable growth rather than fad interest"
-            )
+        elif "Strategic Growth Adviser" in prompt_text or "Strategic Growth Advisor" in prompt_text or "opportunity_analysis" in prompt_text:
+            return json.dumps({
+                "strengths": [
+                    "Strength #1: High margin potential.",
+                    "Strength #2: Direct customer relationships."
+                ],
+                "opportunities": [
+                    "Opportunity #1: B2B corporate partnerships.",
+                    "Opportunity #2: Online marketplace expansion."
+                ],
+                "key_opportunities": [
+                    "Establish a premium subscription model to lock in recurring revenue.",
+                    "Expand geographical reach to adjacent high-income neighborhoods.",
+                    "Partner with local businesses for bundle-deal marketing.",
+                    "Create a referral program to lower customer acquisition costs.",
+                    "Deploy digital booking to maximize client booking convenience."
+                ],
+                "roadmap": [
+                    {
+                        "phase": "Week 1–2",
+                        "title": "Validate Demand",
+                        "tasks": [
+                            "Conduct local customer interviews",
+                            "Setup basic web landing page to capture email interest"
+                        ]
+                    },
+                    {
+                        "phase": "Week 3–4",
+                        "title": "Build MVP",
+                        "tasks": [
+                            "Finalize core service packages or product formulations",
+                            "Setup payment processing and basic booking system"
+                        ]
+                    },
+                    {
+                        "phase": "Month 2",
+                        "title": "Launch Pilot",
+                        "tasks": [
+                            "Run targeted local social media ads",
+                            "Fulfill first 20 orders and collect testimonials"
+                        ]
+                    },
+                    {
+                        "phase": "Month 3",
+                        "title": "Measure Traction",
+                        "tasks": [
+                            "Track customer acquisition cost (CAC) and lifetime value (LTV)",
+                            "Scale booking capacity and launch corporate packages"
+                        ]
+                    }
+                ]
+            })
             
-        elif "Strategic Growth Adviser" in prompt_text:
-            return (
-                "Key Opportunities\n"
-                "• Untapped customer segments in adjacent zones\n"
-                "• Premium pricing potential through unique positioning\n"
-                "• Strong online growth opportunity via digital presence\n"
-                "• Expansion potential in nearby markets and sub-regions\n"
-                "• Customer retention through loyalty programs"
-            )
+        elif "Venture Capital Investment Committee Chair" in prompt_text or "final_report" in prompt_text:
+            return json.dumps({
+                "potential": 4,
+                "confidence": 82,
+                "status": "🟢 Strong Opportunity",
+                "reasons": [
+                    "Demand dynamics show consistent positive query volume in urban centers.",
+                    "Manageable competition allows new entrants to establish a niche market presence.",
+                    "Robust unit economics support scalable growth and rapid capital recovery."
+                ],
+                "strengths": [
+                    "Strong unit margins",
+                    "High brand loyalty potential"
+                ],
+                "risks": [
+                    "Rising customer acquisition costs",
+                    "Operational talent retention"
+                ],
+                "next_step": "Initiate validation pilot in core micro-market immediately."
+            })
+
+        elif "trend_analysis" in prompt_text:
+            return f"Search trends for {idea_text} in {location} reflect rising search volumes with steady regional query density."
             
-        elif "Venture Capital Investment Committee Chair" in prompt_text:
-            return (
-                "Strengths\n"
-                "• Capital-efficient model with rapid payback cycles\n"
-                "• Positive customer engagement and referral metrics\n"
-                "• Favorable demand and local growth dynamics\n\n"
-                "Risks\n"
-                "• Marketing cost inflation in regional channels\n"
-                "• Competitor replication speed\n"
-                "• Local logistics and supply management bottlenecks\n\n"
-                "Recommendation\n"
-                "• Launch Pilot in core micro-market immediately\n"
-                "• Validate customer acquisition costs within 30 days\n"
-                "• Scale operational capacity gradually post-validation\n\n"
-                "Confidence Score:\n"
-                "85%\n\n"
-                "Final Status:\n"
-                "🟢 Strong Opportunity"
-            )
-            
-        return (
-            "Executive Summary\n"
-            "• Feasibility study indicates positive signals\n"
-            "• Regional sector trends show expansion\n\n"
-            "Verdict:\n"
-            "Recommended to proceed with caution."
-        )
+        return json.dumps({
+            "paragraph": "Feasibility study indicates viable market signals. Moderate customer interest supports a pilot launch.",
+            "insights": [
+                "Feasibility shows viable signals.",
+                "Customer demand is moderate.",
+                "Competitor footprint is manageable.",
+                "Risk levels are moderate.",
+                "Growth runway remains stable."
+            ],
+            "recommendation": "Initiate micro-validation launch."
+        })
+
 
     def generate_startup_validation(self, idea_data):
         prompt = STARTUP_VALIDATION_TEMPLATE.format(**idea_data)

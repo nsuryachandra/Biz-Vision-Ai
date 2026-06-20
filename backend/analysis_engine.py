@@ -104,6 +104,18 @@ class AnalysisEngine:
             + sentiment_score   * 0.20
         )))
 
+        # Enforce Report Consistency Rule
+        if demand_score < 45:
+            # Low Demand: Market Demand must be Low, Business Opportunity must be Limited, Risk must reflect higher risk
+            opportunity_score = min(opportunity_score, 45)
+            viability_score = min(viability_score, 55)
+            risk_score = max(risk_score, 60)
+        elif demand_score >= 75:
+            # High Demand: Market Demand should be High, Revenue Potential strong, support scaling
+            opportunity_score = max(opportunity_score, 75)
+            viability_score = max(viability_score, 80)
+            risk_score = min(risk_score, 40)
+
         return {
             "demand":      demand_score,
             "trend":       trend_score,
@@ -113,3 +125,4 @@ class AnalysisEngine:
             "risk":        risk_score,
             "viability":   viability_score,
         }
+
