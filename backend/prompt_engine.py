@@ -389,6 +389,8 @@ class PromptEngine:
         industry = extract_val(r"Industry:\s*(.*?)(?:\n|$)", prompt_text, "Target industry")
         search_results_count = extract_val(r"Search results size:\s*(\d+)", prompt_text, "15")
         
+        idea_lower = idea_text.lower()
+        
         # Check prompt types
         if "Brand Strategy Consultant" in prompt_text or "creative startup names" in prompt_text:
             clean_idea = re.sub(r'[^\w\s]', '', idea_text).strip()
@@ -399,11 +401,11 @@ class PromptEngine:
             second_word = words[1] if len(words) > 1 else ""
             
             # If the user's idea contains "veg" or "food" or "hotel" or "restaurant"
-            if any(k in idea_text.lower() for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
+            if any(k in idea_lower for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
                 names = [
-                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "brand_uniqueness": 94, "tagline": "Purity on Every Plate.", "rationale": "• Connection to category: Reflects purity and clean eating.\n• Emotional appeal: Inspires trust and wholesomeness.\n• Brand perception: Health-focused and high-quality.\n• Market suitability: Fits urban demographic looking for premium dining.", "why_recommended": "It directly communicates clean-eating culinary roots while maintaining a modern, highly brandable trademark."},
-                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "brand_uniqueness": 88, "tagline": "Traditional Taste, Modern Hygiene.", "rationale": "• Connection to category: Locational tie-in with a focus on food.\n• Emotional appeal: Feels generous and inviting.\n• Brand perception: Friendly, high-volume dining brand.\n• Market suitability: High recall value for local consumers.", "why_recommended": "Anchors the business to a high-density regional hub, making it perfect for driving local foot traffic."},
-                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "brand_uniqueness": 80, "tagline": "Innovating the Vegetarian Kitchen.", "rationale": "• Connection to category: Veg-centric sparks of flavor.\n• Emotional appeal: Modern and energetic.\n• Brand perception: Contemporary, eco-friendly lifestyle brand.\n• Market suitability: Appeals to younger, millennial consumer segment.", "why_recommended": "A modern and versatile identity that scales well to franchise models and online delivery apps."},
+                    {"name": f"Vedic{first_word}" if "veg" in idea_lower else f"Aura{first_word}", "brand_uniqueness": 94, "tagline": "Purity on Every Plate.", "rationale": "• Connection to category: Reflects purity and clean eating.\n• Emotional appeal: Inspires trust and wholesomeness.\n• Brand perception: Health-focused and high-quality.\n• Market suitability: Fits urban demographic looking for premium dining.", "why_recommended": "It directly communicates clean-eating culinary roots while maintaining a modern, highly brandable trademark."},
+                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_lower else f"Pure{first_word}", "brand_uniqueness": 88, "tagline": "Traditional Taste, Modern Hygiene.", "rationale": "• Connection to category: Locational tie-in with a focus on food.\n• Emotional appeal: Feels generous and inviting.\n• Brand perception: Friendly, high-volume dining brand.\n• Market suitability: High recall value for local consumers.", "why_recommended": "Anchors the business to a high-density regional hub, making it perfect for driving local foot traffic."},
+                    {"name": f"GreenSparks" if "veg" in idea_lower else f"Nova{first_word}", "brand_uniqueness": 80, "tagline": "Innovating the Vegetarian Kitchen.", "rationale": "• Connection to category: Veg-centric sparks of flavor.\n• Emotional appeal: Modern and energetic.\n• Brand perception: Contemporary, eco-friendly lifestyle brand.\n• Market suitability: Appeals to younger, millennial consumer segment.", "why_recommended": "A modern and versatile identity that scales well to franchise models and online delivery apps."},
                     {"name": "TasteCrafter", "brand_uniqueness": 95, "tagline": "Curated Flavors for the Modern Palate.", "rationale": "• Connection to category: Highlights culinary craftsmanship.\n• Emotional appeal: Aspirational and premium.\n• Brand perception: Chef-driven, high-quality focus.\n• Market suitability: Fits both fine dining and premium takeout setups.", "why_recommended": "Craftsmanship angle allows for higher menu pricing and stronger margins."}
                 ]
             else:
@@ -420,7 +422,6 @@ class PromptEngine:
             kw_list = [k.strip() for k in keywords.split(",") if k.strip()]
             main_kw = kw_list[0] if kw_list else "this concept"
             
-            idea_lower = idea_text.lower()
             if any(k in idea_lower for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
                 paragraph = (
                     f"The feasibility assessment for launching {idea_text} in {location} shows a high-potential local opportunity. "
