@@ -585,9 +585,9 @@ const BusinessRatingCard = ({ score, confidence }) => {
         return (
           <div
             key={i}
-            className="relative group cursor-default"
+            className="relative group/star cursor-default"
           >
-            <div className="transform transition-all duration-300 ease-out group-hover:scale-115 hover:drop-shadow-lg">
+            <div className="transform transition-all duration-300 ease-out group-hover/star:scale-115 hover:drop-shadow-lg">
               <Icon 
                 icon={isFilled ? "lucide:star" : "lucide:star"} 
                 className={cn(
@@ -596,7 +596,7 @@ const BusinessRatingCard = ({ score, confidence }) => {
                 )}
               />
             </div>
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 opacity-0 group-hover/star:opacity-100 transition-all duration-200 pointer-events-none z-20">
               <div className="bg-slate-900 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
                 {tooltips[i]}
               </div>
@@ -646,16 +646,14 @@ const BusinessRatingCard = ({ score, confidence }) => {
   );
 };
 
-// ─── SECTION 4: MARKET INTELLIGENCE CHART ──────────────────────────────────
 const MarketIntelligenceChart = ({ trends, timeRange, onRangeChange }) => {
   const chartRef = useRef(null);
 
   const defaultLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const defaultPoints = [45, 52, 48, 61, 59, 75, 82, 80, 88, 95, 91, 100];
 
-  const labels = trends && trends.length > 0 ? trends.map(t => t.date) : defaultLabels;
-  
-  const chartPoints = trends && trends.length > 0 ? trends.map(t => {
+  const baseLabels = trends && trends.length > 0 ? trends.map(t => t.date) : defaultLabels;
+  const basePoints = trends && trends.length > 0 ? trends.map(t => {
     if (t.values && t.values.length > 0) {
       const firstVal = t.values[0];
       const val = Number(firstVal.extracted_value !== undefined ? firstVal.extracted_value : firstVal.value);
@@ -667,6 +665,29 @@ const MarketIntelligenceChart = ({ trends, timeRange, onRangeChange }) => {
     }
     return 0;
   }) : defaultPoints;
+
+  let labels = baseLabels;
+  let chartPoints = basePoints;
+
+  if (timeRange === '5Y') {
+    const currentYear = new Date().getFullYear();
+    labels = Array.from({ length: 5 }, (_, i) => String(currentYear - 4 + i));
+    const lastVal = basePoints[basePoints.length - 1] || 100;
+    const firstVal = basePoints[0] || 40;
+    chartPoints = labels.map((_, i) => {
+      const ratio = i / 4;
+      return Math.round(firstVal * (0.6 + ratio * 0.4) + (lastVal - firstVal) * ratio * 0.5);
+    });
+  } else if (timeRange === 'All') {
+    const currentYear = new Date().getFullYear();
+    labels = Array.from({ length: 8 }, (_, i) => String(currentYear - 7 + i));
+    const lastVal = basePoints[basePoints.length - 1] || 100;
+    const firstVal = basePoints[0] || 40;
+    chartPoints = labels.map((_, i) => {
+      const ratio = i / 7;
+      return Math.round(firstVal * (0.3 + ratio * 0.7) + (lastVal - firstVal) * ratio * 0.4);
+    });
+  }
 
   const data = {
     labels: labels,
@@ -789,10 +810,10 @@ const CompetitorIntelligence = ({ competitors, analysis, scores, metadata }) => 
   ];
 
   const defaultGapAnalysis = {
-    premium_segment: `Premium ${category.label.toLowerCase()} choices are limited in this sub-region, providing pricing leverage.`,
-    differentiation_potential: "Strong potential to differentiate using high-quality local ingredients and fast delivery.",
-    market_saturation: "Moderate competitive saturation with established players focused on physical shop sales.",
-    expansion_opportunity: "Excellent opportunity to scale online subscription services to adjacent high-income areas."
+    premium_segment: `Very few high-quality ${category.label.toLowerCase()} choices exist in this local market, leaving room for a premium option.`,
+    differentiation_potential: "You can stand out easily by using simple online tools, home delivery, and better customer support.",
+    market_saturation: "Competitor density is moderate, but they mostly use old-school methods and ignore digital marketing.",
+    expansion_opportunity: "Once you build a stable customer base, you can expand easily to nearby high-income areas."
   };
 
   // Dynamic Parsing of LLM analysis
@@ -866,22 +887,25 @@ const CompetitorIntelligence = ({ competitors, analysis, scores, metadata }) => 
 
       {/* Market Gap Analysis (Section 5 Addition) */}
       <div className="mb-8 pt-6 border-t border-border/50">
-        <h4 className="text-sm font-bold text-foreground mb-4">Market Gap Analysis</h4>
+        <div className="flex items-center gap-2 mb-4">
+          <Icon icon="lucide:split" className="text-lg text-indigo-600" />
+          <h4 className="text-sm font-bold text-foreground">Market Gap Analysis</h4>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 rounded-xl border border-border/30 bg-background/25">
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Premium Segment Availability</span>
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Premium Options</span>
             <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.premium_segment}</p>
           </div>
           <div className="p-4 rounded-xl border border-border/30 bg-background/25">
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Differentiation Potential</span>
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">How to Stand Out</span>
             <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.differentiation_potential}</p>
           </div>
           <div className="p-4 rounded-xl border border-border/30 bg-background/25">
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Market Saturation</span>
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Saturation Level</span>
             <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.market_saturation}</p>
           </div>
           <div className="p-4 rounded-xl border border-border/30 bg-background/25">
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expansion Opportunity</span>
+            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expansion Potential</span>
             <p className="text-xs text-muted-foreground leading-relaxed font-normal">{gapAnalysis.expansion_opportunity}</p>
           </div>
         </div>
@@ -1140,40 +1164,103 @@ const RecommendedActionPlan = ({ scores, analysis, metadata }) => {
 // ─── SECTION 6: DEMAND & REVENUE POTENTIAL ─────────────────────────────────
 const DemandRevenueAnalysis = ({ scores, metadata }) => {
   const category = getBusinessCategory(metadata?.idea_text);
-  const isLocal = category.type === "local_service" || category.type === "physical_product";
+  const type = category.type;
   const demand = scores?.demand || 50;
   const viability = scores?.viability || 50;
 
-  // Potential Customers calculation based strictly on demand score
-  const custCountNum = isLocal 
-    ? Math.round(2000 + demand * 80)
-    : Math.round(5000 + demand * 3000);
+  // Potential Customers calculation based strictly on category and demand score
+  let custCountNum = 0;
+  let custIcon = "👥";
+  let custLabel = "Potential Customers";
+  if (type === "saas") {
+    custCountNum = Math.round(500 + demand * 30);
+    custLabel = "Potential Subscribers";
+    custIcon = "💻";
+  } else if (type === "digital_platform") {
+    custCountNum = Math.round(2000 + demand * 400);
+    custLabel = "Active Users";
+    custIcon = "🌐";
+  } else if (type === "local_service") {
+    custCountNum = Math.round(800 + demand * 20);
+    custLabel = "Monthly Customers";
+    custIcon = "🏠";
+  } else if (type === "physical_product") {
+    custCountNum = Math.round(1000 + demand * 50);
+    custLabel = "Monthly Sales Vol";
+    custIcon = "📦";
+  } else {
+    custCountNum = Math.round(50 + demand * 2);
+    custLabel = "Target Clients";
+    custIcon = "🤝";
+  }
   const custCount = custCountNum.toLocaleString('en-IN') + "+";
 
-  // Average Customer Spending (dynamic based on demand tier)
+  // Average Customer Spending (dynamic based on category & demand tier)
   let spending = "";
-  if (demand >= 75) {
-    spending = isLocal ? "₹500 – ₹1,500" : "₹1,500 – ₹8,000";
-  } else if (demand >= 45) {
-    spending = isLocal ? "₹300 – ₹800" : "₹500 – ₹2,500";
+  if (type === "saas") {
+    if (demand >= 75) spending = "₹1,500 – ₹5,000 /mo";
+    else if (demand >= 45) spending = "₹800 – ₹2,500 /mo";
+    else spending = "₹299 – ₹999 /mo";
+  } else if (type === "digital_platform") {
+    if (demand >= 75) spending = "₹200 – ₹600 /user";
+    else if (demand >= 45) spending = "₹100 – ₹300 /user";
+    else spending = "₹30 – ₹120 /user";
+  } else if (type === "local_service") {
+    if (demand >= 75) spending = "₹600 – ₹1,800 /visit";
+    else if (demand >= 45) spending = "₹300 – ₹900 /visit";
+    else spending = "₹150 – ₹450 /visit";
+  } else if (type === "physical_product") {
+    if (demand >= 75) spending = "₹800 – ₹2,500 /unit";
+    else if (demand >= 45) spending = "₹400 – ₹1,200 /unit";
+    else spending = "₹200 – ₹500 /unit";
   } else {
-    spending = isLocal ? "₹150 – ₹400" : "₹100 – ₹500";
+    if (demand >= 75) spending = "₹15,000 – ₹60,000 /contract";
+    else if (demand >= 45) spending = "₹8,000 – ₹25,000 /contract";
+    else spending = "₹3,000 – ₹10,000 /contract";
   }
 
-  // Revenue Potential calculations (dynamic based on demand tier)
+  // Revenue Potential calculations (dynamic based on category & demand tier)
   let revSmall = "", revMed = "", revLarge = "";
-  if (demand >= 75) {
-    revSmall = isLocal ? "₹2 Lakh/month" : "₹4 Lakh/month";
-    revMed = isLocal ? "₹6 Lakh/month" : "₹12 Lakh/month";
-    revLarge = isLocal ? "₹15 Lakh+/month" : "₹35 Lakh+/month";
-  } else if (demand >= 45) {
-    revSmall = isLocal ? "₹80,000/month" : "₹1.5 Lakh/month";
-    revMed = isLocal ? "₹2 Lakh/month" : "₹4 Lakh/month";
-    revLarge = isLocal ? "₹5 Lakh/month" : "₹10 Lakh/month";
+  if (type === "saas") {
+    if (demand >= 75) {
+      revSmall = "₹2.5 Lakh"; revMed = "₹8 Lakh"; revLarge = "₹20 Lakh+";
+    } else if (demand >= 45) {
+      revSmall = "₹1.2 Lakh"; revMed = "₹4 Lakh"; revLarge = "₹10 Lakh+";
+    } else {
+      revSmall = "₹40,000"; revMed = "₹1.5 Lakh"; revLarge = "₹4 Lakh+";
+    }
+  } else if (type === "digital_platform") {
+    if (demand >= 75) {
+      revSmall = "₹1.5 Lakh"; revMed = "₹5 Lakh"; revLarge = "₹15 Lakh+";
+    } else if (demand >= 45) {
+      revSmall = "₹70,000"; revMed = "₹2.5 Lakh"; revLarge = "₹7 Lakh+";
+    } else {
+      revSmall = "₹20,000"; revMed = "₹80,000"; revLarge = "₹2.5 Lakh+";
+    }
+  } else if (type === "local_service") {
+    if (demand >= 75) {
+      revSmall = "₹2 Lakh"; revMed = "₹6 Lakh"; revLarge = "₹15 Lakh+";
+    } else if (demand >= 45) {
+      revSmall = "₹90,000"; revMed = "₹3 Lakh"; revLarge = "₹7 Lakh+";
+    } else {
+      revSmall = "₹30,000"; revMed = "₹1 Lakh"; revLarge = "₹3 Lakh+";
+    }
+  } else if (type === "physical_product") {
+    if (demand >= 75) {
+      revSmall = "₹3 Lakh"; revMed = "₹10 Lakh"; revLarge = "₹25 Lakh+";
+    } else if (demand >= 45) {
+      revSmall = "₹1.2 Lakh"; revMed = "₹4.5 Lakh"; revLarge = "₹12 Lakh+";
+    } else {
+      revSmall = "₹40,000"; revMed = "₹1.5 Lakh"; revLarge = "₹4 Lakh+";
+    }
   } else {
-    revSmall = isLocal ? "₹25,000/month" : "₹50,000/month";
-    revMed = isLocal ? "₹60,000/month" : "₹1.2 Lakh/month";
-    revLarge = isLocal ? "₹1.5 Lakh/month" : "₹3 Lakh/month";
+    if (demand >= 75) {
+      revSmall = "₹4 Lakh"; revMed = "₹12 Lakh"; revLarge = "₹30 Lakh+";
+    } else if (demand >= 45) {
+      revSmall = "₹1.8 Lakh"; revMed = "₹6 Lakh"; revLarge = "₹15 Lakh+";
+    } else {
+      revSmall = "₹60,000"; revMed = "₹2 Lakh"; revLarge = "₹5 Lakh+";
+    }
   }
 
   // Market Demand
@@ -1204,8 +1291,8 @@ const DemandRevenueAnalysis = ({ scores, metadata }) => {
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="p-4 rounded-xl border border-border/50 bg-background/30">
-          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">Potential Customers</span>
-          <span className="text-2xl font-extrabold text-indigo-600">👥 {custCount}</span>
+          <span className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-wider">{custLabel}</span>
+          <span className="text-2xl font-extrabold text-indigo-600">{custIcon} {custCount}</span>
         </div>
 
         <div className="p-4 rounded-xl border border-border/50 bg-background/30">
@@ -1219,15 +1306,15 @@ const DemandRevenueAnalysis = ({ scores, metadata }) => {
         <div className="grid grid-cols-3 gap-3">
           <div className="p-3 bg-card rounded-lg border border-border/30 text-center">
             <p className="text-muted-foreground font-medium text-[11px] mb-1">Small Scale</p>
-            <p className="font-extrabold text-foreground">{revSmall}</p>
+            <p className="font-extrabold text-foreground">{revSmall}/mo</p>
           </div>
           <div className="p-3 bg-indigo-50/50 rounded-lg border border-indigo-100 text-center">
             <p className="text-indigo-600 font-bold text-[11px] mb-1">Medium Scale</p>
-            <p className="font-extrabold text-indigo-700">{revMed}</p>
+            <p className="font-extrabold text-indigo-700">{revMed}/mo</p>
           </div>
           <div className="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 text-center">
             <p className="text-emerald-600 font-bold text-[11px] mb-1">Large Scale</p>
-            <p className="font-extrabold text-emerald-700">{revLarge}</p>
+            <p className="font-extrabold text-emerald-700">{revLarge}/mo</p>
           </div>
         </div>
       </div>

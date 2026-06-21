@@ -65,6 +65,11 @@
 
 /* Custom High-Fidelity Print Styles for Pixel-Perfect PDF Export */
 @media print {
+  @page {
+    size: A4;
+    margin: 20mm 15mm 20mm 15mm;
+  }
+
   html, body {
     background-color: #FAFBFD !important;
     color: #0F172A !important;
@@ -87,14 +92,21 @@
     display: none !important;
   }
   
-  /* Expand main container to full width */
+  /* Expand main container to full width and remove artificial padding offsets */
   main {
     max-width: 100% !important;
     width: 100% !important;
     margin: 0 !important;
-    padding: 1.5in 0.5in 0.5in 0.5in !important; /* Elegant margin padding */
+    padding: 0 !important;
   }
 
+  /* Force grid layout structures to stack vertically to avoid side-by-side print clipping */
+  .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+  
   /* Prevent boxes, grid cards, and charts from breaking across page cuts */
   .bg-card, 
   .bg-primary, 
@@ -103,6 +115,8 @@
   .grid > div {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    width: 100% !important;
+    max-width: 100% !important;
     border: 1px solid rgba(226, 232, 240, 0.8) !important;
     background-color: #FFFFFF !important;
     margin-bottom: 24px !important;

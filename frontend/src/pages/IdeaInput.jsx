@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Icon } from '@iconify/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
@@ -58,7 +58,7 @@ const FeatureTrustBar = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ delay: 0.8, duration: 0.5 }}
-    className="mt-24 flex flex-wrap items-center justify-center gap-8 md:gap-12 text-muted-foreground/60 font-semibold text-sm uppercase tracking-widest"
+    className="mt-20 flex flex-wrap items-center justify-center gap-8 md:gap-12 text-muted-foreground/60 font-semibold text-sm uppercase tracking-widest"
   >
     <div className="flex items-center gap-2">
       <Icon icon="lucide:check-circle-2" className="text-lg text-indigo-500" /> 
@@ -79,6 +79,7 @@ const OneIdeaInput = () => {
   const [startupIdea, setStartupIdea] = useState("I want to start an organic pet food business in Hyderabad.");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const navigate = useNavigate();
+  const inputRef = useRef(null);
 
   const handleInputChange = (e) => {
     setStartupIdea(e.target.value);
@@ -91,12 +92,11 @@ const OneIdeaInput = () => {
     navigate('/ai-processing', { state: { ideaText: startupIdea } });
   }, [startupIdea, navigate]);
 
-  const handleSignIn = () => {
-    console.log("Redirecting to Sign In...");
-  };
-
   const handleGetStarted = () => {
-    console.log("Starting onboarding process...");
+    if (inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
   };
 
   return (
@@ -121,7 +121,7 @@ const OneIdeaInput = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-lg md:text-2xl text-muted-foreground text-center max-w-3xl leading-relaxed mb-16 font-medium"
+          className="text-lg md:text-2xl text-muted-foreground text-center max-w-3xl leading-relaxed mb-12 font-medium"
         >
           Analyze market demand, competitors, trends, product demand, opportunities, and risks using AI-powered startup intelligence.
         </motion.p>
@@ -141,6 +141,7 @@ const OneIdeaInput = () => {
               <Icon icon="lucide:lightbulb" className="text-3xl" />
             </div>
             <input 
+              ref={inputRef}
               type="text" 
               value={startupIdea}
               onChange={handleInputChange}
@@ -182,6 +183,37 @@ const OneIdeaInput = () => {
               </AnimatePresence>
             </button>
           </div>
+        </motion.div>
+
+        {/* Suggestion Tags */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+          className="mt-6 flex flex-wrap items-center justify-center gap-3 max-w-3xl z-10"
+        >
+          <span className="text-xs font-bold text-muted-foreground/80 flex items-center gap-1.5 mr-1 uppercase tracking-wider">
+            <Icon icon="lucide:sparkles" className="text-indigo-500 animate-pulse text-sm" /> Try suggesting:
+          </span>
+          {[
+            "Pure vegetarian restaurant in Hyderabad",
+            "Subscription organic pet food in Hyderabad",
+            "SaaS billing and invoicing dashboard for startups",
+            "On-demand laundry and dry cleaning delivery service"
+          ].map((tag, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setStartupIdea(tag);
+                if (inputRef.current) {
+                  inputRef.current.focus();
+                }
+              }}
+              className="text-xs font-semibold px-4 py-2 rounded-full border border-border/80 bg-white/50 backdrop-blur-sm hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-95"
+            >
+              {tag}
+            </button>
+          ))}
         </motion.div>
 
         <FeatureTrustBar />

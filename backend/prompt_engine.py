@@ -89,10 +89,10 @@ You must return a valid JSON object matching this structure EXACTLY. Do NOT wrap
     }}
   ],
   "gap_analysis": {{
-    "premium_segment": "[Explain availability of premium/high-margin services or products in this local/market segment]",
-    "differentiation_potential": "[Highlight the key differentiator potential for a new entrant]",
-    "market_saturation": "[Analyze current competitor density and saturation level]",
-    "expansion_opportunity": "[Identify untapped expansion channels or customer segments]"
+    "premium_segment": "[Explain availability of premium/high-margin services or products in this local/market segment in very simple, plain English without business jargon]",
+    "differentiation_potential": "[Highlight the key differentiator potential for a new entrant in very simple, plain English without business jargon]",
+    "market_saturation": "[Analyze current competitor density and saturation level in very simple, plain English without business jargon]",
+    "expansion_opportunity": "[Identify untapped expansion channels or customer segments in very simple, plain English without business jargon]"
   }}
 }}
 """
@@ -558,10 +558,10 @@ class PromptEngine:
                     }
                 ],
                 "gap_analysis": {
-                  "premium_segment": f"Premium options for {industry} are sparse in {location}, leaving a high-margin opportunity.",
-                  "differentiation_potential": "Excellent opportunity to win market share via technology-driven scheduling and custom packages.",
-                  "market_saturation": "Moderate local saturation; established incumbents rely on legacy channels.",
-                  "expansion_opportunity": "High potential to expand into neighboring sub-regions once operations stabilize."
+                  "premium_segment": f"Very few businesses in {location} offer premium or high-quality {industry} options, giving you a great chance to charge higher prices.",
+                  "differentiation_potential": "You can stand out easily by using a simple online booking system and offering special service packages.",
+                  "market_saturation": "There are only a few traditional competitors nearby, and they do not use modern digital tools.",
+                  "expansion_opportunity": "Once you succeed in this neighborhood, you can easily open new branches in nearby areas."
                 }
             })
             
