@@ -319,8 +319,9 @@ def dashboard():
             fetch="all",
         )
         for row in recent:
-            if row.get("created_at"):
-                row["created_at"] = row["created_at"].isoformat()
+            created = row.get("created_at")
+            if created:
+                row["created_at"] = created if isinstance(created, str) else created.isoformat()
         return jsonify({
             "metrics": {
                 "total_ideas_analyzed":     int(stats["total_ideas"]),
@@ -391,8 +392,9 @@ def get_report(report_id):
             except Exception:
                 name_list = []
 
-        if report.get("created_at"):
-            report["created_at"] = report["created_at"].isoformat()
+        created = report.get("created_at")
+        if created:
+            report["created_at"] = created if isinstance(created, str) else created.isoformat()
 
         return jsonify({
             "report_id": report["id"],
@@ -447,8 +449,9 @@ def history():
             fetch="all",
         )
         for row in rows:
-            if row.get("created_at"):
-                row["created_at"] = row["created_at"].isoformat()
+            created = row.get("created_at")
+            if created:
+                row["created_at"] = created if isinstance(created, str) else created.isoformat()
         return jsonify(rows)
     except Exception as exc:
         logger.exception("History fetch failed.")

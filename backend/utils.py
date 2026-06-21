@@ -132,10 +132,44 @@ def extract_keywords(text):
 
 def parse_idea(text):
     """Run all extraction methods and compile structured idea data."""
+    parsed_location = extract_location(text)
+    industry = extract_industry(text)
+    business_type = extract_business_type(text)
+    
+    # Detect physical businesses (restaurants, hotels, shops, services, agriculture)
+    physical_types = {
+        "Brick-and-Mortar / Retail Shop",
+        "Food Service / Restaurant",
+        "Hospitality / Lodging",
+        "Manufacturing / Production"
+    }
+    physical_industries = {
+        "Pet Care",
+        "Food & Beverage",
+        "Healthcare & Wellness",
+        "Hospitality & Tourism",
+        "Agriculture"
+    }
+    
+    is_physical = (
+        business_type in physical_types or
+        industry in physical_industries or
+        any(k in text.lower() for k in [
+            "hotel", "restaurant", "shop", "cafe", "store", "salon", 
+            "bakery", "dhaba", "dhabha", "diner", "dining", "boutique", 
+            "supermarket", "grocery", "showroom", "physical", "spa", 
+            "gym", "clinic", "pet care"
+        ])
+    )
+    
+    if is_physical:
+        if not parsed_location or parsed_location.lower() in ("global / online", "global", "online", "here", "there", "local"):
+            parsed_location = "Local Urban Market (India)"
+            
     return {
         "idea_text": text,
         "keywords": extract_keywords(text),
-        "location": extract_location(text),
-        "industry": extract_industry(text),
-        "business_type": extract_business_type(text)
+        "location": parsed_location,
+        "industry": industry,
+        "business_type": business_type
     }

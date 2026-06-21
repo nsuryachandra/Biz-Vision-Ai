@@ -106,6 +106,7 @@ Concept: "{idea_text}"
 You must return a valid JSON array with exactly 4 objects. Each object MUST have:
 - "name": Brand name (modern, brandable)
 - "brand_uniqueness": 70-98 (uniqueness score integer)
+- "tagline": "1-line brand tagline"
 - "rationale": Exactly 4 bullets separated by newlines:
   Format: "• Connection to category: [Detail]\\n• Emotional appeal: [Detail]\\n• Brand perception: [Detail]\\n• Market suitability: [Detail]"
 - "why_recommended": "Explain why this name is the absolute strongest option if chosen (used for the recommended name highlight)."
@@ -255,12 +256,11 @@ class PromptEngine:
         self.gemini_api_key = Config.GEMINI_API_KEY
         
         if not self.groq_api_key and not self.groq_api_key_1 and not self.gemini_api_key:
-            raise ValueError(
+            logger.warning(
                 "Neither Groq API keys nor Gemini API key is configured. "
-                "Add GROQ_API_KEY=<your_key> to the .env file."
+                "PromptEngine will operate in dynamic simulated fallback mode."
             )
-            
-        if self.groq_api_key or self.groq_api_key_1:
+        elif self.groq_api_key or self.groq_api_key_1:
             logger.info("Initializing PromptEngine with Groq (llama-3.3-70b-versatile).")
         else:
             logger.info("Initializing PromptEngine with Gemini (gemini-2.5-flash).")
@@ -399,66 +399,165 @@ class PromptEngine:
             second_word = words[1] if len(words) > 1 else ""
             
             # If the user's idea contains "veg" or "food" or "hotel" or "restaurant"
-            if any(k in idea_text.lower() for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro"]):
+            if any(k in idea_text.lower() for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
                 names = [
-                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "brand_uniqueness": 94, "rationale": "• Connection to category: Reflects purity and clean eating.\n• Emotional appeal: Inspires trust and wholesomeness.\n• Brand perception: Health-focused and high-quality.\n• Market suitability: Fits urban demographic looking for premium dining.", "why_recommended": "It directly communicates clean-eating culinary roots while maintaining a modern, highly brandable trademark."},
-                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "brand_uniqueness": 88, "rationale": "• Connection to category: Locational tie-in with a focus on food.\n• Emotional appeal: Feels generous and inviting.\n• Brand perception: Friendly, high-volume dining brand.\n• Market suitability: High recall value for local consumers.", "why_recommended": "Anchors the business to a high-density regional hub, making it perfect for driving local foot traffic."},
-                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "brand_uniqueness": 80, "rationale": "• Connection to category: Veg-centric sparks of flavor.\n• Emotional appeal: Modern and energetic.\n• Brand perception: Contemporary, eco-friendly lifestyle brand.\n• Market suitability: Appeals to younger, millennial consumer segment.", "why_recommended": "A modern and versatile identity that scales well to franchise models and online delivery apps."},
-                    {"name": "TasteCrafter", "brand_uniqueness": 95, "rationale": "• Connection to category: Highlights culinary craftsmanship.\n• Emotional appeal: Aspirational and premium.\n• Brand perception: Chef-driven, high-quality focus.\n• Market suitability: Fits both fine dining and premium takeout setups.", "why_recommended": "Craftsmanship angle allows for higher menu pricing and stronger margins."}
+                    {"name": f"Vedic{first_word}" if "veg" in idea_text.lower() else f"Aura{first_word}", "brand_uniqueness": 94, "tagline": "Purity on Every Plate.", "rationale": "• Connection to category: Reflects purity and clean eating.\n• Emotional appeal: Inspires trust and wholesomeness.\n• Brand perception: Health-focused and high-quality.\n• Market suitability: Fits urban demographic looking for premium dining.", "why_recommended": "It directly communicates clean-eating culinary roots while maintaining a modern, highly brandable trademark."},
+                    {"name": f"PunjaguttaFeast" if "punjagutta" in idea_text.lower() else f"Pure{first_word}", "brand_uniqueness": 88, "tagline": "Traditional Taste, Modern Hygiene.", "rationale": "• Connection to category: Locational tie-in with a focus on food.\n• Emotional appeal: Feels generous and inviting.\n• Brand perception: Friendly, high-volume dining brand.\n• Market suitability: High recall value for local consumers.", "why_recommended": "Anchors the business to a high-density regional hub, making it perfect for driving local foot traffic."},
+                    {"name": f"GreenSparks" if "veg" in idea_text.lower() else f"Nova{first_word}", "brand_uniqueness": 80, "tagline": "Innovating the Vegetarian Kitchen.", "rationale": "• Connection to category: Veg-centric sparks of flavor.\n• Emotional appeal: Modern and energetic.\n• Brand perception: Contemporary, eco-friendly lifestyle brand.\n• Market suitability: Appeals to younger, millennial consumer segment.", "why_recommended": "A modern and versatile identity that scales well to franchise models and online delivery apps."},
+                    {"name": "TasteCrafter", "brand_uniqueness": 95, "tagline": "Curated Flavors for the Modern Palate.", "rationale": "• Connection to category: Highlights culinary craftsmanship.\n• Emotional appeal: Aspirational and premium.\n• Brand perception: Chef-driven, high-quality focus.\n• Market suitability: Fits both fine dining and premium takeout setups.", "why_recommended": "Craftsmanship angle allows for higher menu pricing and stronger margins."}
                 ]
             else:
                 names = [
-                    {"name": f"Aura{first_word}", "brand_uniqueness": 92, "rationale": "• Connection to category: Elegant and premium tone for the sector.\n• Emotional appeal: Aspirational and calming.\n• Brand perception: Sophisticated and reliable.\n• Market suitability: Perfect for premium lifestyle or service sectors.", "why_recommended": "Minimalist and premium. It conveys sophistication and high-end positioning."},
-                    {"name": f"Nova{first_word}{second_word}", "brand_uniqueness": 85, "rationale": "• Connection to category: Highlights innovation and growth.\n• Emotional appeal: Inspiring and forward-thinking.\n• Brand perception: High-tech and modern.\n• Market suitability: Excellent for digital services or tech products.", "why_recommended": "Highlights modern, future-proof innovation, appealing to tech-savvy early adopters."},
-                    {"name": f"{first_word}ly", "brand_uniqueness": 80, "rationale": "• Connection to category: Clean, punchy name.\n• Emotional appeal: Friendly and approachable.\n• Brand perception: Digital-first and user-friendly.\n• Market suitability: Matches mobile app or SaaS platforms.", "why_recommended": "A modern, single-word brand name that flows easily and is highly memorable in advertising."},
-                    {"name": f"Core{first_word}", "brand_uniqueness": 95, "rationale": "• Connection to category: Represents foundational stability.\n• Emotional appeal: Instills confidence and safety.\n• Brand perception: Extremely trustworthy and corporate.\n• Market suitability: Strong B2B or premium consumer appeal.", "why_recommended": "Evokes security and stability, building long-term institutional trust."}
+                    {"name": f"Aura{first_word}", "brand_uniqueness": 92, "tagline": "Elevate Your Lifestyle.", "rationale": "• Connection to category: Elegant and premium tone for the sector.\n• Emotional appeal: Aspirational and calming.\n• Brand perception: Sophisticated and reliable.\n• Market suitability: Perfect for premium lifestyle or service sectors.", "why_recommended": "Minimalist and premium. It conveys sophistication and high-end positioning."},
+                    {"name": f"Nova{first_word}{second_word}", "brand_uniqueness": 85, "tagline": "Next-Gen Solutions Defined.", "rationale": "• Connection to category: Highlights innovation and growth.\n• Emotional appeal: Inspiring and forward-thinking.\n• Brand perception: High-tech and modern.\n• Market suitability: Excellent for digital services or tech products.", "why_recommended": "Highlights modern, future-proof innovation, appealing to tech-savvy early adopters."},
+                    {"name": f"{first_word}ly", "brand_uniqueness": 80, "tagline": "Simple. Smarter. Together.", "rationale": "• Connection to category: Clean, punchy name.\n• Emotional appeal: Friendly and approachable.\n• Brand perception: Digital-first and user-friendly.\n• Market suitability: Matches mobile app or SaaS platforms.", "why_recommended": "A modern, single-word brand name that flows easily and is highly memorable in advertising."},
+                    {"name": f"Core{first_word}", "brand_uniqueness": 95, "tagline": "Uncompromising Trust and Integrity.", "rationale": "• Connection to category: Represents foundational stability.\n• Emotional appeal: Instills confidence and safety.\n• Brand perception: Extremely trustworthy and corporate.\n• Market suitability: Strong B2B or premium consumer appeal.", "why_recommended": "Evokes security and stability, building long-term institutional trust."}
                 ]
             return json.dumps(names)
             
-        elif "Elite Startup Consultant" in prompt_text or "startup_validation" in prompt_text:
+        elif "Business Intelligence Consultant" in prompt_text or "startup_validation" in prompt_text or "McKinsey-style" in prompt_text:
+            keywords = extract_val(r"Keywords:\s*(.*?)(?:\n|$)", prompt_text, "this business")
+            kw_list = [k.strip() for k in keywords.split(",") if k.strip()]
+            main_kw = kw_list[0] if kw_list else "this concept"
+            
+            idea_lower = idea_text.lower()
+            if any(k in idea_lower for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
+                paragraph = (
+                    f"The feasibility assessment for launching {idea_text} in {location} shows a high-potential local opportunity. "
+                    f"Steady demand for high-quality vegetarian dining options in high-density areas suggests strong initial support, "
+                    f"though success will rely on ingredient quality, local pricing alignment, and efficient kitchen management."
+                )
+                insights = [
+                    f"Demand Insight: Consistent foot traffic patterns and local dining demand indicate strong interest in vegetarian dining options.",
+                    f"Customer Insight: Target customers consist of health-conscious families and local professionals seeking clean vegetarian meals.",
+                    f"Revenue Insight: Monetization is driven by direct dine-in sales, high-margin catering, and local home deliveries.",
+                    f"Competition Insight: Competitive environment includes traditional local eateries, highlighting a need for premium quality and hygiene standards.",
+                    f"Growth Insight: Operational expansion is highly viable through additional local outlets and franchise branding."
+                ]
+            elif any(k in idea_lower for k in ["saas", "software", "app", "platform", "online", "crm", "api"]):
+                customer_profile = "tech-savvy users seeking digital efficiency and seamless integrations"
+                revenue_model = "tiered subscription billing or consumption-based SaaS licensing"
+                competition_desc = "global digital solutions, requiring a focus on user experience and custom features"
+                scalability = "virtually infinite scaling capability with near-zero marginal distribution costs"
+                paragraph = (
+                    f"The feasibility assessment for launching {idea_text} in {location} reveals a viable market opportunity. "
+                    f"Consumer interest in '{main_kw}' indicates a healthy initial audience, but long-term success "
+                    f"will depend on cost-effective customer acquisition and clear value differentiation."
+                )
+                insights = [
+                    f"Demand Insight: Persistent regional search velocity indicates stable consumer interest in {main_kw}.",
+                    f"Customer Insight: Target customers consist of {customer_profile}.",
+                    f"Revenue Insight: Monetization is best driven by {revenue_model}.",
+                    f"Competition Insight: Local saturation includes {competition_desc}.",
+                    f"Growth Insight: Operational scalability will rely on {scalability}."
+                ]
+            elif any(k in idea_lower for k in ["shop", "store", "salon", "boutique", "clinic", "laundry"]):
+                customer_profile = f"local residents in {location} prioritizing convenience, quality, and community touchpoints"
+                revenue_model = "direct retail sales, premium services, or service package subscriptions"
+                competition_desc = f"established regional operators in {location}, necessitating unique branding moats"
+                scalability = f"regional hub expansion or franchising options across adjacent high-density locations"
+                paragraph = (
+                    f"The feasibility assessment for launching {idea_text} in {location} reveals a viable market opportunity. "
+                    f"Consumer interest in '{main_kw}' indicates a healthy initial audience, but long-term success "
+                    f"will depend on cost-effective customer acquisition and clear value differentiation."
+                )
+                insights = [
+                    f"Demand Insight: Persistent regional search velocity indicates stable consumer interest in {main_kw}.",
+                    f"Customer Insight: Target customers consist of {customer_profile}.",
+                    f"Revenue Insight: Monetization is best driven by {revenue_model}.",
+                    f"Competition Insight: Local saturation includes {competition_desc}.",
+                    f"Growth Insight: Operational scalability will rely on {scalability}."
+                ]
+            else:
+                customer_profile = "eco-conscious consumers seeking premium, authentic, or handcrafted products"
+                revenue_model = "direct-to-consumer e-commerce sales and wholesale distribution partnerships"
+                competition_desc = "mass-market manufacturers, making organic branding and premium packaging essential"
+                scalability = "contract manufacturing partnerships and online marketplace distribution pipelines"
+                paragraph = (
+                    f"The feasibility assessment for launching {idea_text} in {location} reveals a viable market opportunity. "
+                    f"Consumer interest in '{main_kw}' indicates a healthy initial audience, but long-term success "
+                    f"will depend on cost-effective customer acquisition and clear value differentiation."
+                )
+                insights = [
+                    f"Demand Insight: Persistent regional search velocity indicates stable consumer interest in {main_kw}.",
+                    f"Customer Insight: Target customers consist of {customer_profile}.",
+                    f"Revenue Insight: Monetization is best driven by {revenue_model}.",
+                    f"Competition Insight: Local saturation includes {competition_desc}.",
+                    f"Growth Insight: Operational scalability will rely on {scalability}."
+                ]
+            
             return json.dumps({
-                "paragraph": f"The market for {idea_text} in {location} presents a calculated entry window. While local demand exists among target consumer groups, capital efficiency and service differentiation will be critical to long-term profitability.",
-                "insights": [
-                    "Demand Insight: Consistent search interest indicates stable organic consumer awareness for this category.",
-                    "Customer Insight: Target customers prioritize convenience, quality, and personalized service options.",
-                    "Revenue Insight: Subscription model or unit sales support steady cash flow post-validation.",
-                    "Competition Insight: Local competitors focus on volume, leaving room for a premium provider.",
-                    "Growth Insight: Low-cost initial setup allows for rapid market entry and validation."
-                ],
-                "recommendation": "Launch a small-scale pilot to validate client acquisition costs before expanding marketing spend."
+                "paragraph": paragraph,
+                "insights": insights,
+                "recommendation": f"Finalize core recipes and run a trial soft launch in {location} to validate local taste preferences." if any(k in idea_lower for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]) else f"Launch a small-scale validation pilot in {location} to test client acquisition costs directly."
             })
             
         elif "Market Intelligence Analyst" in prompt_text or "market_analysis" in prompt_text:
+            keywords = extract_val(r"Keywords:\s*(.*?)(?:\n|$)", prompt_text, "this business")
+            kw_list = [k.strip() for k in keywords.split(",") if k.strip()]
+            main_kw = kw_list[0] if kw_list else "this concept"
+            growth_rate = extract_val(r"Growth rate:\s*([\d\.-]+)%", prompt_text, "5.0")
+            
+            # Check if physical/veg dining
+            if any(k in idea_text.lower() for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
+                return json.dumps({
+                    "insights": [
+                        f"Market size/interest: Solid local foot traffic and customer query interest for quality vegetarian dining options.",
+                        f"Demand trajectory: Local interest in vegetarian dining is growing at {growth_rate}% annually, driven by health consciousness.",
+                        f"Market maturity: The local segment is highly traditional but shows emerging demand for hygienic fine-dining and home deliveries.",
+                        f"Growth outlook: High potential for a premium vegetarian brand to secure a high-margin, durable presence."
+                    ],
+                    "interpretation": f"Local interest for {idea_text} remains strong. The {growth_rate}% growth trajectory indicates a healthy environment for launching a new, hygienic outlet with targeted community marketing."
+                })
+
             return json.dumps({
                 "insights": [
-                    "Market size/interest: Positive search query velocity shows steady local demand signals.",
-                    "Demand trajectory: Consumer shift toward premium digital services drives category interest.",
-                    "Market maturity: Niche market segment remains highly receptive to specialized local offerings.",
-                    "Growth outlook: Favorable long-term runway supported by rising consumer discretionary spending."
+                    f"Market size/interest: Strong search query velocity for '{main_kw}' reveals positive consumer pull.",
+                    f"Demand trajectory: Search interest is expanding at {growth_rate}% annually, showing solid momentum.",
+                    f"Market maturity: The regional segment shows early-to-mid stage maturity with space for new brands.",
+                    f"Growth outlook: Category expansion is well-supported by local demographic and digital adoption trends."
                 ],
-                "interpretation": f"Regional search interest for {idea_text} remains stable. Growth indicators support steady consumer interest, making it an opportune time to launch with a focused, premium positioning."
+                "interpretation": f"Regional search interest for {idea_text} remains stable. The {growth_rate}% growth trajectory suggests a healthy runway for a new brand to enter with targeted, location-specific marketing."
             })
             
         elif "Competitive Intelligence Expert" in prompt_text or "competitor_analysis" in prompt_text:
+            idea_lower = idea_text.lower()
+            if "pet" in idea_lower:
+                comp1, comp2 = "Paws & Claws Care", "TailWaggers Center"
+                diff1 = "Established local pet brand, but lacks organic premium food delivery."
+                diff2 = "High volume services, but minimal personalized nutrition plans."
+            elif any(k in idea_lower for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
+                comp1, comp2 = "Local Pure Veg Restaurant – Budget Segment", "Established Family-Run Vegetarian Hotel"
+                diff1 = "High-volume traditional dining options, but lacks premium hygiene standards and digital delivery integrations."
+                diff2 = "Highly loyal local family clientele, but limited menu innovation and slower turnaround times."
+            elif "fitness" in idea_lower or "gym" in idea_lower:
+                comp1, comp2 = "IronMoat Fitness", "Pulse Studio"
+                diff1 = "Large facility, but high subscription prices and lack of personal trainer coaching."
+                diff2 = "Modern equipment, but lacks localized group fitness schedules."
+            else:
+                comp1, comp2 = "Legacy Service Inc.", "Apex Providers"
+                diff1 = "Broad regional service footprint, but poor customer review rating and slow response."
+                diff2 = "Competitive pricing, but lacks digital-first online scheduling booking."
+
             return json.dumps({
                 "competitors": [
                     {
-                        "name": f"Local {industry} Provider",
-                        "rating": 4.2,
-                        "reviews": 32,
+                        "name": comp1,
+                        "rating": 4.3,
+                        "reviews": 48,
                         "address": f"{location}",
-                        "differentiator": "Established local player with high brand recall but slow service response time."
+                        "differentiator": diff1
                     },
                     {
-                        "name": "Regional Service Shop",
-                        "rating": 3.8,
-                        "reviews": 18,
+                        "name": comp2,
+                        "rating": 3.9,
+                        "reviews": 12,
                         "address": f"{location}",
-                        "differentiator": "Broad, mass-market service range but lacks premium personalization."
+                        "differentiator": diff2
                     }
                 ],
                 "gap_analysis": {
-                  "premium_segment": "Premium options are currently underrepresented, leaving room for higher-margin services.",
+                  "premium_segment": f"Premium options for {industry} are sparse in {location}, leaving a high-margin opportunity.",
                   "differentiation_potential": "Excellent opportunity to win market share via technology-driven scheduling and custom packages.",
                   "market_saturation": "Moderate local saturation; established incumbents rely on legacy channels.",
                   "expansion_opportunity": "High potential to expand into neighboring sub-regions once operations stabilize."
@@ -482,23 +581,43 @@ class PromptEngine:
             })
             
         elif "Strategic Growth Adviser" in prompt_text or "Strategic Growth Advisor" in prompt_text or "opportunity_analysis" in prompt_text:
-            return json.dumps({
-                "strengths": [
-                    "Strength #1: High margin potential.",
-                    "Strength #2: Direct customer relationships."
-                ],
-                "opportunities": [
-                    "Opportunity #1: B2B corporate partnerships.",
-                    "Opportunity #2: Online marketplace expansion."
-                ],
-                "key_opportunities": [
-                    "Establish a premium subscription model to lock in recurring revenue.",
-                    "Expand geographical reach to adjacent high-income neighborhoods.",
-                    "Partner with local businesses for bundle-deal marketing.",
-                    "Create a referral program to lower customer acquisition costs.",
-                    "Deploy digital booking to maximize client booking convenience."
-                ],
-                "roadmap": [
+            if any(k in idea_lower for k in ["veg", "food", "hotel", "restaurant", "dining", "cafe", "bistro", "dhaba", "dhabha", "diner"]):
+                roadmap = [
+                    {
+                        "phase": "Week 1–2",
+                        "title": "Menu Finalization",
+                        "tasks": [
+                            "Draft core vegetarian menu options and price tiers",
+                            "Conduct local customer tasting focus groups"
+                        ]
+                    },
+                    {
+                        "phase": "Week 3–4",
+                        "title": "Supplier & Permits",
+                        "tasks": [
+                            "Complete vegetable and raw ingredient supplier sourcing",
+                            "Submit FSSAI registration and municipal health licensing forms"
+                        ]
+                    },
+                    {
+                        "phase": "Month 2",
+                        "title": "Trial Kitchen Setup",
+                        "tasks": [
+                            "Finalize kitchen layout and setup trial kitchen cooking",
+                            "Soft launch for friends, family, and local food critics"
+                        ]
+                    },
+                    {
+                        "phase": "Month 3",
+                        "title": "Grand Launch",
+                        "tasks": [
+                            "Open physical doors for dine-in and takeout service",
+                            "Onboard with local delivery partner channels"
+                        ]
+                    }
+                ]
+            else:
+                roadmap = [
                     {
                         "phase": "Week 1–2",
                         "title": "Validate Demand",
@@ -532,18 +651,46 @@ class PromptEngine:
                         ]
                     }
                 ]
+
+            return json.dumps({
+                "strengths": [
+                    "Strength #1: High margin potential.",
+                    "Strength #2: Direct customer relationships."
+                ],
+                "opportunities": [
+                    "Opportunity #1: B2B corporate partnerships.",
+                    "Opportunity #2: Online marketplace expansion."
+                ],
+                "key_opportunities": [
+                    "Establish a premium subscription model to lock in recurring revenue.",
+                    "Expand geographical reach to adjacent high-income neighborhoods.",
+                    "Partner with local businesses for bundle-deal marketing.",
+                    "Create a referral program to lower customer acquisition costs.",
+                    "Deploy digital booking to maximize client booking convenience."
+                ],
+                "roadmap": roadmap
             })
             
         elif "Venture Capital Investment Committee Chair" in prompt_text or "final_report" in prompt_text:
+            demand_score = int(extract_val(r"Demand:\s*(\d+)", prompt_text, "50"))
+            trend_score = int(extract_val(r"Trend:\s*(\d+)", prompt_text, "50"))
+            competition_score = int(extract_val(r"Competition:\s*(\d+)", prompt_text, "50"))
+            viability_score = int(extract_val(r"Viability:\s*(\d+)", prompt_text, "50"))
+            
+            status = "🟢 Strong Opportunity" if viability_score >= 75 else "🟡 Proceed with Caution" if viability_score >= 45 else "🔴 High Risk"
+            potential_stars = 5 if viability_score >= 80 else 4 if viability_score >= 60 else 3 if viability_score >= 45 else 2
+            
+            reasons = [
+                f"Demand score of {demand_score}/100 indicates {'strong consumer query velocity' if demand_score >= 70 else 'stable but moderate local interest' if demand_score >= 45 else 'emerging niche awareness'} for this concept.",
+                f"Regional search trend ({trend_score}/100) indicates {'favorable category growth' if trend_score >= 60 else 'stable market interest'} in the target region.",
+                f"Competitive Saturation is {'low, offering a clear entry window' if competition_score < 45 else 'moderate, requiring a unique value hook' if competition_score < 70 else 'high, necessitating a strong branding moat'}."
+            ]
+            
             return json.dumps({
-                "potential": 4,
-                "confidence": 82,
-                "status": "🟢 Strong Opportunity",
-                "reasons": [
-                    "Demand dynamics show consistent positive query volume in urban centers.",
-                    "Manageable competition allows new entrants to establish a niche market presence.",
-                    "Robust unit economics support scalable growth and rapid capital recovery."
-                ],
+                "potential": potential_stars,
+                "confidence": viability_score,
+                "status": status,
+                "reasons": reasons,
                 "strengths": [
                     "Strong unit margins",
                     "High brand loyalty potential"
@@ -552,7 +699,7 @@ class PromptEngine:
                     "Rising customer acquisition costs",
                     "Operational talent retention"
                 ],
-                "next_step": "Initiate validation pilot in core micro-market immediately."
+                "next_step": f"Initiate validation pilot in {location} immediately."
             })
 
         elif "trend_analysis" in prompt_text:
@@ -612,10 +759,10 @@ class PromptEngine:
         except json.JSONDecodeError:
             logger.warning(f"Failed to parse business names JSON from response. Using fallback.")
             parsed = [
-                {"name": "VenturePro", "brand_uniqueness": 75, "rationale": "• Reliable brand presence\n• Highlights professional standards\n• Suitable for corporate service sectors"},
-                {"name": "NovaBiz", "brand_uniqueness": 85, "rationale": "• Modern innovative naming tone\n• Highly memorable brand identity\n• Excellent match for emerging tech sectors"},
-                {"name": "CoreSolution", "brand_uniqueness": 70, "rationale": "• Solid foundational trust indicator\n• Highly reputable corporate tone\n• Fits business-to-business models well"},
-                {"name": "AuraStart", "brand_uniqueness": 80, "rationale": "• Premium and aspirational styling\n• Focuses on starting strong\n• Great traction with younger demographics"}
+                {"name": "VenturePro", "brand_uniqueness": 75, "tagline": "Professional Excellence.", "rationale": "• Connection to category: Reliable brand presence\n• Emotional appeal: Highlights professional standards\n• Brand perception: Suitable for corporate service sectors"},
+                {"name": "NovaBiz", "brand_uniqueness": 85, "tagline": "Smarter Business Ahead.", "rationale": "• Connection to category: Modern innovative naming tone\n• Emotional appeal: Highly memorable brand identity\n• Brand perception: Excellent match for emerging tech sectors"},
+                {"name": "CoreSolution", "brand_uniqueness": 70, "tagline": "Foundation of Success.", "rationale": "• Connection to category: Solid foundational trust indicator\n• Emotional appeal: Highly reputable corporate tone\n• Brand perception: Fits business-to-business models well"},
+                {"name": "AuraStart", "brand_uniqueness": 80, "tagline": "Inspire the Journey.", "rationale": "• Connection to category: Premium and aspirational styling\n• Emotional appeal: Focuses on starting strong\n• Brand perception: Great traction with younger demographics"}
             ]
         self._log_prompt_call("business_name_prompt", idea_data, prompt, response)
         return parsed

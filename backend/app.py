@@ -1,4 +1,8 @@
 import sys
+# Python 3.14 compatibility hotfix for Google Protobuf / UPB extensions
+sys.modules['google._upb'] = None
+sys.modules['google._upb._message'] = None
+
 import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
