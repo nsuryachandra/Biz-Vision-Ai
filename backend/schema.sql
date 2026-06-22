@@ -66,24 +66,24 @@ CREATE TABLE IF NOT EXISTS news_data (
 CREATE TABLE IF NOT EXISTS analysis_reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     idea_id INT NOT NULL,
-    demand_score INT NOT NULL,
-    trend_score INT NOT NULL,
-    competition_score INT NOT NULL,
-    sentiment_score INT NOT NULL,
-    opportunity_score INT NOT NULL,
-    risk_score INT NOT NULL,
-    viability_score INT NOT NULL,
-    executive_summary TEXT NULL,
-    market_analysis TEXT NULL,
-    competitor_analysis TEXT NULL,
-    trend_analysis TEXT NULL,
-    risk_analysis TEXT NULL,
-    opportunity_analysis TEXT NULL,
-    name_validation TEXT NULL, -- JSON block of name validation results
-    final_recommendation TEXT NULL,
+    report_json LONGTEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_analysis_reports_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 6b. Shopping Data Table
+CREATE TABLE IF NOT EXISTS shopping_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idea_id INT NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    price VARCHAR(100) NULL,
+    source VARCHAR(255) NULL,
+    rating DECIMAL(3,2) NULL,
+    reviews INT NULL,
+    thumbnail VARCHAR(500) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shopping_data_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 7. Search History Table
@@ -123,6 +123,7 @@ CREATE INDEX idx_business_ideas_user ON business_ideas(user_id);
 CREATE INDEX idx_competitor_data_idea ON competitor_data(idea_id);
 CREATE INDEX idx_trend_data_idea ON trend_data(idea_id);
 CREATE INDEX idx_news_data_idea ON news_data(idea_id);
+CREATE INDEX idx_shopping_data_idea ON shopping_data(idea_id);
 CREATE INDEX idx_analysis_reports_idea ON analysis_reports(idea_id);
 CREATE INDEX idx_search_history_user ON search_history(user_id);
 CREATE INDEX idx_search_history_idea ON search_history(idea_id);
