@@ -32,8 +32,6 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://biz-vision-ai.onrender.com';
-
 const Header = ({ onNewAnalysis }) => (
   <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/60 shadow-sm">
     <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
@@ -229,7 +227,7 @@ const HistoryDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        const dashRes = await fetch(`${backendUrl}/dashboard`);
+        const dashRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/dashboard`);
         if (dashRes.ok) {
           const dashData = await dashRes.json();
           const metrics = dashData.metrics;
@@ -242,7 +240,7 @@ const HistoryDashboard = () => {
           });
         }
 
-        const histRes = await fetch(`${backendUrl}/history`);
+        const histRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/history`);
         if (histRes.ok) {
           const histData = await histRes.json();
           const formattedReports = histData.map((item) => ({
@@ -280,7 +278,7 @@ const HistoryDashboard = () => {
   const handleViewReport = async (id) => {
     try {
       setIsLoading(true);
-      const res = await fetch(`${backendUrl}/report/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/report/${id}`);
       if (res.ok) {
         const reportData = await res.json();
         navigate('/intelligence-report', { state: { report: reportData } });

@@ -177,8 +177,7 @@ const AIProcessing2 = () => {
     // Start backend analyze fetch call
     const triggerAnalysis = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://biz-vision-ai.onrender.com';
-        const res = await fetch(`${backendUrl}/analyze`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idea_text: ideaText }),
