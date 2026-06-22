@@ -119,20 +119,30 @@ def dashboard():
         for r in all_reports:
             try:
                 data = json.loads(r["report_json"])
-                status = data.get("final_verdict", {}).get("verdict_status", "").lower()
-                if "approved" in status:
+                status = data.get("final_verdict", {}).get("verdict_status") or data.get("final_verdict", {}).get("launch_recommendation", "")
+                status_lower = str(status).lower()
+                if "approved" in status_lower or "pilot" in status_lower:
                     approved_pilots += 1
-                elif "pivot" in status or "caution" in status:
+                elif "pivot" in status_lower or "caution" in status_lower:
                     pivots_recommended += 1
                 else:
                     not_feasible += 1
 
-                sum_investment += int(data.get("investment_readiness", {}).get("investment_score", 50))
-                sum_saturation += int(data.get("market_saturation", {}).get("score", 50))
+                inv_score = data.get("founder_decision_engine", {}).get("market_fit")
+                if inv_score is None:
+                    inv_score = data.get("investment_readiness", {}).get("investment_score", 50)
+                sum_investment += int(inv_score)
+
+                sat_score = data.get("founder_decision_engine", {}).get("competition")
+                if sat_score is None:
+                    sat_score = data.get("market_saturation", {}).get("score", 50)
+                sum_saturation += int(sat_score)
                 
-                risk_str = data.get("risk_analysis", {}).get("risk_level", "").lower()
-                risk_val = 80 if "high" in risk_str else 30 if "low" in risk_str else 50
-                sum_risk += risk_val
+                risk_score = data.get("founder_decision_engine", {}).get("risk")
+                if risk_score is None:
+                    risk_str = data.get("risk_analysis", {}).get("risk_level", "").lower()
+                    risk_score = 80 if "high" in risk_str else 30 if "low" in risk_str else 50
+                sum_risk += int(risk_score)
 
                 count_valid += 1
             except Exception:
@@ -152,10 +162,19 @@ def dashboard():
             
             try:
                 report_data = json.loads(row["report_json"])
-                row["verdict_status"] = report_data.get("final_verdict", {}).get("verdict_status", "Unknown")
+                status = report_data.get("final_verdict", {}).get("verdict_status") or report_data.get("final_verdict", {}).get("launch_recommendation", "Unknown")
+                row["verdict_status"] = status
                 row["title"] = report_data.get("executive_summary", {}).get("title", "Market Report")
-                row["grade"] = report_data.get("investment_readiness", {}).get("grade", "-")
-                row["viability_score"] = int(report_data.get("investment_readiness", {}).get("investment_score", 50))
+                
+                grade = report_data.get("final_verdict", {}).get("investment_grade")
+                if not grade:
+                    grade = report_data.get("investment_readiness", {}).get("grade", "-")
+                row["grade"] = grade
+                
+                viability_score = report_data.get("founder_decision_engine", {}).get("market_fit")
+                if viability_score is None:
+                    viability_score = report_data.get("investment_readiness", {}).get("investment_score", 50)
+                row["viability_score"] = int(viability_score)
             except Exception:
                 row["verdict_status"] = "Unknown"
                 row["title"] = "Market Report"
@@ -296,10 +315,19 @@ def history():
             
             try:
                 report_data = json.loads(row["report_json"])
-                row["verdict_status"] = report_data.get("final_verdict", {}).get("verdict_status", "Unknown")
+                status = report_data.get("final_verdict", {}).get("verdict_status") or report_data.get("final_verdict", {}).get("launch_recommendation", "Unknown")
+                row["verdict_status"] = status
                 row["title"] = report_data.get("executive_summary", {}).get("title", "Market Report")
-                row["grade"] = report_data.get("investment_readiness", {}).get("grade", "-")
-                row["viability_score"] = int(report_data.get("investment_readiness", {}).get("investment_score", 50))
+                
+                grade = report_data.get("final_verdict", {}).get("investment_grade")
+                if not grade:
+                    grade = report_data.get("investment_readiness", {}).get("grade", "-")
+                row["grade"] = grade
+                
+                viability_score = report_data.get("founder_decision_engine", {}).get("market_fit")
+                if viability_score is None:
+                    viability_score = report_data.get("investment_readiness", {}).get("investment_score", 50)
+                row["viability_score"] = int(viability_score)
             except Exception:
                 row["verdict_status"] = "Unknown"
                 row["title"] = "Market Report"

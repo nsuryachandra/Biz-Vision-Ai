@@ -230,94 +230,83 @@ CRITICAL DATA GUIDELINES:
 {{
   "executive_summary": {{
     "title": "A highly premium, professional business title (e.g. 'Elevate Fitness Studio')",
-    "tagline": "A compelling 1-line brand tagline",
-    "critical_requirement": "One sentence explaining the single most critical dependency for launch success.",
-    "brand_suggestions": [
-      {{
-        "name": "Suggested Brand Name 1",
-        "tagline": "Tagline 1",
-        "rationale": "Short explanation of connection"
-      }},
-      {{
-        "name": "Suggested Brand Name 2",
-        "tagline": "Tagline 2",
-        "rationale": "Short explanation of connection"
-      }}
-    ]
+    "business_summary": "A deep, comprehensive summary paragraph of the business idea, target value proposition, and customer segment.",
+    "one_paragraph_verdict": "A concise, single-paragraph decisive investment verdict and viability assessment by the VC committee.",
+    "key_opportunity": "The prime market catalyst or competitive advantage that makes this venture highly attractive right now.",
+    "biggest_challenge": "The single most significant structural, operational, or customer adoption barrier to entry."
   }},
-  "market_intelligence": {{
-    "search_velocity": "High, Moderate, or Low search velocity based on search results",
-    "interest_momentum": "Explain growth rate of {trends_growth_rate}% interest velocity and general search momentum over the past 12 months.",
-    "forecast": "1-sentence projection of market trajectory over the next 18 months."
+  "market_overview": {{
+    "search_demand": "A detailed analysis of local search volume, query velocity, and interest trajectory based on search results.",
+    "trend_direction": "A brief sentence identifying if search query momentum and general consumer interest are growing, stable, or declining.",
+    "market_maturity": "An analysis of the local market's lifecycle phase (e.g. Emerging, Growing, Mature, Saturated)."
   }},
   "competitor_intelligence": {{
-    "market_leader": "Name of the leading competitor from maps data, or 'Insufficient data' if none found",
-    "top_competitors": [
-      {{
-        "name": "[Rival Name from Maps Data]",
-        "rating": 4.5,
-        "reviews": 120,
-        "address": "[Address/Area]",
-        "differentiator": "A 1-sentence differentiator strategy"
-      }}
-    ],
-    "common_strengths": ["Strength 1 (max 10 words)", "Strength 2 (max 10 words)"],
-    "common_weaknesses": ["Weakness 1 (max 10 words)", "Weakness 2 (max 10 words)"],
-    "unserved_opportunities": ["Opportunity 1 (max 12 words)", "Opportunity 2 (max 12 words)"]
+    "market_gaps": "A synthesis of unserved needs, negative competitor review patterns, or lack of customization in local rivals."
   }},
-  "customer_sentiment": {{
-    "love_factors": ["Love factor 1 (max 10 words)", "Love factor 2 (max 10 words)"],
-    "pain_points": ["Pain point 1 (max 10 words)", "Pain point 2 (max 10 words)"],
-    "buying_triggers": ["Trigger 1 (max 12 words)", "Trigger 2 (max 12 words)"],
-    "market_gap": "Explain the exact gap or underserved segment in the local market based on competitor reviews."
+  "customer_intelligence": {{
+    "customer_persona": "A detailed profile of the core local target customer (demographics, habits, preferences).",
+    "pain_points": ["Specific friction point 1", "Specific friction point 2"],
+    "buying_behavior": "Key criteria driving the customer's choice (e.g., convenience, hygiene, brand reputation).",
+    "spending_patterns": "Typical wallet share, average transaction size, and price sensitivity of local buyers."
   }},
-  "market_saturation": {{
-    "score": 74,
-    "grade": "B",
-    "state": "Competitive / Saturated / Fragmented",
-    "explanation": "Provide a detailed justification for the saturation score based on competitor density and search demand."
+  "industry_trends": {{
+    "news_analysis": "A summary of recent local news articles, regulations, or public discussions affecting this industry.",
+    "trend_analysis": "Contextual analysis of macro and micro industry trends shaping market demand.",
+    "emerging_changes": "Key changes shifting consumer expectations or industry standards."
   }},
-  "revenue_potential": {{
-    "low_case": "Monthly revenue estimate under conservative scenario in local currency (e.g., ₹2,50,000)",
-    "expected_case": "Monthly revenue estimate under expected scenario (e.g., ₹8,00,000)",
-    "high_case": "Monthly revenue estimate under aggressive scenario (e.g., ₹20,00,000)",
-    "assumptions": ["Assumption 1 (e.g., average customer spend, footfall)", "Assumption 2"]
+  "opportunity_analysis": {{
+    "why_work": "A strategic argument of why this specific business idea is viable in the target location.",
+    "untapped_opportunities": ["Unserved local niche 1", "Unserved local niche 2"],
+    "premium_positioning": "How the venture can position itself as a high-margin premium player to stand out."
   }},
-  "startup_costs": {{
-    "minimum_cost": "Minimum launch cost in local currency (e.g., ₹5,00,000)",
-    "recommended_cost": "Recommended launch cost (e.g., ₹15,00,000)",
-    "premium_launch_cost": "Premium launch cost (e.g., ₹30,00,000)"
+  "revenue_model": {{
+    "revenue_streams": ["Primary revenue stream description", "Secondary revenue stream"],
+    "upsells": "Specific higher-value options, add-ons, or bundle suggestions to increase average order value.",
+    "memberships": "Loyalty program or membership structures to increase lifetime value.",
+    "subscriptions": "Recurring revenue options, subscription boxes, or retainer plans suitable for the business."
   }},
-  "location_analysis": {{
-    "location_score": 86,
-    "grade": "A",
-    "analysis": "Specific location analysis based on proximity, density, and local accessibility factors of {location}."
+  "cost_capital_analysis": {{
+    "estimated_startup_cost": "Estimated initial capital required in local currency (e.g. ₹5,00,000)",
+    "operating_cost": "Estimated monthly operational expenses (rent, payroll, utilities) in local currency (e.g. ₹1,20,000/mo)",
+    "recommended_capital": "Total funding suggested for safe MVP launch and early growth (e.g. ₹15,00,000)",
+    "runway": "Estimated months of runway this capital provides (e.g. 6-9 months)",
+    "context_text": "Plain text explaining key drivers of these expenses (e.g., high retail rents in Jubilee Hills)."
   }},
   "swot_analysis": {{
-    "strengths": ["Strength 1 (max 10 words)", "Strength 2"],
-    "weaknesses": ["Weakness 1 (max 10 words)", "Weakness 2"],
-    "opportunities": ["Opportunity 1 (max 12 words)", "Opportunity 2"],
-    "threats": ["Threat 1 (max 10 words)", "Threat 2"]
+    "strengths": ["Internal Strength 1 (max 10 words)", "Internal Strength 2"],
+    "weaknesses": ["Internal Weakness 1 (max 10 words)", "Internal Weakness 2"],
+    "opportunities": ["External Opportunity 1 (max 12 words)", "External Opportunity 2"],
+    "threats": ["External Threat 1 (max 10 words)", "External Threat 2"]
   }},
-  "risk_analysis": {{
-    "risk_level": "High, Medium, or Low",
-    "top_risks": ["Risk 1 (max 10 words)", "Risk 2"],
-    "mitigation_strategies": ["Mitigation strategy 1", "Mitigation strategy 2"]
+  "risk_assessment": {{
+    "market_risks": "Risk of shifting local taste, economic recession, or interest drops.",
+    "competition_risks": "Threat of aggressive price cuts or mimicry by existing local incumbents.",
+    "operational_risks": "Key operational failure modes (supply chain, staffing, rent increases).",
+    "legal_risks": "Zoning regulations, business licensing, health permits, or local compliance rules."
   }},
-  "investment_readiness": {{
-    "investment_score": 91,
-    "grade": "A+",
-    "recommendation": "Strategic recommendation for the founder (2 sentences) on investment viability."
+  "scenario_planning": {{
+    "best_case": "Optimistic revenue and growth projection details.",
+    "expected_case": "Realistic baseline execution metrics.",
+    "worst_case": "Downside scenario details and trigger point to pivot."
   }},
   "launch_roadmap": {{
-    "first_30_days": ["Action item 1", "Action item 2"],
-    "days_31_to_60": ["Action item 1", "Action item 2"],
-    "days_61_to_90": ["Action item 1", "Action item 2"]
+    "week_1_2": ["Milestone 1", "Milestone 2"],
+    "week_3_4": ["Milestone 1", "Milestone 2"],
+    "month_2": ["Milestone 1", "Milestone 2"],
+    "month_3": ["Milestone 1", "Milestone 2"]
+  }},
+  "founder_decision_engine": {{
+    "market_fit": 88,
+    "competition": 74,
+    "scalability": 91,
+    "capital_efficiency": 79,
+    "risk": 67
   }},
   "final_verdict": {{
-    "verdict_status": "🟢 Approved for Pilot / 🟡 Pivot Recommended / 🔴 Not Feasible",
-    "financial_viability_outlook": "Premium, Medium, or Low",
-    "confidence_level": 85
+    "context_text": "A comprehensive final strategic summary that ties all findings together.",
+    "investment_grade": "A",
+    "launch_recommendation": "Pilot First",
+    "confidence_level": "High"
   }}
 }}
 """

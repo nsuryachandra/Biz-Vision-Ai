@@ -89,27 +89,16 @@ const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
 );
 
 // ─── RADIAL GAUGE FOR INVESTMENT READINESS ─────────────────────────────────
-const InvestmentReadinessGauge = ({ score, grade, recommendation }) => {
-  const strokeDashoffset = 251 - (251 * (score || 50)) / 100;
+const InvestmentReadinessGauge = ({ recommendation }) => {
   return (
-    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col items-center justify-between min-h-[360px]">
-      <h3 className="text-sm font-extrabold text-muted-foreground uppercase tracking-widest mb-4">Investment Readiness</h3>
-      
-      <div className="relative w-44 h-44 flex items-center justify-center">
-        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#F1F5F9" strokeWidth="8" />
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#6366F1" strokeWidth="8"
-            strokeDasharray="251" strokeDashoffset={strokeDashoffset} strokeLinecap="round" className="transition-all duration-1000" />
-        </svg>
-        <div className="absolute flex flex-col items-center">
-          <span className="text-4xl font-extrabold text-indigo-600">{score}</span>
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Grade {grade}</span>
-        </div>
+    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 flex flex-col items-center justify-center min-h-[360px] text-center">
+      <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6">
+        <Icon icon="lucide:shield-check" className="text-3xl text-indigo-600" />
       </div>
-
-      <div className="mt-4 text-center">
-        <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">VC Strategic Recommendation</p>
-        <p className="text-sm leading-relaxed text-foreground font-semibold">
+      <h3 className="text-lg font-extrabold text-slate-800 mb-2">Investment Readiness</h3>
+      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-4">VC Strategic Recommendation</p>
+      <div className="px-4">
+        <p className="text-sm leading-relaxed text-slate-600 font-semibold bg-slate-50/50 p-4 rounded-xl border border-slate-100/50">
           "{recommendation}"
         </p>
       </div>
@@ -329,55 +318,47 @@ const IntelligenceReport = () => {
     report: {
       executive_summary: {
         title: "Pawganic Sourcing",
-        tagline: "Purity on Every Plate. Certified organic daily meal plans for urban dogs.",
-        critical_requirement: "Establishing direct cold-chain logistics loops with poultry farms in Telangana is essential.",
-        brand_suggestions: [
-          { name: "Pawganic.in", tagline: "Purity on Every Plate.", rationale: "Strong connection to organic formulations and local pets." },
-          { name: "NaturaPet.com", tagline: "Natural nutrition for active dogs.", rationale: "Highlights natural organic sourcing and direct home delivery." }
-        ]
+        business_summary: "Certified organic daily meal plans for urban dogs with direct home delivery.",
+        one_paragraph_verdict: "High viability target opportunity. Establishing direct cold-chain logistics loops with poultry farms in Telangana is essential.",
+        key_opportunity: "Absence of certified local organic pet food suppliers with customized daily delivery options.",
+        biggest_challenge: "Cold-chain logistics consistency and raw ingredient shelf-life limits."
       },
-      market_intelligence: {
-        search_velocity: "Moderate search velocity",
-        interest_momentum: "Search query interest trends reflect expanding momentum (25% growth) in high-income Telangana residential sectors.",
-        forecast: "Strong upward momentum projected over the next 18 months, driven by pet humanization macros."
+      market_overview: {
+        search_demand: "Search velocity for organic formulations reflects expanding momentum (25% growth) in high-income Telangana residential sectors.",
+        trend_direction: "Strong upward momentum projected over the next 18 months, driven by pet humanization macros.",
+        market_maturity: "Emerging local niche with low competitor density."
       },
       competitor_intelligence: {
-        market_leader: "Pawsome Bites (Jubilee Hills)",
-        top_competitors: [
-          { name: "Pawsome Bites", rating: 4.8, reviews: 240, address: "Jubilee Hills, Hyderabad", differentiator: "Established local footprint but lacks custom fresh organic meal formulation plans." },
-          { name: "GreenNose Feeders", rating: 4.2, reviews: 84, address: "Gachibowli, Hyderabad", differentiator: "Eco-friendly branding with moderate customer reviews, limited customization." }
-        ],
-        common_strengths: ["Strong local presence", "Established retail network"],
-        common_weaknesses: ["No organic certification", "Poor e-commerce support"],
-        unserved_opportunities: ["Certified organic food", "Custom subscription kits"]
+        market_gaps: "Lack of certified organic validation and poor e-commerce subscription personalization from traditional providers."
       },
-      customer_sentiment: {
-        love_factors: ["Fresh ingredients", "Fast home delivery", "Tailored portions"],
-        pain_points: ["Digestive sensitivities", "Chemical additives", "Inconsistent supply"],
-        buying_triggers: ["Vet recommendation", "Healthy coat concerns", "Subscription convenience"],
-        market_gap: "Absence of certified local organic pet food suppliers with customized daily delivery options."
+      customer_intelligence: {
+        customer_persona: "High-income pet owners who treat pets as family members, prioritizing premium nutrition.",
+        pain_points: ["Digestive sensitivities", "Chemical additives", "Inconsistent fresh supply"],
+        buying_behavior: "Vet recommendation and subscription convenience.",
+        spending_patterns: "Average spend of ₹2,50,000/pet monthly, low price sensitivity."
       },
-      market_saturation: {
-        score: 42,
-        grade: "A",
-        state: "Fragmented / Low Saturation",
-        explanation: "Low competitor density in the premium organic niche. Major incumbents focus on mass-market dry kibble via traditional retail."
+      industry_trends: {
+        news_analysis: "Growing regulatory focus on pet food grade labeling and consumer shift to natural alternatives.",
+        trend_analysis: "Transition from dry kibble to fresh-frozen high-moisture diets.",
+        emerging_changes: "Increasing adoption of direct-to-door subscription boxes."
       },
-      revenue_potential: {
-        low_case: "₹2,50,000 /mo",
-        expected_case: "₹8,00,000 /mo",
-        high_case: "₹20,00,000 /mo",
-        assumptions: ["Avg spend of ₹2,500/pet", "Conversion rate of 2.5% from waitlist", "Expected 320 subscribers in Month 3"]
+      opportunity_analysis: {
+        why_work: "High pet owner density in Jubilee Hills combined with premium purchasing power.",
+        untapped_opportunities: ["Custom allergen-free subscription kits", "Vet clinic co-branding"],
+        premium_positioning: "Direct-to-consumer premium organic label with cold-chain provenance mapping."
       },
-      startup_costs: {
-        minimum_cost: "₹5,00,000",
-        recommended_cost: "₹12,00,000",
-        premium_launch_cost: "₹25,0,000"
+      revenue_model: {
+        revenue_streams: ["Monthly subscription boxes", "A-la-carte specialty treats"],
+        upsells: "Allergen testing kit, specialized veterinary-grade health supplements.",
+        memberships: "VIP club offering free vet consult calls and priority delivery routes.",
+        subscriptions: "Weekly, bi-weekly, or monthly recurring subscription tiers."
       },
-      location_analysis: {
-        location_score: 88,
-        grade: "A",
-        analysis: "Hyderabad's high-income sectors (Jubilee Hills, Gachibowli) show dense target pet ownership, high purchasing power, and excellent accessibility."
+      cost_capital_analysis: {
+        estimated_startup_cost: "₹5,00,000",
+        operating_cost: "₹1,20,000 /mo",
+        recommended_capital: "₹12,00,000",
+        runway: "9-12 Months",
+        context_text: "Encompasses kitchen lease, vacuum packaging lines, raw organic sourcing deposits, and initial local delivery fleet."
       },
       swot_analysis: {
         strengths: ["First-mover organic brand", "High-margin subscription model"],
@@ -390,20 +371,35 @@ const IntelligenceReport = () => {
         top_risks: ["Supply chain shelf-life consistency", "Ingredient cost inflation"],
         mitigation_strategies: ["Automate delivery logs", "Implement vacuum storage lines", "Advance deposit billing"]
       },
-      investment_readiness: {
-        investment_score: 82,
-        grade: "A",
-        recommendation: "Highly viable opportunity. Build local landing page waitlist first to validate customer acquisition cost before capital deployment."
+      risk_assessment: {
+        market_risks: "Slowing pet adoption rates post-pandemic.",
+        competition_risks: "Commercial brands launching organic sub-brands.",
+        operational_risks: "Cold chain log disruptions causing spoilage.",
+        legal_risks: "Local health authority compliance and food safety inspections."
+      },
+      scenario_planning: {
+        best_case: "₹20,0,000 /mo",
+        expected_case: "₹8,00,000 /mo",
+        worst_case: "₹2,50,000 /mo"
       },
       launch_roadmap: {
-        first_30_days: ["Source ingredients from organic suppliers", "Run kitchen tests", "Launch waitlist landing page"],
-        days_31_to_60: ["Secure initial clinic partnerships", "Setup subscription billing", "Initiate soft launch (50 orders)"],
-        days_61_to_90: ["Gather customer feedback", "Scale social ads budget", "Hire packaging assistants"]
+        week_1_2: ["Source ingredients from organic suppliers", "Run kitchen tests"],
+        week_3_4: ["Launch waitlist landing page", "Setup subscription billing"],
+        month_2: ["Initiate soft launch (50 orders)", "Secure initial clinic partnerships"],
+        month_3: ["Gather customer feedback", "Scale social ads budget"]
+      },
+      founder_decision_engine: {
+        market_fit: 88,
+        competition: 74,
+        scalability: 91,
+        capital_efficiency: 79,
+        risk: 67
       },
       final_verdict: {
-        verdict_status: "🟢 Approved for Pilot",
-        financial_viability_outlook: "Premium",
-        confidence_level: 85
+        context_text: "Highly viable opportunity. Build local landing page waitlist first to validate customer acquisition cost before capital deployment.",
+        investment_grade: "A",
+        launch_recommendation: "Pilot First",
+        confidence_level: "High"
       }
     },
     competitors: [
@@ -434,6 +430,8 @@ const IntelligenceReport = () => {
   const metadata = report.metadata;
   const competitors = report.competitors || [];
   const trends = report.trends || [];
+  const news = report.news || [];
+  const shopping = report.shopping || [];
 
   const [selectedTimeRange, setSelectedTimeRange] = useState('12M');
   const [isSaved, setIsSaved] = useState(false);
@@ -441,9 +439,14 @@ const IntelligenceReport = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const downloadHtmlReport = (reportData) => {
-    const { metadata, report: rData, competitors: comps } = reportData;
+    const { metadata, report: rData, competitors: comps, trends: trendData, news: newsData, shopping: shopData } = reportData;
     const currentData = rData || fallbackReport.report;
     const category = metadata?.idea_text || "Startup Concept";
+
+    const getListItems = (arr) => {
+      if (!arr || !Array.isArray(arr)) return '<div class="text-muted">None specified</div>';
+      return arr.map(item => `<div class="list-item"><span class="bullet">●</span> ${item}</div>`).join('');
+    };
 
     const htmlContent = `
   <!DOCTYPE html>
@@ -451,13 +454,13 @@ const IntelligenceReport = () => {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BizVision AI - VC Decision Engine Report</title>
+    <title>BizVision AI - 14-Section Intelligence Report</title>
     <style>
       body {
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
         line-height: 1.6;
-        color: #0F172A;
-        background-color: #FAFBFD;
+        color: #1E293B;
+        background-color: #F8FAFC;
         margin: 0;
         padding: 40px 20px;
       }
@@ -467,140 +470,506 @@ const IntelligenceReport = () => {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 24px;
-        padding: 40px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        padding: 45px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
       }
       .header {
         border-bottom: 2px solid #F1F5F9;
         padding-bottom: 30px;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
+        position: relative;
+      }
+      .badge-validated {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        color: #065F46;
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
       .title {
-        font-size: 28px;
+        font-size: 32px;
         font-weight: 800;
         color: #1E1B4B;
-        margin: 0 0 10px 0;
+        margin: 0 0 12px 0;
       }
       .meta {
-        font-size: 14px;
+        font-size: 13px;
         color: #64748B;
         font-weight: 600;
-      }
-      .score-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        display: flex;
         gap: 15px;
-        margin-bottom: 30px;
+        flex-wrap: wrap;
       }
-      .score-card {
-        background: #F8FAFC;
+      .section-card {
+        background: #FFFFFF;
         border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 15px;
-        text-align: center;
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 25px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
       }
-      .score-label {
+      .section-tag {
         font-size: 10px;
+        font-weight: 800;
+        color: #4F46E5;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        display: inline-block;
+        background: #EEF2FF;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1E1B4B;
+        margin: 0 0 16px 0;
+        border-bottom: 1px solid #F1F5F9;
+        padding-bottom: 8px;
+      }
+      .content-block {
+        margin-bottom: 15px;
+      }
+      .content-label {
+        font-size: 11px;
         font-weight: 700;
         color: #64748B;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
       }
-      .score-value {
-        font-size: 24px;
-        font-weight: 800;
-        color: #4F46E5;
-      }
-      .section {
-        margin-bottom: 35px;
-      }
-      .section-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1E1B4B;
-        border-left: 4px solid #4F46E5;
-        padding-left: 12px;
-        margin-bottom: 15px;
-      }
-      .card {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 15px;
+      .content-text {
+        font-size: 14px;
+        color: #334155;
+        margin: 0;
       }
       .list-item {
         margin-bottom: 8px;
         font-size: 14px;
+        color: #334155;
+        display: flex;
+        align-items: center;
       }
       .bullet {
         color: #10B981;
         font-weight: bold;
         margin-right: 8px;
       }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-top: 10px;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 10px;
+      }
+      .grid-card {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 15px;
+      }
+      .score-bar-container {
+        margin-bottom: 14px;
+      }
+      .score-bar-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 5px;
+      }
+      .score-bar-bg {
+        background: #E2E8F0;
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .score-bar-fill {
+        background: #4F46E5;
+        height: 100%;
+        border-radius: 4px;
+      }
+      .verdict-card {
+        background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+        color: #FFFFFF;
+        border: none;
+      }
+      .verdict-card .section-tag {
+        background: rgba(255,255,255,0.15);
+        color: #FFFFFF;
+      }
+      .verdict-card .section-title {
+        color: #FFFFFF;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      .verdict-value {
+        font-size: 28px;
+        font-weight: 900;
+        color: #10B981;
+        margin: 5px 0;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h1 class="title">"${currentData.executive_summary?.title || category}"</h1>
+        <div class="badge-validated">VC Validated</div>
+        <h1 class="title">${currentData.executive_summary?.title || category}</h1>
         <div class="meta">
-          📍 Location: ${metadata?.location || 'Global'} &nbsp;|&nbsp; 
-          💼 Industry: ${metadata?.industry || 'General'}
+          <span>📍 <strong>Location:</strong> ${metadata?.location || 'Global'}</span>
+          <span>💼 <strong>Industry:</strong> ${metadata?.industry || 'General'}</span>
+          <span>🏢 <strong>Model:</strong> ${metadata?.business_type || 'General'}</span>
         </div>
       </div>
 
-      <div class="score-grid">
-        <div class="score-card">
-          <div class="score-label">Investment readiness</div>
-          <div class="score-value">${currentData.investment_readiness?.investment_score || 50}</div>
+      <!-- Section 1: Executive Summary -->
+      <div class="section-card">
+        <span class="section-tag">Section 1</span>
+        <h2 class="section-title">Executive Summary</h2>
+        <div class="content-block">
+          <div class="content-label">Business Summary</div>
+          <p class="content-text">${currentData.executive_summary?.business_summary || "N/A"}</p>
         </div>
-        <div class="score-card">
-          <div class="score-label">Market Saturation</div>
-          <div class="score-value">${currentData.market_saturation?.score || 50}</div>
+        <div class="content-block">
+          <div class="content-label">One Paragraph Verdict</div>
+          <p class="content-text">${currentData.executive_summary?.one_paragraph_verdict || "N/A"}</p>
         </div>
-        <div class="score-card">
-          <div class="score-label">Location score</div>
-          <div class="score-value">${currentData.location_analysis?.location_score || 50}</div>
+        <div class="content-block">
+          <div class="content-label">Key Opportunity</div>
+          <p class="content-text">${currentData.executive_summary?.key_opportunity || "N/A"}</p>
         </div>
-        <div class="score-card">
-          <div class="score-label">Confidence level</div>
-          <div class="score-value">${currentData.final_verdict?.confidence_level || 85}%</div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Executive Summary</div>
-        <div class="card">
-          <p><strong>Tagline:</strong> "${currentData.executive_summary?.tagline}"</p>
-          <p><strong>Critical dependency:</strong> ${currentData.executive_summary?.critical_requirement}</p>
+        <div class="content-block">
+          <div class="content-label">Biggest Challenge</div>
+          <p class="content-text">${currentData.executive_summary?.biggest_challenge || "N/A"}</p>
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Competitor Saturation</div>
-        <div class="card">
-          <p><strong>Market leader:</strong> ${currentData.competitor_intelligence?.market_leader}</p>
-          <h4 style="margin: 15px 0 10px 0;">Identified Competitors:</h4>
-          ${(currentData.competitor_intelligence?.top_competitors || comps || []).map(c => `
-            <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #F1F5F9;">
-              <strong>${c.name || c.title}</strong> (${c.rating || 4.0}★)
-              <p style="margin: 5px 0; font-size: 13px; color: #64748B;">${c.differentiator || "Local provider servicing traditional markets."}</p>
+      <!-- Section 2: Market Overview -->
+      <div class="section-card">
+        <span class="section-tag">Section 2</span>
+        <h2 class="section-title">Market Overview</h2>
+        <div class="content-block">
+          <div class="content-label">Search Demand</div>
+          <p class="content-text">${currentData.market_overview?.search_demand || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Trend Direction</div>
+          <p class="content-text">${currentData.market_overview?.trend_direction || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Market Maturity</div>
+          <p class="content-text">${currentData.market_overview?.market_maturity || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 3: Competitor Intelligence -->
+      <div class="section-card">
+        <span class="section-tag">Section 3</span>
+        <h2 class="section-title">Competitor Intelligence</h2>
+        <div class="content-block">
+          <div class="content-label">Market Gaps & Vulnerabilities</div>
+          <p class="content-text">${currentData.competitor_intelligence?.market_gaps || "N/A"}</p>
+        </div>
+        <div class="content-block" style="margin-top: 15px;">
+          <div class="content-label">Identified Local Competitors</div>
+          ${(comps || []).slice(0, 5).map(c => `
+            <div style="margin-bottom: 12px; padding: 10px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0;">
+              <strong>${c.title || c.name}</strong> - ${c.rating || '4.0'}★ (${c.reviews || 0} reviews)
+              <div style="font-size: 12px; color: #64748B; margin-top: 3px;">📍 ${c.address || 'Address not listed'}</div>
             </div>
           `).join('')}
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Action Plan Roadmap</div>
-        <div class="card">
-          <p><strong>Month 1 (Days 1–30):</strong></p>
-          ${(currentData.launch_roadmap?.first_30_days || []).map(t => `<div class="list-item"><span class="bullet">●</span> ${t}</div>`).join('')}
-          <p style="margin-top: 15px;"><strong>Month 2 (Days 31–60):</strong></p>
-          ${(currentData.launch_roadmap?.days_31_to_60 || []).map(t => `<div class="list-item"><span class="bullet">●</span> ${t}</div>`).join('')}
-          <p style="margin-top: 15px;"><strong>Month 3 (Days 61–90):</strong></p>
-          ${(currentData.launch_roadmap?.days_61_to_90 || []).map(t => `<div class="list-item"><span class="bullet">●</span> ${t}</div>`).join('')}
+      <!-- Section 4: Customer Intelligence -->
+      <div class="section-card">
+        <span class="section-tag">Section 4</span>
+        <h2 class="section-title">Customer Intelligence</h2>
+        <div class="content-block">
+          <div class="content-label">Core Target Persona</div>
+          <p class="content-text">${currentData.customer_intelligence?.customer_persona || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Observed Pain Points</div>
+          ${getListItems(currentData.customer_intelligence?.pain_points)}
+        </div>
+        <div class="content-block">
+          <div class="content-label">Buying Behavior</div>
+          <p class="content-text">${currentData.customer_intelligence?.buying_behavior || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Spending Patterns</div>
+          <p class="content-text">${currentData.customer_intelligence?.spending_patterns || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 5: Industry Trends -->
+      <div class="section-card">
+        <span class="section-tag">Section 5</span>
+        <h2 class="section-title">Industry Trends</h2>
+        <div class="content-block">
+          <div class="content-label">News Sentiment Analysis</div>
+          <p class="content-text">${currentData.industry_trends?.news_analysis || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Trend Analysis</div>
+          <p class="content-text">${currentData.industry_trends?.trend_analysis || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Emerging Regulatory or Market Changes</div>
+          <p class="content-text">${currentData.industry_trends?.emerging_changes || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 6: Opportunity Analysis -->
+      <div class="section-card">
+        <span class="section-tag">Section 6</span>
+        <h2 class="section-title">Opportunity Analysis</h2>
+        <div class="content-block">
+          <div class="content-label">Why This Business May Work</div>
+          <p class="content-text">${currentData.opportunity_analysis?.why_work || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Untapped Local Opportunities</div>
+          ${getListItems(currentData.opportunity_analysis?.untapped_opportunities)}
+        </div>
+        <div class="content-block">
+          <div class="content-label">Premium Positioning Hook</div>
+          <p class="content-text">${currentData.opportunity_analysis?.premium_positioning || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 7: Revenue Model -->
+      <div class="section-card">
+        <span class="section-tag">Section 7</span>
+        <h2 class="section-title">Revenue Model</h2>
+        <div class="content-block">
+          <div class="content-label">Revenue Streams</div>
+          ${getListItems(currentData.revenue_model?.revenue_streams)}
+        </div>
+        <div class="content-block">
+          <div class="content-label">Upsell Opportunities</div>
+          <p class="content-text">${currentData.revenue_model?.upsells || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Memberships Mechanics</div>
+          <p class="content-text">${currentData.revenue_model?.memberships || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Subscription Tiering</div>
+          <p class="content-text">${currentData.revenue_model?.subscriptions || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 8: Cost & Capital Analysis -->
+      <div class="section-card">
+        <span class="section-tag">Section 8</span>
+        <h2 class="section-title">Cost & Capital Analysis</h2>
+        <div class="grid-3">
+          <div class="grid-card">
+            <div class="content-label">Startup Capital</div>
+            <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.estimated_startup_cost || "N/A"}</strong>
+          </div>
+          <div class="grid-card">
+            <div class="content-label">Operating Cost</div>
+            <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.operating_cost || "N/A"}</strong>
+          </div>
+          <div class="grid-card">
+            <div class="content-label">Recommended Runway</div>
+            <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.runway || "N/A"}</strong>
+          </div>
+        </div>
+        <div class="content-block" style="margin-top: 15px;">
+          <div class="content-label">Recommended Allocation Capital</div>
+          <p class="content-text"><strong>${currentData.cost_capital_analysis?.recommended_capital || "N/A"}</strong></p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Contextual Expense Drivers</div>
+          <p class="content-text">${currentData.cost_capital_analysis?.context_text || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 9: SWOT Analysis -->
+      <div class="section-card">
+        <span class="section-tag">Section 9</span>
+        <h2 class="section-title">SWOT Analysis</h2>
+        <div class="grid-2">
+          <div class="grid-card">
+            <strong>Strengths</strong>
+            ${getListItems(currentData.swot_analysis?.strengths)}
+          </div>
+          <div class="grid-card">
+            <strong>Weaknesses</strong>
+            ${getListItems(currentData.swot_analysis?.weaknesses)}
+          </div>
+          <div class="grid-card" style="margin-top: 10px;">
+            <strong>Opportunities</strong>
+            ${getListItems(currentData.swot_analysis?.opportunities)}
+          </div>
+          <div class="grid-card" style="margin-top: 10px;">
+            <strong>Threats</strong>
+            ${getListItems(currentData.swot_analysis?.threats)}
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 10: Risk Assessment -->
+      <div class="section-card">
+        <span class="section-tag">Section 10</span>
+        <h2 class="section-title">Risk Assessment</h2>
+        <div class="content-block">
+          <div class="content-label">Market Risks</div>
+          <p class="content-text">${currentData.risk_assessment?.market_risks || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Competition Risks</div>
+          <p class="content-text">${currentData.risk_assessment?.competition_risks || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Operational Risks</div>
+          <p class="content-text">${currentData.risk_assessment?.operational_risks || "N/A"}</p>
+        </div>
+        <div class="content-block">
+          <div class="content-label">Legal & Compliance Risks</div>
+          <p class="content-text">${currentData.risk_assessment?.legal_risks || "N/A"}</p>
+        </div>
+      </div>
+
+      <!-- Section 11: Scenario Planning -->
+      <div class="section-card">
+        <span class="section-tag">Section 11</span>
+        <h2 class="section-title">Scenario Planning</h2>
+        <div class="grid-3">
+          <div class="grid-card">
+            <div class="content-label">Best Case Scenario</div>
+            <p class="content-text">${currentData.scenario_planning?.best_case || "N/A"}</p>
+          </div>
+          <div class="grid-card">
+            <div class="content-label">Expected Case Scenario</div>
+            <p class="content-text">${currentData.scenario_planning?.expected_case || "N/A"}</p>
+          </div>
+          <div class="grid-card">
+            <div class="content-label">Worst Case Scenario</div>
+            <p class="content-text">${currentData.scenario_planning?.worst_case || "N/A"}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 12: Launch Roadmap -->
+      <div class="section-card">
+        <span class="section-tag">Section 12</span>
+        <h2 class="section-title">Launch Roadmap</h2>
+        <div class="content-block">
+          <div class="content-label">Week 1-2 Milestones</div>
+          ${getListItems(currentData.launch_roadmap?.week_1_2)}
+        </div>
+        <div class="content-block">
+          <div class="content-label">Week 3-4 Milestones</div>
+          ${getListItems(currentData.launch_roadmap?.week_3_4)}
+        </div>
+        <div class="content-block">
+          <div class="content-label">Month 2 Milestones</div>
+          ${getListItems(currentData.launch_roadmap?.month_2)}
+        </div>
+        <div class="content-block">
+          <div class="content-label">Month 3 Milestones</div>
+          ${getListItems(currentData.launch_roadmap?.month_3)}
+        </div>
+      </div>
+
+      <!-- Section 13: Founder Decision Engine -->
+      <div class="section-card">
+        <span class="section-tag">Section 13</span>
+        <h2 class="section-title">Founder Decision Engine</h2>
+        
+        <div class="score-bar-container">
+          <div class="score-bar-header">
+            <span>Market Fit</span>
+            <span>${currentData.founder_decision_engine?.market_fit || 50}/100</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width: ${currentData.founder_decision_engine?.market_fit || 50}%;"></div>
+          </div>
+        </div>
+
+        <div class="score-bar-container">
+          <div class="score-bar-header">
+            <span>Competition Readiness</span>
+            <span>${currentData.founder_decision_engine?.competition || 50}/100</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width: ${currentData.founder_decision_engine?.competition || 50}%;"></div>
+          </div>
+        </div>
+
+        <div class="score-bar-container">
+          <div class="score-bar-header">
+            <span>Scalability</span>
+            <span>${currentData.founder_decision_engine?.scalability || 50}/100</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width: ${currentData.founder_decision_engine?.scalability || 50}%;"></div>
+          </div>
+        </div>
+
+        <div class="score-bar-container">
+          <div class="score-bar-header">
+            <span>Capital Efficiency</span>
+            <span>${currentData.founder_decision_engine?.capital_efficiency || 50}/100</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width: ${currentData.founder_decision_engine?.capital_efficiency || 50}%;"></div>
+          </div>
+        </div>
+
+        <div class="score-bar-container">
+          <div class="score-bar-header">
+            <span>Risk Level (Lower is Better)</span>
+            <span>${currentData.founder_decision_engine?.risk || 50}/100</span>
+          </div>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width: ${currentData.founder_decision_engine?.risk || 50}%; background: #EF4444;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 14: Final Verdict -->
+      <div class="section-card verdict-card">
+        <span class="section-tag">Section 14</span>
+        <h2 class="section-title">Final Verdict</h2>
+        <div class="content-block">
+          <div class="content-label" style="color: rgba(255,255,255,0.7);">Strategic Evaluation</div>
+          <p class="content-text" style="color: #FFFFFF; font-size: 15px; font-weight: 500; font-style: italic;">
+            "${currentData.final_verdict?.context_text || "N/A"}"
+          </p>
+        </div>
+        <div class="grid-3" style="margin-top: 20px;">
+          <div>
+            <div class="content-label" style="color: rgba(255,255,255,0.7);">Investment Grade</div>
+            <div class="verdict-value" style="color: #34D399;">${currentData.final_verdict?.investment_grade || "B+"}</div>
+          </div>
+          <div>
+            <div class="content-label" style="color: rgba(255,255,255,0.7);">Launch Recommendation</div>
+            <div class="verdict-value" style="color: #60A5FA; font-size: 20px; padding-top: 8px;">${currentData.final_verdict?.launch_recommendation || "Pilot First"}</div>
+          </div>
+          <div>
+            <div class="content-label" style="color: rgba(255,255,255,0.7);">Confidence Level</div>
+            <div class="verdict-value" style="color: #FBBF24; font-size: 20px; padding-top: 8px;">${currentData.final_verdict?.confidence_level || "High"}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -699,7 +1068,7 @@ const IntelligenceReport = () => {
         isLoading={isLoading}
       />
 
-      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-8 space-y-8 pb-32">
+      <main className="flex-1 w-full max-w-[1200px] mx-auto px-6 py-8 space-y-10 pb-32">
         <DisclaimerBanner />
 
         {/* Venture Statement Callout */}
@@ -721,296 +1090,445 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Executive summary + Score gauge */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Executive Summary */}
-          <div className="bg-card bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50 lg:col-span-2 flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                  <Icon icon="lucide:file-text" className="text-xl text-indigo-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-extrabold tracking-tight">Executive Intelligence</h2>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">Corporate feasibility brief</p>
-                </div>
-              </div>
-              <h3 className="text-xl font-extrabold text-indigo-900">"{data.executive_summary?.title}"</h3>
-              <p className="text-sm leading-relaxed text-slate-600 font-medium">"{data.executive_summary?.tagline}"</p>
-              <div className="p-4 rounded-xl bg-indigo-50/40 border border-indigo-100/50">
-                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1.5">Critical launch requirement</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.executive_summary?.critical_requirement}</p>
-              </div>
-            </div>
-
-            {/* Brand Naming Suggestions */}
-            <div className="mt-8 pt-6 border-t border-slate-100 space-y-4">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block">AI Brand recommendations</span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(data.executive_summary?.brand_suggestions || []).map((brand, bIdx) => (
-                  <div key={bIdx} className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <span className="text-sm font-extrabold text-slate-800">{brand.name}</span>
-                    <span className="text-[10px] italic text-indigo-600 block font-semibold mt-0.5">"{brand.tagline}"</span>
-                    <p className="text-xs text-slate-500 mt-2 font-medium">{brand.rationale}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* Section 1: Executive Summary */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 1</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Executive Summary</h2>
           </div>
-
-          {/* Investment readiness score gauge */}
-          <InvestmentReadinessGauge 
-            score={data.investment_readiness?.investment_score} 
-            grade={data.investment_readiness?.grade} 
-            recommendation={data.investment_readiness?.recommendation} 
-          />
-        </div>
-
-        {/* 4 KPIs grid stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Market Saturation</span>
-            <span className="text-2xl font-extrabold text-indigo-600 block">{data.market_saturation?.score} /100</span>
-            <span className="text-xs font-bold text-indigo-500 block mt-1">{data.market_saturation?.state} ({data.market_saturation?.grade})</span>
-          </div>
-          <div className="p-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Location attractiveness</span>
-            <span className="text-2xl font-extrabold text-indigo-600 block">{data.location_analysis?.location_score} /100</span>
-            <span className="text-xs font-bold text-indigo-500 block mt-1">Grade {data.location_analysis?.grade}</span>
-          </div>
-          <div className="p-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Risk profile</span>
-            <span className="text-2xl font-extrabold text-indigo-600 block">{data.risk_analysis?.risk_level}</span>
-            <span className="text-xs font-bold text-indigo-500 block mt-1">Mitigations modeled</span>
-          </div>
-          <div className="p-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Confidence metric</span>
-            <span className="text-2xl font-extrabold text-indigo-600 block">{data.final_verdict?.confidence_level}%</span>
-            <span className="text-xs font-bold text-indigo-500 block mt-1">Calculated via data consistency</span>
-          </div>
-        </div>
-
-        {/* Market Saturation text */}
-        <div className="bg-card bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Market Saturation Justification</span>
-          <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.market_saturation?.explanation}</p>
-        </div>
-
-        {/* Market intelligence trend chart + interpretations */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 bg-white rounded-[2rem] p-8 border border-slate-200/60 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
-              <span className="text-sm font-extrabold text-slate-800">Local Search velocity (Past 12 Months)</span>
-              <span className="text-xs font-bold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg border border-indigo-100">{data.market_intelligence?.search_velocity}</span>
-            </div>
-            <div className="h-64 w-full relative">
-              <Line data={dataLine} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-[2rem] p-8 border border-slate-200/60 shadow-sm flex flex-col justify-between">
-            <div className="space-y-4">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Local demand trajectory</span>
-              <p className="text-sm text-slate-700 leading-relaxed font-semibold">"{data.market_intelligence?.interest_momentum}"</p>
-            </div>
-            <div className="pt-6 border-t border-slate-100">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">18-Month Outlook forecast</span>
-              <p className="text-xs text-indigo-600 leading-relaxed font-bold">"{data.market_intelligence?.forecast}"</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Competitor list + Competitor bar chart */}
-        <div className="bg-card bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-              <Icon icon="lucide:crosshair" className="text-xl text-amber-600" />
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Corporate Title</span>
+              <h3 className="text-lg font-extrabold text-indigo-900">"{data.executive_summary?.title}"</h3>
             </div>
             <div>
-              <h3 className="text-lg font-bold tracking-tight">Competitor Intelligence</h3>
-              <p className="text-sm text-muted-foreground font-medium">Incumbents & differentiator maps</p>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Business Summary</span>
+              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.executive_summary?.business_summary}</p>
+            </div>
+            <div className="p-4 rounded-xl bg-indigo-50/40 border border-indigo-100/50">
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">One Paragraph Verdict</span>
+              <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.executive_summary?.one_paragraph_verdict}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl">
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Key Opportunity</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.executive_summary?.key_opportunity}</p>
+              </div>
+              <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl">
+                <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Biggest Challenge</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.executive_summary?.biggest_challenge}</p>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div className="lg:col-span-2 space-y-4">
-              <div className="p-3 bg-slate-50 border border-slate-100 rounded-lg flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Identified Market Leader:</span>
-                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded">{data.competitor_intelligence?.market_leader}</span>
+        {/* Section 2: Market Overview */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 2</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Market Overview</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Search Demand Velocity</span>
+              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.market_overview?.search_demand}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Trend Direction</span>
+                <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.trend_direction}</p>
               </div>
-              <div className="space-y-3">
-                {(data.competitor_intelligence?.top_competitors || competitors).slice(0, 3).map((comp, idx) => (
-                  <div key={idx} className="p-4 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-4">
-                    <div className="w-10 h-10 bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center rounded-lg flex-shrink-0">
-                      {(comp.name || comp.title || 'CO').slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-800">{comp.name || comp.title}</span>
-                        <span className="text-xs font-bold text-amber-500">★ {comp.rating || "4.0"} ({comp.reviews || "0"} reviews)</span>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Maturity Stage</span>
+                <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.market_maturity}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm mt-4">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-3">Local Search Velocity (Past 12 Months)</span>
+              <div className="h-64 w-full relative">
+                <Line data={dataLine} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3: Competitor Intelligence */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 3</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Competitor Intelligence</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Market Gaps & Vulnerabilities</span>
+              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.competitor_intelligence?.market_gaps}</p>
+            </div>
+            
+            {competitors.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
+                <div className="lg:col-span-2 space-y-3">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Local Rivals Map (From Live API Sourcing)</span>
+                  {competitors.slice(0, 4).map((comp, idx) => (
+                    <div key={idx} className="p-4 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-4">
+                      <div className="w-10 h-10 bg-indigo-50 text-indigo-600 font-extrabold flex items-center justify-center rounded-lg flex-shrink-0 text-sm">
+                        {(comp.name || comp.title || 'CO').slice(0, 2).toUpperCase()}
                       </div>
-                      <p className="text-xs text-slate-400 mt-1 font-semibold">{comp.address}</p>
-                      <p className="text-xs text-slate-600 mt-2 font-medium"><strong>Differentiation Hook:</strong> {comp.differentiator || "Local provider servicing traditional markets."}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-slate-800">{comp.name || comp.title}</span>
+                          <span className="text-xs font-bold text-amber-500">★ {comp.rating || "4.0"} ({comp.reviews || "0"} reviews)</span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-1 font-semibold">{comp.address}</p>
+                      </div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+                <div className="bg-slate-50/40 rounded-2xl p-6 border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Competitor Ratings Benchmarking</span>
+                  <CompetitorsRatingsChart competitors={competitors} />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Section 4: Customer Intelligence */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 4</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Customer Intelligence</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Target Customer Persona</span>
+              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.customer_intelligence?.customer_persona}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Observed Pain Points</span>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                {(data.customer_intelligence?.pain_points || []).map((pt, i) => (
+                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-indigo-500 font-bold">•</span> {pt}
+                  </li>
                 ))}
+              </ul>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Buying Behavior Drivers</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.buying_behavior}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Spending Patterns & Wallet Share</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.spending_patterns}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 5: Industry Trends */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 5</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Industry Trends</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">News Sentiment Analysis</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.news_analysis}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Macro Trend Analysis</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.trend_analysis}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Emerging Standards</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.emerging_changes}</p>
               </div>
             </div>
 
-            <div className="bg-slate-50/40 rounded-2xl p-6 border border-slate-100">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-4">Competitor ratings comparison</span>
-              <CompetitorsRatingsChart competitors={data.competitor_intelligence?.top_competitors || competitors} />
+            {/* Live News Signals */}
+            {news.length > 0 && (
+              <div className="pt-4">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Live Industry News Signals</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {news.slice(0, 3).map((item, idx) => (
+                    <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-4 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition-all">
+                      <span className="text-[10px] font-bold text-indigo-600 block mb-1">{item.source || "News Source"}</span>
+                      <p className="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
+                      {item.date && <span className="text-[9px] text-slate-400 block mt-2 font-bold">{item.date}</span>}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Live Shopping Benchmarks */}
+            {shopping.length > 0 && (
+              <div className="pt-4">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Alternative Product & Pricing Benchmarks</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {shopping.slice(0, 4).map((item, idx) => (
+                    <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col justify-between">
+                      <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
+                      <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
+                        <span className="text-xs font-extrabold text-emerald-600">{item.price || "N/A"}</span>
+                        {item.source && <span className="text-[9px] text-slate-400 font-bold truncate max-w-[50px]">{item.source}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Section 6: Opportunity Analysis */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 6</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Opportunity Analysis</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Why This Business May Work</span>
+              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.opportunity_analysis?.why_work}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Untapped Local Opportunities</span>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                {(data.opportunity_analysis?.untapped_opportunities || []).map((opp, i) => (
+                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-indigo-500 font-bold">•</span> {opp}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Premium Positioning Hook</span>
+              <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.opportunity_analysis?.premium_positioning}</p>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
+        {/* Section 7: Revenue Model */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 7</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
             <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Common strengths</span>
-              <ul className="space-y-1">
-                {(data.competitor_intelligence?.common_strengths || []).map((s, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-medium">
-                    <span className="text-emerald-500">•</span> {s}
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
+                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-emerald-500 font-bold">•</span> {stream}
                   </li>
                 ))}
               </ul>
             </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Common weaknesses</span>
-              <ul className="space-y-1">
-                {(data.competitor_intelligence?.common_weaknesses || []).map((w, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-medium">
-                    <span className="text-red-500">•</span> {w}
-                  </li>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 8: Cost & Capital Analysis */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 8</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Cost & Capital Analysis</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-6">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
+                <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
+              </div>
+              <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
+                <span className="text-lg font-extrabold text-indigo-700">{data.cost_capital_analysis?.operating_cost}</span>
+              </div>
+              <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
+                <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
+                <span className="text-lg font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recommended Runway</span>
+                <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.runway}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Contextual Expense Drivers</span>
+                <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.context_text}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 9: SWOT Analysis */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 9</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">SWOT Analysis</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4">
+            <SWOTAnalysisSection swot={data.swot_analysis} />
+          </div>
+        </div>
+
+        {/* Section 10: Risk Assessment */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 10</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Risk Assessment</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Risks</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.market_risks}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Competition Risks</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.competition_risks}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Operational Risks</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.operational_risks}</p>
+              </div>
+              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Legal & Compliance Risks</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.legal_risks}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 11: Scenario Planning */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 11</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Scenario Planning</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center">
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
+                <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
+              </div>
+              <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center">
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
+                <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
+              </div>
+              <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center">
+                <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
+                <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 12: Launch Roadmap */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 12</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Launch Roadmap</h2>
+          </div>
+          <div className="border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Weeks 1-2</span>
+              <ul className="space-y-1.5">
+                {(data.launch_roadmap?.week_1_2 || []).map((task, idx) => (
+                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
                 ))}
               </ul>
             </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Unserved opportunities</span>
-              <ul className="space-y-1">
-                {(data.competitor_intelligence?.unserved_opportunities || []).map((o, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-medium">
-                    <span className="text-indigo-500">•</span> {o}
-                  </li>
+            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Weeks 3-4</span>
+              <ul className="space-y-1.5">
+                {(data.launch_roadmap?.week_3_4 || []).map((task, idx) => (
+                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Month 2</span>
+              <ul className="space-y-1.5">
+                {(data.launch_roadmap?.month_2 || []).map((task, idx) => (
+                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Month 3</span>
+              <ul className="space-y-1.5">
+                {(data.launch_roadmap?.month_3 || []).map((task, idx) => (
+                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
                 ))}
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Customer sentiment analysis */}
-        <div className="bg-card bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-              <Icon icon="lucide:smile" className="text-xl text-indigo-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold tracking-tight">Customer Sentiment Miner</h3>
-              <p className="text-sm text-muted-foreground font-medium">Customer expectations & purchase signals</p>
-            </div>
+        {/* Section 13: Founder Decision Engine */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 13</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Founder Decision Engine</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="p-5 bg-emerald-50/20 border border-emerald-100 rounded-xl">
-              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-2">Love factors</span>
-              <ul className="space-y-2">
-                {(data.customer_sentiment?.love_factors || []).map((item, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-medium">
-                    <span className="text-emerald-500 font-bold">•</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-5 bg-red-50/20 border border-red-100 rounded-xl">
-              <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-2">Customer frustrations</span>
-              <ul className="space-y-2">
-                {(data.customer_sentiment?.pain_points || []).map((item, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-medium">
-                    <span className="text-red-500 font-bold">•</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-5 bg-indigo-50/20 border border-indigo-100 rounded-xl">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2">Buying triggers</span>
-              <ul className="space-y-2">
-                {(data.customer_sentiment?.buying_triggers || []).map((item, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-medium">
-                    <span className="text-indigo-500 font-bold">•</span> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Identified Local Market Gap</span>
-            <p className="text-xs text-slate-700 leading-relaxed font-semibold">"{data.customer_sentiment?.market_gap}"</p>
+          <div className="border-t border-slate-100 pt-4 space-y-5">
+            {[
+              { label: 'Market Fit', value: data.founder_decision_engine?.market_fit || 50, color: 'bg-indigo-600' },
+              { label: 'Competition Readiness', value: data.founder_decision_engine?.competition || 50, color: 'bg-indigo-600' },
+              { label: 'Scalability Potential', value: data.founder_decision_engine?.scalability || 50, color: 'bg-indigo-600' },
+              { label: 'Capital Efficiency', value: data.founder_decision_engine?.capital_efficiency || 50, color: 'bg-indigo-600' },
+              { label: 'Risk Factor (Lower is Better)', value: data.founder_decision_engine?.risk || 50, color: 'bg-red-500' }
+            ].map((bar, idx) => (
+              <div key={idx} className="space-y-1.5">
+                <div className="flex justify-between text-xs font-bold text-slate-600">
+                  <span>{bar.label}</span>
+                  <span>{bar.value}/100</span>
+                </div>
+                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div className={`h-full ${bar.color} rounded-full transition-all duration-500`} style={{ width: `${bar.value}%` }}></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Costs and scenario matrix */}
-        <FinancialSizingSection revenue={data.revenue_potential} costs={data.startup_costs} />
-
-        {/* Location analysis info */}
-        <div className="bg-card bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0_0,0.04)] border border-border/50">
-          <div className="flex items-center gap-3 mb-4">
-            <Icon icon="lucide:map" className="text-xl text-indigo-600" />
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Geographical Locality assessment</span>
+        {/* Section 14: Final Verdict */}
+        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 14</div>
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Final Verdict</h2>
           </div>
-          <p className="text-sm text-slate-700 leading-relaxed font-semibold">"{data.location_analysis?.analysis}"</p>
-        </div>
-
-        {/* SWOT Analysis */}
-        <SWOTAnalysisSection swot={data.swot_analysis} />
-
-        {/* Risk Mitigation */}
-        <div className="bg-card bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-              <Icon icon="lucide:shield-alert" className="text-xl text-red-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold tracking-tight">Risk Engine Assessment</h3>
-              <p className="text-sm text-muted-foreground font-medium">Identified threats & tactical mitigation</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2.5">Top Category Risks</span>
-              <ul className="space-y-2">
-                {(data.risk_analysis?.top_risks || []).map((risk, i) => (
-                  <li key={i} className="text-xs text-slate-700 leading-relaxed flex gap-2 font-medium">
-                    <span className="text-red-500 font-bold">•</span> {risk}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2.5">Mitigation Strategies</span>
-              <ul className="space-y-2">
-                {(data.risk_analysis?.mitigation_strategies || []).map((strat, i) => (
-                  <li key={i} className="text-xs text-slate-700 leading-relaxed flex gap-2 font-medium">
-                    <span className="text-emerald-500 font-bold">•</span> {strat}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="border-t border-slate-100 pt-4">
+            <FinalVerdict 
+              scores={{ viability: data.founder_decision_engine?.market_fit }}
+              analysis={{ final_recommendation: JSON.stringify({ next_step: data.final_verdict?.context_text, status: data.final_verdict?.launch_recommendation, grade: data.final_verdict?.investment_grade, confidence: data.final_verdict?.confidence_level }) }}
+              onGenerate={handleGenerateBusinessPlan}
+              onSave={handleSaveToWorkspace}
+              isLoading={isGenerating}
+              metadata={metadata}
+            />
           </div>
         </div>
-
-        {/* Timeline roadmap milestones */}
-        <LaunchRoadmapSection roadmap={data.launch_roadmap} />
-
-        {/* Final verdict premium CTA */}
-        <FinalVerdict 
-          scores={{ viability: data.investment_readiness?.investment_score }}
-          analysis={{ final_recommendation: JSON.stringify({ next_step: data.investment_readiness?.recommendation, status: data.final_verdict?.verdict_status }) }}
-          onGenerate={handleGenerateBusinessPlan}
-          onSave={handleSaveToWorkspace}
-          isLoading={isGenerating}
-          metadata={metadata}
-        />
       </main>
     </div>
   );
