@@ -55,14 +55,9 @@ def analyze():
             "error": "idea or idea_text is required and must not be empty."
         }), 400
 
-    if not location:
-        return jsonify({
-            "success": False,
-            "error": "Please specify a target location."
-        }), 400
-
     try:
-        result = market_service.analyze_idea(idea_text, user_id, location=location)
+        # Pass location (which might be None or empty string) so service layer can parse/validate
+        result = market_service.analyze_idea(idea_text, user_id, location=location or None)
         if isinstance(result, dict) and not result.get("success", True):
             status_code = 400 if "location" in result.get("error", "").lower() else 500
             return jsonify({

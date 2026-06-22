@@ -104,8 +104,7 @@ const FeatureTrustBar = () => (
 );
 
 const OneIdeaInput = () => {
-  const [startupIdea, setStartupIdea] = useState("Subscription organic pet food");
-  const [locationInput, setLocationInput] = useState("Hyderabad");
+  const [startupIdea, setStartupIdea] = useState("Subscription organic pet food in Hyderabad");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -116,14 +115,10 @@ const OneIdeaInput = () => {
 
   const handleAnalyze = useCallback(() => {
     if (!startupIdea.trim()) return;
-    if (!locationInput.trim()) {
-      alert("Please specify a target location.");
-      return;
-    }
     
     setIsAnalyzing(true);
-    navigate('/ai-processing', { state: { ideaText: startupIdea, location: locationInput } });
-  }, [startupIdea, locationInput, navigate]);
+    navigate('/ai-processing', { state: { ideaText: startupIdea } });
+  }, [startupIdea, navigate]);
 
   const handleGetStarted = () => {
     if (inputRef.current) {
@@ -176,7 +171,7 @@ const OneIdeaInput = () => {
           <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-600/30 via-cyan-500/30 to-indigo-600/30 rounded-full blur-xl opacity-40 group-hover:opacity-80 transition duration-700 group-hover:duration-300"></div>
           
           <div className="relative flex flex-col md:flex-row items-center bg-white rounded-3xl md:rounded-full p-2.5 shadow-[0_8px_40px_rgb(0,0,0,0.08)] border border-border/80 transition-all group-hover:border-indigo-600/30">
-            <div className="hidden md:flex pl-8 pr-4 text-indigo-600 flex-shrink-0">
+            <div className="hidden md:flex pl-8 pr-4 text-indigo-600">
               <Icon icon="lucide:lightbulb" className="text-3xl" />
             </div>
             <input 
@@ -188,22 +183,6 @@ const OneIdeaInput = () => {
               placeholder="Describe your startup idea in detail..."
               disabled={isAnalyzing}
             />
-
-            {/* Divider line */}
-            <div className="hidden md:block w-px h-8 bg-gray-200 mx-2 flex-shrink-0" />
-
-            {/* Location Input with Map Pin */}
-            <div className="flex items-center pl-6 md:pl-2 pr-4 py-3 md:py-0 w-full md:w-72 border-t md:border-t-0 border-gray-100 flex-shrink-0">
-              <Icon icon="lucide:map-pin" className="text-2xl text-indigo-600 mr-2 flex-shrink-0" />
-              <input 
-                type="text"
-                value={locationInput}
-                onChange={(e) => setLocationInput(e.target.value)}
-                className="bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted-foreground/60 font-medium w-full"
-                placeholder="Target location (e.g. Punjagutta)"
-                disabled={isAnalyzing}
-              />
-            </div>
 
             <button 
               onClick={handleAnalyze}
