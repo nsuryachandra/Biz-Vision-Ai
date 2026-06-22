@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate, Link } from 'react-router-dom';
+import FrameSequenceHero from '../components/FrameSequenceHero';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -32,23 +33,50 @@ const StatusBadge = () => (
 );
 
 const Navigation = ({ onGetStarted }) => (
-  <nav className="w-full px-8 py-6 flex items-center justify-between z-20 relative">
-    <Link to="/" className="flex items-center gap-3 cursor-pointer group">
-      <img src="/logo.jpeg" alt="BizVision AI" className="w-10 h-10 rounded-xl object-cover shadow-lg group-hover:scale-110 transition-transform" />
-      <span className="text-2xl font-extrabold tracking-tight">BizVision AI</span>
+  <nav
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 50,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '14px 32px',
+      background: 'rgba(255, 255, 255, 0.12)',
+      backdropFilter: 'blur(24px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.18)',
+      boxShadow: '0 2px 32px rgba(0,0,0,0.06)',
+    }}
+  >
+    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+      <img src="/logo.jpeg" alt="BizVision AI" style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }} />
+      <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', color: '#0f172a' }}>BizVision AI</span>
     </Link>
-    <div className="hidden md:flex items-center gap-8">
-      <Link to="/" className="text-sm font-bold text-foreground transition-colors">New Idea</Link>
-      <Link to="/history-dashboard" className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
-      <button 
+    <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+      <Link to="/" style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', textDecoration: 'none' }}>New Idea</Link>
+      <Link to="/history-dashboard" style={{ fontSize: 14, fontWeight: 600, color: '#64748b', textDecoration: 'none' }}>Dashboard</Link>
+      <button
         onClick={onGetStarted}
-        className="text-sm font-bold bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+        style={{
+          fontSize: 14,
+          fontWeight: 700,
+          background: '#0f172a',
+          color: '#fff',
+          padding: '10px 24px',
+          borderRadius: 999,
+          border: 'none',
+          cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(15,23,42,0.25)',
+          transition: 'transform 0.15s, box-shadow 0.15s',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(15,23,42,0.3)'; }}
+        onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 16px rgba(15,23,42,0.25)'; }}
       >
         Get Started
       </button>
-    </div>
-    <div className="md:hidden">
-      <Icon icon="lucide:menu" className="text-2xl text-foreground" />
     </div>
   </nav>
 );
@@ -99,11 +127,17 @@ const OneIdeaInput = () => {
     }
   };
 
+
   return (
-    <div className="min-h-screen w-full bg-background flex flex-col relative overflow-hidden font-sans text-foreground">
+    <div className="min-h-screen w-full bg-background flex flex-col relative overflow-x-hidden font-sans text-foreground">
+      {/* Fixed glassmorphic navbar always on top of animation */}
       <Navigation onGetStarted={handleGetStarted} />
 
-      <main className="flex-1 flex flex-col items-center justify-center relative px-6 z-10 w-full max-w-7xl mx-auto pb-20">
+      {/* Scroll track + fixed canvas */}
+      <FrameSequenceHero />
+
+      {/* Hero content appears naturally after scroll track ends */}
+      <main className="flex-1 flex flex-col items-center justify-center relative px-6 z-20 w-full max-w-7xl mx-auto pb-20 pt-24">
         <BackgroundGradients />
 
         <StatusBadge />
