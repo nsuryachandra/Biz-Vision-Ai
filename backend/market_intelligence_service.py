@@ -388,10 +388,38 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
             "sub_category": parsed.get("sub_category") or "General Niche"
         }
 
+    def extract_location_from_text(self, text: str) -> str:
+        """
+        Extract target location deterministically using regex.
+        Looks for patterns like 'in [Location]', 'at [Location]', 'for [Location]'.
+        """
+        if not text:
+            return None
+            
+        # Look for 'in <Location>', 'at <Location>', 'near <Location>', 'based in <Location>', 'located in <Location>'
+        # e.g., "bakery in Austin, TX" or "gym in Seattle" or "hotel at Punjagutta"
+        patterns = [
+            r'\b(?:in|at|near|based\s+in|located\s+in)\s+([A-Z][a-zA-Z]+(?:\s*(?:,\s*|\s+)[A-Z][a-zA-Z]+)*)\b',
+            r'\b(?:in|at|near|based\s+in|located\s+in)\s+([a-zA-Z]+(?:\s*(?:,\s*|\s+)[a-zA-Z]+)*)\b'
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, text)
+            if match:
+                loc = match.group(1).strip()
+                # Filter out common false positives
+                if loc.lower() not in ["a", "the", "my", "our", "an", "business", "market", "industry", "any", "some", "detail", "details"]:
+                    return loc
+                    
+        return None
+
     # ─── Orchestrator ──────────────────────────────────────────────────────────
 
     def analyze_idea(self, idea_text: str, user_id=None, location=None) -> dict:
         # ── 1. Enforce explicit location input and reject empty locations
+        if not location or not location.strip():
+            location = self.extract_location_from_text(idea_text)
+            
         if not location or not location.strip():
             return {
                 "success": False,
