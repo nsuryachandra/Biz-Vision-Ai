@@ -454,7 +454,7 @@ const IntelligenceReport = () => {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BizVision AI - 14-Section Intelligence Report</title>
+    <title>BizVision AI - Premium Intelligence Report</title>
     <style>
       body {
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -636,9 +636,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 1: Executive Summary -->
+      <!-- Executive Summary -->
       <div class="section-card">
-        <span class="section-tag">Section 1</span>
         <h2 class="section-title">Executive Summary</h2>
         <div class="content-block">
           <div class="content-label">Business Summary</div>
@@ -658,9 +657,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 2: Market Overview -->
+      <!-- Market Overview -->
       <div class="section-card">
-        <span class="section-tag">Section 2</span>
         <h2 class="section-title">Market Overview</h2>
         <div class="content-block">
           <div class="content-label">Search Demand</div>
@@ -676,9 +674,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 3: Competitor Intelligence -->
+      <!-- Competitor Intelligence -->
       <div class="section-card">
-        <span class="section-tag">Section 3</span>
         <h2 class="section-title">Competitor Intelligence</h2>
         <div class="content-block">
           <div class="content-label">Market Gaps & Vulnerabilities</div>
@@ -695,9 +692,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 4: Customer Intelligence -->
+      <!-- Customer Intelligence -->
       <div class="section-card">
-        <span class="section-tag">Section 4</span>
         <h2 class="section-title">Customer Intelligence</h2>
         <div class="content-block">
           <div class="content-label">Core Target Persona</div>
@@ -717,9 +713,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 5: Industry Trends -->
+      <!-- Industry Trends -->
       <div class="section-card">
-        <span class="section-tag">Section 5</span>
         <h2 class="section-title">Industry Trends</h2>
         <div class="content-block">
           <div class="content-label">News Sentiment Analysis</div>
@@ -735,9 +730,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 6: Opportunity Analysis -->
+      <!-- Opportunity Analysis -->
       <div class="section-card">
-        <span class="section-tag">Section 6</span>
         <h2 class="section-title">Opportunity Analysis</h2>
         <div class="content-block">
           <div class="content-label">Why This Business May Work</div>
@@ -753,9 +747,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 7: Revenue Model -->
+      <!-- Revenue Model -->
       <div class="section-card">
-        <span class="section-tag">Section 7</span>
         <h2 class="section-title">Revenue Model</h2>
         <div class="content-block">
           <div class="content-label">Revenue Streams</div>
@@ -775,9 +768,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 8: Cost & Capital Analysis -->
+      <!-- Cost & Capital Analysis -->
       <div class="section-card">
-        <span class="section-tag">Section 8</span>
         <h2 class="section-title">Cost & Capital Analysis</h2>
         <div class="grid-3">
           <div class="grid-card">
@@ -803,9 +795,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 9: SWOT Analysis -->
+      <!-- SWOT Analysis -->
       <div class="section-card">
-        <span class="section-tag">Section 9</span>
         <h2 class="section-title">SWOT Analysis</h2>
         <div class="grid-2">
           <div class="grid-card">
@@ -827,9 +818,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 10: Risk Assessment -->
+      <!-- Risk Assessment -->
       <div class="section-card">
-        <span class="section-tag">Section 10</span>
         <h2 class="section-title">Risk Assessment</h2>
         <div class="content-block">
           <div class="content-label">Market Risks</div>
@@ -849,9 +839,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 11: Scenario Planning -->
+      <!-- Scenario Planning -->
       <div class="section-card">
-        <span class="section-tag">Section 11</span>
         <h2 class="section-title">Scenario Planning</h2>
         <div class="grid-3">
           <div class="grid-card">
@@ -869,9 +858,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 12: Launch Roadmap -->
+      <!-- Launch Roadmap -->
       <div class="section-card">
-        <span class="section-tag">Section 12</span>
         <h2 class="section-title">Launch Roadmap</h2>
         <div class="content-block">
           <div class="content-label">Week 1-2 Milestones</div>
@@ -891,9 +879,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 13: Founder Decision Engine -->
+      <!-- Founder Decision Engine -->
       <div class="section-card">
-        <span class="section-tag">Section 13</span>
         <h2 class="section-title">Founder Decision Engine</h2>
         
         <div class="score-bar-container">
@@ -947,9 +934,8 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Section 14: Final Verdict -->
+      <!-- Final Verdict -->
       <div class="section-card verdict-card">
-        <span class="section-tag">Section 14</span>
         <h2 class="section-title">Final Verdict</h2>
         <div class="content-block">
           <div class="content-label" style="color: rgba(255,255,255,0.7);">Strategic Evaluation</div>
@@ -1068,7 +1054,7 @@ const IntelligenceReport = () => {
         isLoading={isLoading}
       />
 
-      <main className="flex-1 w-full max-w-[1200px] mx-auto px-6 py-8 space-y-10 pb-32">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-8 space-y-10 pb-32">
         <DisclaimerBanner />
 
         {/* Venture Statement Callout */}
@@ -1090,10 +1076,9 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Section 1: Executive Summary */}
+        {/* Executive Summary */}
         <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 1</div>
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Executive Summary</h2>
           </div>
           <div className="border-t border-slate-100 pt-4 space-y-4">
@@ -1122,268 +1107,313 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Section 2: Market Overview */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 2</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Market Overview</h2>
+        {/* 2-Column Dashboard Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Market Overview */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Market Overview</h2>
+            </div>
+            <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Search Demand Velocity</span>
+                <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.market_overview?.search_demand}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Trend Direction</span>
+                  <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.trend_direction}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Maturity Stage</span>
+                  <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.market_maturity}</p>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm mt-4">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-3">Local Search Velocity (Past 12 Months)</span>
+                <div className="h-64 w-full relative">
+                  <Line data={dataLine} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Search Demand Velocity</span>
-              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.market_overview?.search_demand}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Trend Direction</span>
-                <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.trend_direction}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Maturity Stage</span>
-                <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.market_maturity}</p>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm mt-4">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-3">Local Search Velocity (Past 12 Months)</span>
-              <div className="h-64 w-full relative">
-                <Line data={dataLine} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Section 3: Competitor Intelligence */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 3</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Competitor Intelligence</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Market Gaps & Vulnerabilities</span>
-              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.competitor_intelligence?.market_gaps}</p>
+          {/* Competitor Intelligence */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Competitor Intelligence</h2>
             </div>
-            
-            {competitors.length > 0 && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
-                <div className="lg:col-span-2 space-y-3">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Local Rivals Map (From Live API Sourcing)</span>
-                  {competitors.slice(0, 4).map((comp, idx) => (
-                    <div key={idx} className="p-4 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-4">
-                      <div className="w-10 h-10 bg-indigo-50 text-indigo-600 font-extrabold flex items-center justify-center rounded-lg flex-shrink-0 text-sm">
-                        {(comp.name || comp.title || 'CO').slice(0, 2).toUpperCase()}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-slate-800">{comp.name || comp.title}</span>
-                          <span className="text-xs font-bold text-amber-500">★ {comp.rating || "4.0"} ({comp.reviews || "0"} reviews)</span>
+            <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Market Gaps & Vulnerabilities</span>
+                <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.competitor_intelligence?.market_gaps}</p>
+              </div>
+              
+              {competitors.length > 0 && (
+                <div className="grid grid-cols-1 gap-6 pt-4">
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Local Rivals Map (From Live API Sourcing)</span>
+                    {competitors.slice(0, 4).map((comp, idx) => (
+                      <div key={idx} className="p-4 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-4">
+                        <div className="w-10 h-10 bg-indigo-50 text-indigo-600 font-extrabold flex items-center justify-center rounded-lg flex-shrink-0 text-sm">
+                          {(comp.name || comp.title || 'CO').slice(0, 2).toUpperCase()}
                         </div>
-                        <p className="text-xs text-slate-400 mt-1 font-semibold">{comp.address}</p>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-bold text-slate-880">{comp.name || comp.title}</span>
+                            <span className="text-xs font-bold text-amber-500">★ {comp.rating || "4.0"} ({comp.reviews || "0"} reviews)</span>
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1 font-semibold">{comp.address}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <div className="bg-slate-50/40 rounded-2xl p-6 border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Competitor Ratings Benchmarking</span>
+                    <CompetitorsRatingsChart competitors={competitors} />
+                  </div>
                 </div>
-                <div className="bg-slate-50/40 rounded-2xl p-6 border border-slate-100">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Competitor Ratings Benchmarking</span>
-                  <CompetitorsRatingsChart competitors={competitors} />
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Section 4: Customer Intelligence */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 4</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Customer Intelligence</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Target Customer Persona</span>
-              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.customer_intelligence?.customer_persona}</p>
+          {/* Customer Intelligence */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Customer Intelligence</h2>
             </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Observed Pain Points</span>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                {(data.customer_intelligence?.pain_points || []).map((pt, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span className="text-indigo-500 font-bold">•</span> {pt}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div className="border-t border-slate-100 pt-4 space-y-4">
               <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Buying Behavior Drivers</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.buying_behavior}</p>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Target Customer Persona</span>
+                <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.customer_intelligence?.customer_persona}</p>
               </div>
               <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Spending Patterns & Wallet Share</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.spending_patterns}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 5: Industry Trends */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 5</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Industry Trends</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">News Sentiment Analysis</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.news_analysis}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Macro Trend Analysis</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.trend_analysis}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Emerging Standards</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.emerging_changes}</p>
-              </div>
-            </div>
-
-            {/* Live News Signals */}
-            {news.length > 0 && (
-              <div className="pt-4">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Live Industry News Signals</span>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {news.slice(0, 3).map((item, idx) => (
-                    <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-4 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition-all">
-                      <span className="text-[10px] font-bold text-indigo-600 block mb-1">{item.source || "News Source"}</span>
-                      <p className="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
-                      {item.date && <span className="text-[9px] text-slate-400 block mt-2 font-bold">{item.date}</span>}
-                    </a>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Observed Pain Points</span>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                  {(data.customer_intelligence?.pain_points || []).map((pt, i) => (
+                    <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <span className="text-indigo-500 font-bold">•</span> {pt}
+                    </li>
                   ))}
+                </ul>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Buying Behavior Drivers</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.buying_behavior}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Spending Patterns & Wallet Share</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.spending_patterns}</p>
                 </div>
               </div>
-            )}
+            </div>
+          </div>
 
-            {/* Live Shopping Benchmarks */}
-            {shopping.length > 0 && (
-              <div className="pt-4">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Alternative Product & Pricing Benchmarks</span>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {shopping.slice(0, 4).map((item, idx) => (
-                    <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col justify-between">
-                      <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
-                      <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
-                        <span className="text-xs font-extrabold text-emerald-600">{item.price || "N/A"}</span>
-                        {item.source && <span className="text-[9px] text-slate-400 font-bold truncate max-w-[50px]">{item.source}</span>}
+          {/* Industry Trends */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Industry Trends</h2>
+            </div>
+            <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">News Sentiment Analysis</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.news_analysis}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Macro Trend Analysis</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.trend_analysis}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Emerging Standards</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.emerging_changes}</p>
+                </div>
+              </div>
+
+              {/* Live News Signals */}
+              {news.length > 0 && (
+                <div className="pt-4">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Live Industry News Signals</span>
+                  <div className="grid grid-cols-1 gap-4">
+                    {news.slice(0, 3).map((item, idx) => (
+                      <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-4 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition-all">
+                        <span className="text-[10px] font-bold text-indigo-600 block mb-1">{item.source || "News Source"}</span>
+                        <p className="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
+                        {item.date && <span className="text-[9px] text-slate-400 block mt-2 font-bold">{item.date}</span>}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Live Shopping Benchmarks */}
+              {shopping.length > 0 && (
+                <div className="pt-4">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Alternative Product & Pricing Benchmarks</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    {shopping.slice(0, 4).map((item, idx) => (
+                      <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col justify-between">
+                        <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
+                        <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
+                          <span className="text-xs font-extrabold text-emerald-600">{item.price || "N/A"}</span>
+                          {item.source && <span className="text-[9px] text-slate-400 font-bold truncate max-w-[50px]">{item.source}</span>}
+                        </div>
                       </div>
-                    </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Opportunity Analysis */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Opportunity Analysis</h2>
+            </div>
+            <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Why This Business May Work</span>
+                <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.opportunity_analysis?.why_work}</p>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Untapped Local Opportunities</span>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                  {(data.opportunity_analysis?.untapped_opportunities || []).map((opp, i) => (
+                    <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <span className="text-indigo-500 font-bold">•</span> {opp}
+                    </li>
                   ))}
+                </ul>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Premium Positioning Hook</span>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.opportunity_analysis?.premium_positioning}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Revenue Model */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
+            </div>
+            <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                  {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
+                    <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <span className="text-emerald-500 font-bold">•</span> {stream}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        {/* Section 6: Opportunity Analysis */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 6</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Opportunity Analysis</h2>
+          {/* Cost & Capital Analysis */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Cost & Capital Analysis</h2>
+            </div>
+            <div className="border-t border-slate-100 pt-4 space-y-6">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
+                  <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
+                </div>
+                <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
+                  <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.operating_cost}</span>
+                </div>
+                <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
+                  <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
+                  <span className="text-lg font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recommended Runway</span>
+                  <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.runway}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Contextual Expense Drivers</span>
+                  <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.context_text}</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Why This Business May Work</span>
-              <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.opportunity_analysis?.why_work}</p>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Untapped Local Opportunities</span>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                {(data.opportunity_analysis?.untapped_opportunities || []).map((opp, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span className="text-indigo-500 font-bold">•</span> {opp}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Premium Positioning Hook</span>
-              <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.opportunity_analysis?.premium_positioning}</p>
-            </div>
-          </div>
-        </div>
 
-        {/* Section 7: Revenue Model */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 7</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
-                  <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <span className="text-emerald-500 font-bold">•</span> {stream}
-                  </li>
-                ))}
-              </ul>
+          {/* Risk Assessment */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Risk Assessment</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
+            <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Risks</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.market_risks}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Competition Risks</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.competition_risks}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Operational Risks</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.operational_risks}</p>
+                </div>
+                <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Legal & Compliance Risks</span>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.legal_risks}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Section 8: Cost & Capital Analysis */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 8</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Cost & Capital Analysis</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4 space-y-6">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
-                <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
-              </div>
-              <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
-                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
-                <span className="text-lg font-extrabold text-indigo-700">{data.cost_capital_analysis?.operating_cost}</span>
-              </div>
-              <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
-                <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
-                <span className="text-lg font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
-              </div>
+          {/* Scenario Planning */}
+          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Scenario Planning</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recommended Runway</span>
-                <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.runway}</p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Contextual Expense Drivers</span>
-                <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.context_text}</p>
+            <div className="border-t border-slate-100 pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
+                  <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
+                </div>
+                <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
+                  <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
+                </div>
+                <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
+                  <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Section 9: SWOT Analysis */}
+        {/* SWOT Analysis */}
         <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 9</div>
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">SWOT Analysis</h2>
           </div>
           <div className="border-t border-slate-100 pt-4">
@@ -1391,62 +1421,9 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Section 10: Risk Assessment */}
+        {/* Launch Roadmap */}
         <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 10</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Risk Assessment</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Risks</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.market_risks}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Competition Risks</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.competition_risks}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Operational Risks</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.operational_risks}</p>
-              </div>
-              <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Legal & Compliance Risks</span>
-                <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.legal_risks}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 11: Scenario Planning */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 11</div>
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Scenario Planning</h2>
-          </div>
-          <div className="border-t border-slate-100 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center">
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
-                <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
-              </div>
-              <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center">
-                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
-                <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
-              </div>
-              <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center">
-                <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
-                <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 12: Launch Roadmap */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 12</div>
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Launch Roadmap</h2>
           </div>
           <div className="border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -1485,10 +1462,9 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Section 13: Founder Decision Engine */}
+        {/* Founder Decision Engine */}
         <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 13</div>
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Founder Decision Engine</h2>
           </div>
           <div className="border-t border-slate-100 pt-4 space-y-5">
@@ -1512,10 +1488,9 @@ const IntelligenceReport = () => {
           </div>
         </div>
 
-        {/* Section 14: Final Verdict */}
+        {/* Final Verdict */}
         <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="px-3 py-1 bg-indigo-50 text-indigo-600 font-extrabold text-xs rounded-lg uppercase tracking-wider">Section 14</div>
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Final Verdict</h2>
           </div>
           <div className="border-t border-slate-100 pt-4">
