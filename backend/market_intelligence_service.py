@@ -310,6 +310,34 @@ CRITICAL DATA GUIDELINES:
   }}
 }}
 """
+        # Filter competitors to only essential fields for LLM analysis
+        filtered_competitors = []
+        for c in market_data.get("competitors", []):
+            filtered_competitors.append({
+                "name": c.get("title") or c.get("name") or "",
+                "rating": c.get("rating") or "N/A",
+                "reviews": c.get("reviews") or c.get("review_count") or 0,
+                "address": c.get("address") or ""
+            })
+
+        # Filter news articles
+        filtered_news = []
+        for n in market_data.get("news", []):
+            filtered_news.append({
+                "title": n.get("title") or "",
+                "source": n.get("source") or "",
+                "snippet": n.get("snippet") or ""
+            })
+
+        # Filter shopping products
+        filtered_shopping = []
+        for s in market_data.get("shopping", []):
+            filtered_shopping.append({
+                "title": s.get("title") or "",
+                "price": s.get("price") or s.get("price_str") or "N/A",
+                "source": s.get("source") or s.get("merchant") or ""
+            })
+
         return prompt_template.format(
             idea_text=idea_data["idea_text"],
             keywords=idea_data["keywords"],
@@ -319,9 +347,9 @@ CRITICAL DATA GUIDELINES:
             sub_category=idea_data.get("sub_category", "N/A"),
             search_results_json=json.dumps(market_data.get("top_search_results", []), indent=2),
             trends_growth_rate=market_data["trends"]["growth_rate"],
-            competitors_json=json.dumps(market_data["competitors"], indent=2),
-            news_json=json.dumps(market_data["news"], indent=2),
-            shopping_json=json.dumps(market_data["shopping"], indent=2),
+            competitors_json=json.dumps(filtered_competitors, indent=2),
+            news_json=json.dumps(filtered_news, indent=2),
+            shopping_json=json.dumps(filtered_shopping, indent=2),
             warnings=", ".join(market_data.get("warnings", [])) or "None"
         )
 

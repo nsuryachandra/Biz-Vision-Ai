@@ -129,7 +129,7 @@ const AIProcessing2 = () => {
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
-  const apiResultRef = useRef(null);
+  const [apiResult, setApiResult] = useState(null);
   const isFinishedRef = useRef(false);
 
   const steps = [
@@ -158,20 +158,20 @@ const AIProcessing2 = () => {
         return nextIndex;
       } else {
         // We are on the last step
-        if (apiResultRef.current && !isFinishedRef.current) {
+        if (apiResult && !isFinishedRef.current) {
           isFinishedRef.current = true;
           setProgressPercentage(100);
           setCurrentSteps((prevSteps) => prevSteps.map(step => ({ ...step, status: 'completed' })));
           
           // Complete and navigate
           setTimeout(() => {
-            navigate('/intelligence-report', { state: { report: apiResultRef.current } });
+            navigate('/intelligence-report', { state: { report: apiResult } });
           }, 800);
         }
         return prevIndex;
       }
     });
-  }, [navigate, steps.length]);
+  }, [navigate, steps.length, apiResult]);
 
   useEffect(() => {
     // Start backend analyze fetch call
@@ -184,7 +184,7 @@ const AIProcessing2 = () => {
         });
         if (res.ok) {
           const data = await res.json();
-          apiResultRef.current = data;
+          setApiResult(data);
         } else {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.error || 'Analysis failed');
@@ -213,15 +213,15 @@ const AIProcessing2 = () => {
 
   // Keep checking if API finished early, and steps also finished
   useEffect(() => {
-    if (apiResultRef.current && currentStepIndex === steps.length - 1 && !isFinishedRef.current) {
+    if (apiResult && currentStepIndex === steps.length - 1 && !isFinishedRef.current) {
       isFinishedRef.current = true;
       setProgressPercentage(100);
       setCurrentSteps((prevSteps) => prevSteps.map(step => ({ ...step, status: 'completed' })));
       setTimeout(() => {
-        navigate('/intelligence-report', { state: { report: apiResultRef.current } });
+        navigate('/intelligence-report', { state: { report: apiResult } });
       }, 800);
     }
-  }, [currentStepIndex, steps.length, navigate]);
+  }, [currentStepIndex, steps.length, navigate, apiResult]);
 
   return (
     <div className="min-h-screen w-full bg-background flex flex-col relative items-center justify-center overflow-hidden font-sans text-foreground">
