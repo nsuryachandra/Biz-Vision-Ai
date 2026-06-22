@@ -45,14 +45,18 @@ def analyze():
         return jsonify({"error": "MarketIntelligenceService is unavailable."}), 503
 
     body = request.get_json(silent=True) or {}
-    idea_text = (body.get("idea_text") or "").strip()
+    idea_text = (body.get("idea_text") or body.get("idea") or "").strip()
+    location = (body.get("location") or "").strip()
     user_id = body.get("user_id")
 
     if not idea_text:
-        return jsonify({"error": "idea_text is required and must not be empty."}), 400
+        return jsonify({"error": "idea or idea_text is required and must not be empty."}), 400
 
     try:
-        result = market_service.analyze_idea(idea_text, user_id)
+        result = market_service.analyze_idea(idea_text, user_id, location=location)
+        if isinstance(result, dict) and not result.get("success", True):
+            return jsonify({"error": result.get("error", "AI report generation unavailable")}), 500
+
         return jsonify({
             "report_id": result["report_id"],
             "idea_id": result["idea_id"],

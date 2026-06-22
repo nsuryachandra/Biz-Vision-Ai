@@ -125,7 +125,8 @@ const StatusItem = ({ step }) => {
 const AIProcessing2 = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const ideaText = location.state?.ideaText || "I want to start an organic pet food business in Hyderabad.";
+  const ideaText = location.state?.ideaText || "I want to start an organic pet food business.";
+  const userLocation = location.state?.location || "Hyderabad";
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
@@ -180,7 +181,10 @@ const AIProcessing2 = () => {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idea_text: ideaText }),
+          body: JSON.stringify({ 
+            idea: ideaText,
+            location: userLocation 
+          }),
         });
         if (res.ok) {
           const data = await res.ok ? await res.json() : null;
@@ -190,7 +194,7 @@ const AIProcessing2 = () => {
         }
       } catch (err) {
         console.error("API Error during analysis:", err);
-        alert("Backend analysis failed. Returning to dashboard.");
+        alert("AI analysis currently unavailable. Please try again later.");
         navigate('/');
       }
     };

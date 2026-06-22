@@ -8,7 +8,6 @@ import google.generativeai as genai
 
 from config import Config
 from db import execute_query
-from utils import parse_idea
 
 logger = logging.getLogger(__name__)
 
@@ -108,90 +107,7 @@ class MarketIntelligenceService:
         topic = keywords.split(",")[0].strip()
         return self._serpapi_get({"engine": "google_shopping", "q": topic}, "Google Shopping")
 
-    # ─── Fallback Data Generator ──────────────────────────────────────────────
 
-    def generate_fallback_dataset(self, idea_data: dict) -> dict:
-        import hashlib
-        import math
-        
-        idea_text = idea_data.get("idea_text", "")
-        seed = int(hashlib.sha256(idea_text.encode('utf-8')).hexdigest(), 16)
-        
-        # 1. Search Result count
-        results_count = int(10 ** (3.5 + (seed % 1500) / 500))
-        
-        # 2. Trends Growth Rate
-        growth_rate = round(-5.0 + (seed % 800) / 10.0, 1)
-        timeline = []
-        base_val = 30 + (seed % 35)
-        for i in range(12):
-            val = base_val + int(math.sin(i + (seed % 7)) * 12) + int(i * growth_rate / 12)
-            val = min(100, max(0, int(val)))
-            timeline.append({"date": f"Month {i+1}", "value": val})
-            
-        # 3. News results
-        news_results = [
-            {
-                "title": f"Market disruptions and growth opportunities in {idea_data.get('industry', 'Business')}",
-                "source": "VentureBeat",
-                "link": "https://example.com/article-1",
-                "sentiment_hint": "positive",
-                "date": "2026-06-22"
-            },
-            {
-                "title": f"The rise of specialized {idea_data.get('keywords', 'niche')} services",
-                "source": "Forbes",
-                "link": "https://example.com/article-2",
-                "sentiment_hint": "neutral",
-                "date": "2026-06-20"
-            }
-        ]
-        
-        # 4. Maps Competitors
-        competitors = [
-            {
-                "title": f"Apex {idea_data.get('industry', 'Venture')}",
-                "rating": 4.6,
-                "reviews": 142,
-                "address": f"{idea_data.get('location', 'Urban Hub')}",
-                "reviews_list": ["Great customer support.", "Pricing was reasonable and prompt service."]
-            },
-            {
-                "title": f"Summit Co.",
-                "rating": 3.9,
-                "reviews": 34,
-                "address": f"{idea_data.get('location', 'Urban Hub')}",
-                "reviews_list": ["Staff was nice, but wait time was long.", "Decent option in the area."]
-            }
-        ]
-        
-        # 5. Shopping Products
-        shopping_products = [
-            {
-                "title": f"Premium {idea_data.get('industry', 'Startup')} Package",
-                "price": "$99.00",
-                "source": "IndustryDirect",
-                "rating": 4.5,
-                "reviews": 23,
-                "thumbnail": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=150"
-            },
-            {
-                "title": f"Standard {idea_data.get('industry', 'Startup')} Kit",
-                "price": "$49.99",
-                "source": "MarketSupply",
-                "rating": 4.1,
-                "reviews": 8,
-                "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=150"
-            }
-        ]
-        
-        return {
-            "search_results_count": results_count,
-            "trends": {"timeline_data": timeline, "growth_rate": growth_rate},
-            "news": news_results,
-            "competitors": competitors,
-            "shopping": shopping_products
-        }
 
     # ─── LLM Caller ───────────────────────────────────────────────────────────
 
@@ -278,7 +194,9 @@ STARTUP CONCEPT DETAILS:
 - Location: {location}
 - Main Industry: {industry}
 - Category Type: {business_type}
+- Sub-Category/Niche: {sub_category}
 - Extracted Keywords: {keywords}
+- Data Collection Warnings: {warnings}
 
 CRITICAL DATA GUIDELINES:
 - You must ONLY use the real competitor names, addresses, review counts, news titles, sources, and shopping prices provided in the API data.
@@ -379,18 +297,72 @@ CRITICAL DATA GUIDELINES:
             location=idea_data["location"],
             industry=idea_data["industry"],
             business_type=idea_data["business_type"],
+            sub_category=idea_data.get("sub_category", "N/A"),
             search_results_count=market_data["search_results_count"],
             trends_growth_rate=market_data["trends"]["growth_rate"],
             competitors_json=json.dumps(market_data["competitors"], indent=2),
             news_json=json.dumps(market_data["news"], indent=2),
-            shopping_json=json.dumps(market_data["shopping"], indent=2)
+            shopping_json=json.dumps(market_data["shopping"], indent=2),
+            warnings=", ".join(market_data.get("warnings", [])) or "None"
         )
+
+    # ─── Idea Parsing / Classification via LLM ─────────────────────────────────
+
+    def parse_idea_via_llm(self, idea_text: str, location: str = "Global / Online") -> dict:
+        """
+        Classifies and extracts structured metadata from the raw business idea
+        using Groq / Gemini. Relies on a robust fallback if APIs are unavailable.
+        """
+        prompt = f"""You are an elite business analyst and startup classification engine.
+Analyze the following startup/business idea text and extract the key attributes.
+You must return a valid JSON object matching this schema EXACTLY:
+{{
+  "idea_text": "The original input text, cleaned of unnecessary spacing.",
+  "keywords": "A comma-separated string of 3-5 main descriptive search keywords/queries (e.g. 'gym, yoga, fitness class'). No stop words.",
+  "industry": "Most accurate industry classification determined by AI.",
+  "business_type": "Most accurate business model classification determined by AI.",
+  "sub_category": "Specific niche/subsegment determined by AI."
+}}
+
+Startup Idea Text: "{idea_text}"
+
+Return only the JSON object. Do not include markdown fences, preambles, or additional text.
+"""
+        response_text = self._call_llm(prompt)
+        parsed = {}
+        if response_text:
+            clean = response_text.strip()
+            if "```" in clean:
+                m = re.search(r"```(?:json)?(.*?)```", clean, re.DOTALL)
+                if m:
+                    clean = m.group(1).strip()
+            try:
+                parsed = json.loads(clean)
+            except Exception as e:
+                logger.warning(f"LLM parse_idea_via_llm failed to decode JSON: {e}. Raw: {response_text}")
+
+        # Ensure all keys exist, fallback if needed
+        keywords = parsed.get("keywords") or ""
+        if not keywords:
+            # Fallback keyword extraction: take non-stop words
+            stop_words = {'i', 'want', 'to', 'start', 'a', 'an', 'the', 'business', 'company', 'startup', 'in', 'at', 'for'}
+            words = [w.lower() for w in re.findall(r'\b\w+\b', idea_text) if w.lower() not in stop_words and len(w) > 2]
+            keywords = ", ".join(words[:4]) if words else "startup"
+
+        return {
+            "idea_text": idea_text,
+            "keywords": keywords,
+            "location": location,
+            "industry": parsed.get("industry") or "General Business",
+            "business_type": parsed.get("business_type") or "General Service",
+            "sub_category": parsed.get("sub_category") or "General Niche"
+        }
 
     # ─── Orchestrator ──────────────────────────────────────────────────────────
 
-    def analyze_idea(self, idea_text: str, user_id=None) -> dict:
+    def analyze_idea(self, idea_text: str, user_id=None, location=None) -> dict:
         # ── 1. NLP Parse
-        idea_data = parse_idea(idea_text)
+        idea_data = self.parse_idea_via_llm(idea_text, location=location or "Global / Online")
         
         # ── 2. Persist Idea
         idea_id = None
@@ -434,32 +406,36 @@ CRITICAL DATA GUIDELINES:
             search_count = int("".join(filter(str.isdigit, search_count)) or "0")
             
         trends_data = trends_raw.get("interest_over_time", {}).get("timeline_data", [])
-        trends_growth = trends_raw.get("growth_rate", 5.0)
+        trends_growth = trends_raw.get("growth_rate", 0.0) if trends_data else 0.0
         
         news_articles = news_raw.get("news_results", [])
         competitors = maps_raw.get("local_results", [])
         shopping_products = shopping_raw.get("shopping_results", [])
         
-        # Use fallback if completely empty
-        fallback_data = self.generate_fallback_dataset(idea_data)
-        if not search_count:
-            search_count = fallback_data["search_results_count"]
-        if not trends_data:
-            trends_data = fallback_data["trends"]["timeline_data"]
-            trends_growth = fallback_data["trends"]["growth_rate"]
-        if not news_articles:
-            news_articles = fallback_data["news"]
+        warnings = []
         if not competitors:
-            competitors = fallback_data["competitors"]
+            competitors = []
+            warnings.append("Competitor data unavailable")
+        if not news_articles:
+            news_articles = []
+            warnings.append("News data unavailable")
         if not shopping_products:
-            shopping_products = fallback_data["shopping"]
+            shopping_products = []
+            warnings.append("Shopping data unavailable")
+        if not trends_data:
+            trends_data = []
+            warnings.append("Trends data unavailable")
+        if not search_count:
+            search_count = 0
+            warnings.append("Search data unavailable")
             
         market_data = {
             "search_results_count": search_count,
             "trends": {"timeline_data": trends_data, "growth_rate": trends_growth},
             "news": news_articles,
             "competitors": competitors,
-            "shopping": shopping_products
+            "shopping": shopping_products,
+            "warnings": warnings
         }
 
         # ── 4. Persist API Data to Database
@@ -551,10 +527,14 @@ CRITICAL DATA GUIDELINES:
             except Exception as e:
                 logger.warning(f"Failed to parse JSON response from LLM: {e}. Raw response: {response_text}")
 
-        # Fallback to local dynamic generator if LLM failed
+        # Return error state if LLM failed
         if not report_json:
-            logger.warning("LLM generation failed or was unconfigured. Synthesizing fallback JSON report...")
-            report_json = self.generate_fallback_json(idea_data, market_data)
+            logger.error("LLM synthesis failed. AI report generation unavailable.")
+            return {
+                "success": False,
+                "error": "AI report generation unavailable",
+                "report": None
+            }
             
         # ── 6. Persist Report to Database
         report_id = None
@@ -579,96 +559,4 @@ CRITICAL DATA GUIDELINES:
             "shopping": shopping_products
         }
 
-    # ─── Local Dynamic Fallback JSON Builder ──────────────────────────────────
 
-    def generate_fallback_json(self, idea_data: dict, market_data: dict) -> dict:
-        kw = idea_data.get("keywords", "startup concept")
-        loc = idea_data.get("location", "Urban Hub")
-        growth = market_data["trends"]["growth_rate"]
-        
-        return {
-            "hero_summary": {
-                "title": f"The {kw.split(',')[0].title()} Initiative",
-                "tagline": "Redefining efficiency through smart market alignment.",
-                "market_opportunity_status": "🟢 High Potential" if growth >= 25 else "🟡 Proceed with Caution",
-                "critical_requirement": f"Validating customer acquisition velocity in {loc} within 30 days."
-            },
-            "executive_verdict": {
-                "verdict_summary": f"This business concept exhibits solid alignment with local consumer demand in {loc}. Category interest is growing, though success hinges on low startup overhead.",
-                "verdict_status": "🟢 Approved for Pilot" if growth >= 15 else "🟡 Pivot Recommended",
-                "financial_viability_outlook": "Premium" if growth >= 25 else "Medium"
-            },
-            "market_overview": {
-                "total_search_volume_indicator": "High search velocity" if market_data["search_results_count"] > 10000 else "Moderate search velocity",
-                "industry_trends_analysis": f"The search results index of {market_data['search_results_count']} queries indicates steady customer pull.",
-                "maturity_level": "Growth" if growth >= 10 else "Emerging"
-            },
-            "trend_insights": {
-                "trajectory": "Rising" if growth > 5 else "Stable",
-                "regional_velocity_description": f"Reflects a {growth}% growth rate in local search volumes over the past 12 months.",
-                "forecast": "Expected to maintain slow but positive upward growth over the next 18 months."
-            },
-            "competitor_insights": {
-                "competitors_found_count": len(market_data["competitors"]),
-                "direct_rivals": [
-                    {
-                        "name": c.get("title", "Local Competitor"),
-                        "rating": c.get("rating", 4.0),
-                        "reviews": c.get("reviews", 10),
-                        "address": c.get("address", loc),
-                        "vulnerability": "Lack of custom service digital engagement tools."
-                    } for c in market_data["competitors"][:2]
-                ],
-                "local_market_gap": "A clear gap exists for digital-first booking and premium customer packages."
-            },
-            "opportunity_radar": {
-                "strengths": [
-                    "High initial product margin potential.",
-                    "Untapped neighborhood location density."
-                ],
-                "high_margin_avenues": [
-                    "Introduce premium corporate subscription packages.",
-                    "Provide custom delivery integrations."
-                ]
-            },
-            "risk_radar": {
-                "threats": [
-                    "Local player price competition.",
-                    "Shifts in regional licensing requirements."
-                ],
-                "barriers_to_entry": [
-                    "Initial setup and logistics capital requirements.",
-                    "Local health or municipal compliance certifications."
-                ]
-            },
-            "audience_insights": {
-                "primary_persona": "Young working professionals prioritizing speed and convenience.",
-                "price_sensitivity": "Medium based on current market listings.",
-                "key_purchasing_driver": "On-demand booking speed and premium service quality."
-            },
-            "launch_strategy": {
-                "phase_1_validation": "Conduct 20 local target customer interviews in week 1-2.",
-                "phase_2_setup": "Establish simple online booking landing page in week 3-4.",
-                "phase_3_pilot": "Execute a soft launch pilot with 10 test clients in month 2.",
-                "phase_4_scale": "Optimize customer acquisition channels and scale in month 3."
-            },
-            "brand_suggestions": {
-                "suggested_brand_names": [
-                    {
-                        "name": f"Aura{kw.split(',')[0].title().replace(' ', '')}",
-                        "tagline": "Seamlessly better.",
-                        "rationale": "Combines a premium prefix with the target concept category."
-                    },
-                    {
-                        "name": f"Nova{kw.split(',')[0].title().replace(' ', '')}",
-                        "tagline": "Smart modern living.",
-                        "rationale": "Highlights innovative approach to traditional services."
-                    }
-                ],
-                "recommended_logo_concept": "Clean, minimalist typography using slate gray and mint green tones."
-            },
-            "final_recommendation": {
-                "overall_score_equivalent": "A" if growth >= 25 else "B",
-                "strategic_verdict": f"Highly recommended to start with a low-cost pilot. Avoid high capital assets until local product-market fit is validated."
-            }
-        }
