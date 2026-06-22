@@ -316,14 +316,14 @@ const HistoryDashboard = () => {
         {/* Aggregate KPIs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           <KPICard 
-            label="Total Reports" 
+            label="Validated Ventures" 
             value={kpiStats.totalReports} 
             icon="lucide:folder-open" 
             colorClass="text-primary" 
             bgClass="bg-primary/10" 
           />
           <KPICard 
-            label="Avg. Health Score" 
+            label="Avg Investment Score" 
             value={kpiStats.avgHealth} 
             icon="lucide:activity" 
             colorClass="text-tertiary" 
@@ -331,7 +331,7 @@ const HistoryDashboard = () => {
             suffix="/100"
           />
           <KPICard 
-            label="Opportunity Index" 
+            label="Avg Saturation Score" 
             value={kpiStats.viableIdeas} 
             icon="lucide:rocket" 
             colorClass="text-secondary" 
@@ -339,7 +339,7 @@ const HistoryDashboard = () => {
             suffix="/100"
           />
           <KPICard 
-            label="Risk Average" 
+            label="Avg Risk Index" 
             value={kpiStats.highRisk} 
             icon="lucide:shield" 
             colorClass="text-destructive" 

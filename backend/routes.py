@@ -108,23 +108,45 @@ def dashboard():
         approved_pilots = 0
         pivots_recommended = 0
         not_feasible = 0
+        avg_investment = 0
+        avg_saturation = 0
+        avg_risk = 0
 
         # Calculate metrics from all reports
         all_reports = execute_query("SELECT report_json FROM analysis_reports", fetch="all") or []
         total_ideas = len(all_reports)
 
+        sum_investment = 0
+        sum_saturation = 0
+        sum_risk = 0
+        count_valid = 0
+
         for r in all_reports:
             try:
                 data = json.loads(r["report_json"])
-                status = data.get("executive_verdict", {}).get("verdict_status", "").lower()
+                status = data.get("final_verdict", {}).get("verdict_status", "").lower()
                 if "approved" in status:
                     approved_pilots += 1
                 elif "pivot" in status or "caution" in status:
                     pivots_recommended += 1
                 else:
                     not_feasible += 1
+
+                sum_investment += int(data.get("investment_readiness", {}).get("investment_score", 50))
+                sum_saturation += int(data.get("market_saturation", {}).get("score", 50))
+                
+                risk_str = data.get("risk_analysis", {}).get("risk_level", "").lower()
+                risk_val = 80 if "high" in risk_str else 30 if "low" in risk_str else 50
+                sum_risk += risk_val
+
+                count_valid += 1
             except Exception:
                 pass
+
+        if count_valid > 0:
+            avg_investment = round(sum_investment / count_valid)
+            avg_saturation = round(sum_saturation / count_valid)
+            avg_risk = round(sum_risk / count_valid)
 
         # Formatting recent report payloads for API response
         formatted_recent = []
@@ -135,13 +157,15 @@ def dashboard():
             
             try:
                 report_data = json.loads(row["report_json"])
-                row["verdict_status"] = report_data.get("executive_verdict", {}).get("verdict_status", "Unknown")
-                row["title"] = report_data.get("hero_summary", {}).get("title", "Market Report")
-                row["grade"] = report_data.get("final_recommendation", {}).get("overall_score_equivalent", "-")
+                row["verdict_status"] = report_data.get("final_verdict", {}).get("verdict_status", "Unknown")
+                row["title"] = report_data.get("executive_summary", {}).get("title", "Market Report")
+                row["grade"] = report_data.get("investment_readiness", {}).get("grade", "-")
+                row["viability_score"] = int(report_data.get("investment_readiness", {}).get("investment_score", 50))
             except Exception:
                 row["verdict_status"] = "Unknown"
                 row["title"] = "Market Report"
                 row["grade"] = "-"
+                row["viability_score"] = 50
 
             if "report_json" in row:
                 del row["report_json"]
@@ -153,6 +177,9 @@ def dashboard():
                 "approved_pilots_count": approved_pilots,
                 "pivots_recommended_count": pivots_recommended,
                 "not_feasible_count": not_feasible,
+                "average_viability_score": avg_investment,
+                "average_opportunity_score": avg_saturation,
+                "average_risk_score": avg_risk
             },
             "recent_reports": formatted_recent
         })
@@ -274,13 +301,15 @@ def history():
             
             try:
                 report_data = json.loads(row["report_json"])
-                row["verdict_status"] = report_data.get("executive_verdict", {}).get("verdict_status", "Unknown")
-                row["title"] = report_data.get("hero_summary", {}).get("title", "Market Report")
-                row["grade"] = report_data.get("final_recommendation", {}).get("overall_score_equivalent", "-")
+                row["verdict_status"] = report_data.get("final_verdict", {}).get("verdict_status", "Unknown")
+                row["title"] = report_data.get("executive_summary", {}).get("title", "Market Report")
+                row["grade"] = report_data.get("investment_readiness", {}).get("grade", "-")
+                row["viability_score"] = int(report_data.get("investment_readiness", {}).get("investment_score", 50))
             except Exception:
                 row["verdict_status"] = "Unknown"
                 row["title"] = "Market Report"
                 row["grade"] = "-"
+                row["viability_score"] = 50
 
             if "report_json" in row:
                 del row["report_json"]

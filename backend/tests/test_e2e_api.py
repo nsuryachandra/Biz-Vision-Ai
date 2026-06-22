@@ -63,9 +63,9 @@ def run_e2e_tests():
     
     # Check that report is returned and looks valid
     report = res_data["report"]
-    assert "hero_summary" in report, "Missing hero_summary in report"
-    assert "executive_verdict" in report, "Missing executive_verdict in report"
-    assert "market_overview" in report, "Missing market_overview in report"
+    assert "executive_summary" in report, "Missing executive_summary in report"
+    assert "final_verdict" in report, "Missing final_verdict in report"
+    assert "market_intelligence" in report, "Missing market_intelligence in report"
     
     logger.info("API payload structures and report details validated successfully.")
 

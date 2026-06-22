@@ -201,7 +201,7 @@ You are generating a premium business intelligence report for a startup concept.
 You must analyze the collected real-market API data below and build a comprehensive, highly strategic report.
 
 REAL-MARKET API DATA COLLECTED:
-1. Top Google Search Results (use these to analyze search-result content, titles, snippets, commercial intent, and market saturation instead of raw result count):
+1. Top Google Search Results:
 {search_results_json}
 2. 12-Month Trends growth rate: {trends_growth_rate}%
 3. Real competitors identified in {location} (from Google Maps API):
@@ -228,89 +228,96 @@ CRITICAL DATA GUIDELINES:
 - Return a single, valid JSON object matching this structure EXACTLY. No comments, no extra characters.
 
 {{
-  "hero_summary": {{
+  "executive_summary": {{
     "title": "A highly premium, professional business title (e.g. 'Elevate Fitness Studio')",
     "tagline": "A compelling 1-line brand tagline",
-    "market_opportunity_status": "🟢 High Potential / 🟡 Proceed with Caution / 🔴 High Risk",
-    "critical_requirement": "One sentence explaining the single most critical dependency for launch success."
+    "critical_requirement": "One sentence explaining the single most critical dependency for launch success.",
+    "brand_suggestions": [
+      {{
+        "name": "Suggested Brand Name 1",
+        "tagline": "Tagline 1",
+        "rationale": "Short explanation of connection"
+      }},
+      {{
+        "name": "Suggested Brand Name 2",
+        "tagline": "Tagline 2",
+        "rationale": "Short explanation of connection"
+      }}
+    ]
   }},
-  "executive_verdict": {{
-    "verdict_summary": "A 2-3 sentence McKinsey-style verdict assessing general feasibility, location-fit, and capital requirement.",
-    "verdict_status": "🟢 Approved for Pilot / 🟡 Pivot Recommended / 🔴 Not Feasible",
-    "financial_viability_outlook": "Premium, Medium, or Low"
-  }},
-  "market_overview": {{
-    "total_search_volume_indicator": "High, Moderate, or Low search velocity",
-    "industry_trends_analysis": "A concise paragraph summarizing local customer demand trajectory, commercial intent, and market saturation based on the content of top search results.",
-    "maturity_level": "Emerging, Growth, or Saturated"
-  }},
-  "trend_insights": {{
-    "trajectory": "Rising, Stable, or Declining",
-    "regional_velocity_description": "Explain growth rate of {trends_growth_rate}% interest velocity and general search momentum over the past 12 months.",
+  "market_intelligence": {{
+    "search_velocity": "High, Moderate, or Low search velocity based on search results",
+    "interest_momentum": "Explain growth rate of {trends_growth_rate}% interest velocity and general search momentum over the past 12 months.",
     "forecast": "1-sentence projection of market trajectory over the next 18 months."
   }},
-  "competitor_insights": {{
-    "competitors_found_count": 0,
-    "direct_rivals": [
+  "competitor_intelligence": {{
+    "market_leader": "Name of the leading competitor from maps data, or 'Insufficient data' if none found",
+    "top_competitors": [
       {{
         "name": "[Rival Name from Maps Data]",
         "rating": 4.5,
         "reviews": 120,
         "address": "[Address/Area]",
-        "vulnerability": "Insufficient data"
+        "differentiator": "A 1-sentence differentiator strategy"
       }}
     ],
-    "local_market_gap": "Explain the exact gap or underserved segment in the local market (e.g. hygiene standards, digital booking, unique packages)."
+    "common_strengths": ["Strength 1 (max 10 words)", "Strength 2 (max 10 words)"],
+    "common_weaknesses": ["Weakness 1 (max 10 words)", "Weakness 2 (max 10 words)"],
+    "unserved_opportunities": ["Opportunity 1 (max 12 words)", "Opportunity 2 (max 12 words)"]
   }},
-  "opportunity_radar": {{
-    "strengths": [
-      "Strength #1 (max 10 words)",
-      "Strength #2 (max 10 words)"
-    ],
-    "high_margin_avenues": [
-      "High margin upsell opportunity #1 (max 12 words)",
-      "High margin upsell opportunity #2 (max 12 words)"
-    ]
+  "customer_sentiment": {{
+    "love_factors": ["Love factor 1 (max 10 words)", "Love factor 2 (max 10 words)"],
+    "pain_points": ["Pain point 1 (max 10 words)", "Pain point 2 (max 10 words)"],
+    "buying_triggers": ["Trigger 1 (max 12 words)", "Trigger 2 (max 12 words)"],
+    "market_gap": "Explain the exact gap or underserved segment in the local market based on competitor reviews."
   }},
-  "risk_radar": {{
-    "threats": [
-      "External threat #1 (max 10 words)",
-      "External threat #2 (max 10 words)"
-    ],
-    "barriers_to_entry": [
-      "Primary barrier/regulation #1 (max 12 words)",
-      "Secondary barrier/regulation #2 (max 12 words)"
-    ]
+  "market_saturation": {{
+    "score": 74,
+    "grade": "B",
+    "state": "Competitive / Saturated / Fragmented",
+    "explanation": "Provide a detailed justification for the saturation score based on competitor density and search demand."
   }},
-  "audience_insights": {{
-    "primary_persona": "Description of the main customer profile (age, lifestyle, priority)",
-    "price_sensitivity": "High, Medium, or Premium-friendly based on Google Shopping prices",
-    "key_purchasing_driver": "What motivates them to purchase (e.g., convenience, organic source, speed)"
+  "revenue_potential": {{
+    "low_case": "Monthly revenue estimate under conservative scenario in local currency (e.g., ₹2,50,000)",
+    "expected_case": "Monthly revenue estimate under expected scenario (e.g., ₹8,00,000)",
+    "high_case": "Monthly revenue estimate under aggressive scenario (e.g., ₹20,00,000)",
+    "assumptions": ["Assumption 1 (e.g., average customer spend, footfall)", "Assumption 2"]
   }},
-  "launch_strategy": {{
-    "phase_1_validation": "Action item for validation in week 1-2 (max 15 words)",
-    "phase_2_setup": "Action item for setting up MVP in week 3-4 (max 15 words)",
-    "phase_3_pilot": "Action item for soft-launch in month 2 (max 15 words)",
-    "phase_4_scale": "Action item for scaling in month 3 (max 15 words)"
+  "startup_costs": {{
+    "minimum_cost": "Minimum launch cost in local currency (e.g., ₹5,00,000)",
+    "recommended_cost": "Recommended launch cost (e.g., ₹15,00,000)",
+    "premium_launch_cost": "Premium launch cost (e.g., ₹30,00,000)"
   }},
-  "brand_suggestions": {{
-    "suggested_brand_names": [
-      {{
-        "name": "Brand Name Suggestion 1",
-        "tagline": "Tagline 1",
-        "rationale": "Short explanation of brand connection"
-      }},
-      {{
-        "name": "Brand Name Suggestion 2",
-        "tagline": "Tagline 2",
-        "rationale": "Short explanation of brand connection"
-      }}
-    ],
-    "recommended_logo_concept": "Creative visual concept for logo and color palette representation."
+  "location_analysis": {{
+    "location_score": 86,
+    "grade": "A",
+    "analysis": "Specific location analysis based on proximity, density, and local accessibility factors of {location}."
   }},
-  "final_recommendation": {{
-    "overall_score_equivalent": "A letter grade (A+, A, B, C, or D) representing overall investment potential",
-    "strategic_verdict": "Concluding strategic recommendation for the founder (2 sentences)."
+  "swot_analysis": {{
+    "strengths": ["Strength 1 (max 10 words)", "Strength 2"],
+    "weaknesses": ["Weakness 1 (max 10 words)", "Weakness 2"],
+    "opportunities": ["Opportunity 1 (max 12 words)", "Opportunity 2"],
+    "threats": ["Threat 1 (max 10 words)", "Threat 2"]
+  }},
+  "risk_analysis": {{
+    "risk_level": "High, Medium, or Low",
+    "top_risks": ["Risk 1 (max 10 words)", "Risk 2"],
+    "mitigation_strategies": ["Mitigation strategy 1", "Mitigation strategy 2"]
+  }},
+  "investment_readiness": {{
+    "investment_score": 91,
+    "grade": "A+",
+    "recommendation": "Strategic recommendation for the founder (2 sentences) on investment viability."
+  }},
+  "launch_roadmap": {{
+    "first_30_days": ["Action item 1", "Action item 2"],
+    "days_31_to_60": ["Action item 1", "Action item 2"],
+    "days_61_to_90": ["Action item 1", "Action item 2"]
+  }},
+  "final_verdict": {{
+    "verdict_status": "🟢 Approved for Pilot / 🟡 Pivot Recommended / 🔴 Not Feasible",
+    "financial_viability_outlook": "Premium, Medium, or Low",
+    "confidence_level": 85
   }}
 }}
 """
