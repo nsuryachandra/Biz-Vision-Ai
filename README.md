@@ -1,6 +1,6 @@
 # BizVision AI — Startup Intelligence & Market Validation Platform
 
-BizVision AI is a premium, McKinsey-inspired SaaS application designed to validate business concepts before investing capital. The platform leverages SerpAPI to query Google Search, Trends, News, and Maps, and utilizes Google Gemini to build detailed text reports, operational risks, competitor spreadsheets, and brand name viability profiles.
+BizVision AI is a premium, McKinsey-inspired SaaS application designed to validate business concepts before investing capital. The platform leverages SerpAPI to query Google Search, Trends, News, and Maps, and utilizes Groq (Llama-3.3) and Google Gemini to build detailed text reports, operational risks, competitor spreadsheets, and brand name viability profiles.
 
 ## Project Structure
 ```text
@@ -8,16 +8,16 @@ bizvision-ai/
 ├── backend/            # Flask Python API server
 │   ├── app.py          # Main entrypoint
 │   ├── routes.py       # API routing and business flows
-│   ├── db.py           # MySQL database driver and local JSON fallback
+│   ├── db.py           # Aiven MySQL database driver
 │   ├── services.py     # SerpAPI connections & mock fallbacks
 │   ├── prompt_engine.py# LLM dynamic prompt templates
 │   ├── analysis_engine.py # Quantitative scoring algorithm
-│   └── local_db.json   # Local DB storage template
+│   └── schema.sql      # MySQL schema definition
 └── frontend/           # React Single Page App (Vite)
     ├── src/
     │   ├── App.jsx     # Main page router
-    │   ├── components/ # LandingPage, Dashboard, and ReportView
-    │   └── styles/     # Vanilla CSS theme definitions
+    │   ├── components/ # Landing page and canvas video components
+    │   └── pages/      # Report, History, and Processing pages
     └── package.json    # React dependencies
 ```
 
@@ -37,14 +37,11 @@ pip install -r requirements.txt
 
 Create/modify the `.env` file with your details:
 ```ini
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=YOUR_MYSQL_PASSWORD_HERE
-DB_NAME=bizvision_ai
+DATABASE_URL=mysql://avnadmin:PASSWORD@HOST:PORT/bizvision_ai?ssl-mode=REQUIRED
 SERPAPI_KEY=YOUR_SERPAPI_KEY_HERE
+GROQ_API_KEY=YOUR_GROQ_API_KEY_HERE
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 ```
-*Note: If no MySQL server is running, the backend automatically falls back to the local `local_db.json` database.*
 
 Run the Flask server:
 ```bash
