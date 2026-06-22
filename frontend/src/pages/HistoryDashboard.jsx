@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -227,7 +228,7 @@ const HistoryDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        const dashRes = await fetch('http://localhost:5000/dashboard');
+        const dashRes = await fetch(`${API_BASE_URL}/dashboard`);
         if (dashRes.ok) {
           const dashData = await dashRes.json();
           const metrics = dashData.metrics;
@@ -240,7 +241,7 @@ const HistoryDashboard = () => {
           });
         }
 
-        const histRes = await fetch('http://localhost:5000/history');
+        const histRes = await fetch(`${API_BASE_URL}/history`);
         if (histRes.ok) {
           const histData = await histRes.json();
           const formattedReports = histData.map((item) => ({
@@ -278,7 +279,7 @@ const HistoryDashboard = () => {
   const handleViewReport = async (id) => {
     try {
       setIsLoading(true);
-      const res = await fetch(`http://localhost:5000/report/${id}`);
+      const res = await fetch(`${API_BASE_URL}/report/${id}`);
       if (res.ok) {
         const reportData = await res.json();
         navigate('/intelligence-report', { state: { report: reportData } });

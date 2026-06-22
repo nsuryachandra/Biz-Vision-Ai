@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -177,7 +178,7 @@ const AIProcessing2 = () => {
     // Start backend analyze fetch call
     const triggerAnalysis = async () => {
       try {
-        const res = await fetch('http://localhost:5000/analyze', {
+        const res = await fetch(`${API_BASE_URL}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idea_text: ideaText }),
