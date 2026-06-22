@@ -4,8 +4,6 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://biz-vision-ai.onrender.com';
-
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -179,7 +177,8 @@ const AIProcessing2 = () => {
     // Start backend analyze fetch call
     const triggerAnalysis = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/analyze`, {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://biz-vision-ai.onrender.com';
+        const res = await fetch(`${backendUrl}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idea_text: ideaText }),

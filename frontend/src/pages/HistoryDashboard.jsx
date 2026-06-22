@@ -3,8 +3,6 @@ import { Icon } from '@iconify/react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate } from 'react-router-dom';
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://biz-vision-ai.onrender.com';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,6 +31,8 @@ ChartJS.register(
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://biz-vision-ai.onrender.com';
 
 const Header = ({ onNewAnalysis }) => (
   <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/60 shadow-sm">
@@ -229,7 +229,7 @@ const HistoryDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        const dashRes = await fetch(`${BACKEND_URL}/dashboard`);
+        const dashRes = await fetch(`${backendUrl}/dashboard`);
         if (dashRes.ok) {
           const dashData = await dashRes.json();
           const metrics = dashData.metrics;
@@ -242,7 +242,7 @@ const HistoryDashboard = () => {
           });
         }
 
-        const histRes = await fetch(`${BACKEND_URL}/history`);
+        const histRes = await fetch(`${backendUrl}/history`);
         if (histRes.ok) {
           const histData = await histRes.json();
           const formattedReports = histData.map((item) => ({
@@ -280,7 +280,7 @@ const HistoryDashboard = () => {
   const handleViewReport = async (id) => {
     try {
       setIsLoading(true);
-      const res = await fetch(`${BACKEND_URL}/report/${id}`);
+      const res = await fetch(`${backendUrl}/report/${id}`);
       if (res.ok) {
         const reportData = await res.json();
         navigate('/intelligence-report', { state: { report: reportData } });
