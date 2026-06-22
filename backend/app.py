@@ -36,10 +36,7 @@ def startup_checks() -> bool:
     print(f"{B}{'-'*46}{X}")
 
     mysql_ok = check_db_health()
-    import db
-    if db.USE_SQLITE:
-        _check(f"SQLite (Local Fallback) -> {db.SQLITE_DB_PATH.split('/')[-1].split('\\')[-1]}", mysql_ok, "MySQL failed, using local fallback database")
-    elif Config.DATABASE_URL:
+    if Config.DATABASE_URL:
         from urllib.parse import urlparse
         parsed = urlparse(Config.DATABASE_URL)
         host = parsed.hostname
