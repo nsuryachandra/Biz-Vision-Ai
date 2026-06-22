@@ -38,6 +38,7 @@ def run_e2e_tests():
     # 3. Test POST /analyze (E2E Analysis pipeline)
     test_payload = {
         "idea_text": "A premium indoor climbing gym with organic juice bar in Seattle, WA",
+        "location": "Seattle, WA",
         "user_id": None
     }
     logger.info(f"Testing POST /analyze with payload: {test_payload}")

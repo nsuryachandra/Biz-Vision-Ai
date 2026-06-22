@@ -81,13 +81,44 @@ class MarketIntelligenceService:
         query = f"{location} {keywords}"
         return self._serpapi_get({"engine": "google", "q": query}, "Google Search")
 
-    def fetch_google_trends(self, keywords: str) -> dict:
-        topic = keywords.split(",")[0].strip()
-        return self._serpapi_get({"engine": "google_trends", "q": topic, "date": "today 12-m"}, "Google Trends")
+    def _get_geo_for_location(self, location: str) -> str:
+        if not location:
+            return None
+        india_terms = {"india", "hyderabad", "punjagutta", "gachibowli", "madhapur", "bangalore", "mumbai", "delhi", "chennai", "kolkata", "pune"}
+        loc_lower = location.lower()
+        for term in india_terms:
+            if term in loc_lower:
+                return "IN"
+        if "us" in loc_lower or "united states" in loc_lower:
+            return "US"
+        if "uk" in loc_lower or "united kingdom" in loc_lower or "london" in loc_lower:
+            return "GB"
+        if "ca" in loc_lower or "canada" in loc_lower:
+            return "CA"
+        if "au" in loc_lower or "australia" in loc_lower:
+            return "AU"
+        return None
 
-    def fetch_google_news(self, keywords: str, industry: str) -> dict:
-        query = f"{keywords} {industry} market trends"
-        return self._serpapi_get({"engine": "google", "tbm": "nws", "q": query}, "Google News")
+    def fetch_google_trends(self, keywords: str, location: str) -> dict:
+        topic = keywords.split(",")[0].strip()
+        query = f"{location} {topic}"
+        params = {
+            "engine": "google_trends",
+            "q": query,
+            "date": "today 12-m"
+        }
+        geo = self._get_geo_for_location(location)
+        if geo:
+            params["geo"] = geo
+        return self._serpapi_get(params, "Google Trends")
+
+    def fetch_google_news(self, keywords: str, location: str, industry: str) -> dict:
+        query = f"{location} {keywords}"
+        res = self._serpapi_get({"engine": "google", "tbm": "nws", "q": query}, "Google News")
+        if not res or not res.get("news_results"):
+            fallback_query = f"{location} {industry}"
+            res = self._serpapi_get({"engine": "google", "tbm": "nws", "q": fallback_query}, "Google News")
+        return res
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
         query = f"{keywords} {location}"
@@ -170,7 +201,8 @@ You are generating a premium business intelligence report for a startup concept.
 You must analyze the collected real-market API data below and build a comprehensive, highly strategic report.
 
 REAL-MARKET API DATA COLLECTED:
-1. Search Demand Signal: {search_results_count} total Google index matches found.
+1. Top Google Search Results (use these to analyze search-result content, titles, snippets, commercial intent, and market saturation instead of raw result count):
+{search_results_json}
 2. 12-Month Trends growth rate: {trends_growth_rate}%
 3. Real competitors identified in {location} (from Google Maps API):
 {competitors_json}
@@ -191,6 +223,7 @@ STARTUP CONCEPT DETAILS:
 CRITICAL DATA GUIDELINES:
 - You must ONLY use the real competitor names, addresses, review counts, news titles, sources, and shopping prices provided in the API data.
 - If no competitors are provided, report that no local competitors were found in this region. Do not invent any competitor names, reviews, ratings, news articles, or shopping items.
+- RULE: Only identify competitor vulnerabilities if supported by actual review evidence supplied in API data. If evidence is unavailable, output exactly: "Insufficient data".
 - Maintain maximum color fidelity, sharpness, and high-quality insight paragraphs. Do not wrap sections in any markdown fences.
 - Return a single, valid JSON object matching this structure EXACTLY. No comments, no extra characters.
 
@@ -208,7 +241,7 @@ CRITICAL DATA GUIDELINES:
   }},
   "market_overview": {{
     "total_search_volume_indicator": "High, Moderate, or Low search velocity",
-    "industry_trends_analysis": "A concise paragraph summarizing local customer demand trajectory based on search results count.",
+    "industry_trends_analysis": "A concise paragraph summarizing local customer demand trajectory, commercial intent, and market saturation based on the content of top search results.",
     "maturity_level": "Emerging, Growth, or Saturated"
   }},
   "trend_insights": {{
@@ -224,7 +257,7 @@ CRITICAL DATA GUIDELINES:
         "rating": 4.5,
         "reviews": 120,
         "address": "[Address/Area]",
-        "vulnerability": "Only identify a vulnerability if supported by actual review data provided in API results. If review evidence is unavailable, return: 'Insufficient data'."
+        "vulnerability": "Insufficient data"
       }}
     ],
     "local_market_gap": "Explain the exact gap or underserved segment in the local market (e.g. hygiene standards, digital booking, unique packages)."
@@ -288,7 +321,7 @@ CRITICAL DATA GUIDELINES:
             industry=idea_data["industry"],
             business_type=idea_data["business_type"],
             sub_category=idea_data.get("sub_category", "N/A"),
-            search_results_count=market_data["search_results_count"],
+            search_results_json=json.dumps(market_data.get("top_search_results", []), indent=2),
             trends_growth_rate=market_data["trends"]["growth_rate"],
             competitors_json=json.dumps(market_data["competitors"], indent=2),
             news_json=json.dumps(market_data["news"], indent=2),
@@ -348,42 +381,11 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
             "sub_category": parsed.get("sub_category") or "General Niche"
         }
 
-    def extract_location_from_text(self, text: str) -> str:
-        """
-        Deterministically extracts geographic location from startup idea text
-        by looking for common prepositions like "in" or "at" preceding a location name.
-        Example: "organic pet food business in Hyderabad" -> "Hyderabad"
-        Example: "Luxury Hotel in Austin, TX" -> "Austin, TX"
-        Example: "Online SaaS platform" -> None
-        """
-        if not text:
-            return None
-        # Match " in <location>" or " at <location>" near the end of the text.
-        match = re.search(r'\b(?:in|at)\s+([A-Z][a-zA-Z\s,]+)(?:\.|\?|!|\s*$)', text)
-        if match:
-            loc = match.group(1).strip()
-            non_locations = {"a", "an", "the", "my", "our", "detail", "general", "brick"}
-            if loc.lower() not in non_locations:
-                return loc
-        
-        # Fallback split check: split by " in " or " at "
-        parts = re.split(r'\b(?:in|at)\b', text, flags=re.IGNORECASE)
-        if len(parts) > 1:
-            loc = parts[-1].strip()
-            loc = re.sub(r'[.,!?]+$', '', loc).strip()
-            if loc and len(loc) <= 50:
-                return loc
-                
-        return None
-
     # ─── Orchestrator ──────────────────────────────────────────────────────────
 
     def analyze_idea(self, idea_text: str, user_id=None, location=None) -> dict:
-        # ── 1. Determine location from direct input if not provided
-        if not location:
-            location = self.extract_location_from_text(idea_text)
-            
-        if not location:
+        # ── 1. Enforce explicit location input and reject empty locations
+        if not location or not location.strip():
             return {
                 "success": False,
                 "error": "Please specify a target location."
@@ -423,8 +425,8 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         ind = idea_data.get("industry", "")
         
         search_raw = self.fetch_google_search(kw, loc)
-        trends_raw = self.fetch_google_trends(kw)
-        news_raw = self.fetch_google_news(kw, ind)
+        trends_raw = self.fetch_google_trends(kw, loc)
+        news_raw = self.fetch_google_news(kw, loc, ind)
         maps_raw = self.fetch_google_maps(kw, loc)
         shopping_raw = self.fetch_google_shopping(kw)
         
@@ -432,6 +434,14 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         search_count = search_raw.get("search_information", {}).get("total_results", 0)
         if isinstance(search_count, str):
             search_count = int("".join(filter(str.isdigit, search_count)) or "0")
+            
+        organic_results = search_raw.get("organic_results", [])
+        top_search_results = []
+        for res in organic_results[:5]:
+            top_search_results.append({
+                "title": res.get("title") or "",
+                "snippet": res.get("snippet") or ""
+            })
             
         trends_data = trends_raw.get("interest_over_time", {}).get("timeline_data", [])
         trends_growth = trends_raw.get("growth_rate", 0.0) if trends_data else 0.0
@@ -453,12 +463,12 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         if not trends_data:
             trends_data = []
             warnings.append("Trends data unavailable")
-        if not search_count:
-            search_count = 0
+        if not top_search_results:
             warnings.append("Search data unavailable")
             
         market_data = {
             "search_results_count": search_count,
+            "top_search_results": top_search_results,
             "trends": {"timeline_data": trends_data, "growth_rate": trends_growth},
             "news": news_articles,
             "competitors": competitors,

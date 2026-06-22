@@ -1,4 +1,8 @@
 import sys
+# Python 3.14 compatibility hotfix for Google Protobuf / UPB extensions
+sys.modules['google._upb'] = None
+sys.modules['google._upb._message'] = None
+
 import os
 import logging
 import json

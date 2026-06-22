@@ -50,13 +50,25 @@ def analyze():
     user_id = body.get("user_id")
 
     if not idea_text:
-        return jsonify({"error": "idea or idea_text is required and must not be empty."}), 400
+        return jsonify({
+            "success": False,
+            "error": "idea or idea_text is required and must not be empty."
+        }), 400
+
+    if not location:
+        return jsonify({
+            "success": False,
+            "error": "Please specify a target location."
+        }), 400
 
     try:
         result = market_service.analyze_idea(idea_text, user_id, location=location)
         if isinstance(result, dict) and not result.get("success", True):
             status_code = 400 if "location" in result.get("error", "").lower() else 500
-            return jsonify({"error": result.get("error", "AI report generation unavailable")}), status_code
+            return jsonify({
+                "success": False,
+                "error": result.get("error", "AI report generation unavailable")
+            }), status_code
 
         return jsonify({
             "report_id": result["report_id"],

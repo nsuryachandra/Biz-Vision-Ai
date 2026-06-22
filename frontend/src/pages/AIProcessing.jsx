@@ -125,7 +125,8 @@ const StatusItem = ({ step }) => {
 const AIProcessing2 = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const ideaText = location.state?.ideaText || "I want to start an organic pet food business in Hyderabad.";
+  const ideaText = location.state?.ideaText || "Subscription organic pet food";
+  const targetLocation = location.state?.location || "Hyderabad";
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
@@ -180,7 +181,7 @@ const AIProcessing2 = () => {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idea_text: ideaText }),
+          body: JSON.stringify({ idea_text: ideaText, location: targetLocation }),
         });
         if (res.ok) {
           const data = await res.json();

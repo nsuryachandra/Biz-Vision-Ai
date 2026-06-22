@@ -104,7 +104,8 @@ const FeatureTrustBar = () => (
 );
 
 const OneIdeaInput = () => {
-  const [startupIdea, setStartupIdea] = useState("I want to start an organic pet food business in Hyderabad.");
+  const [startupIdea, setStartupIdea] = useState("Subscription organic pet food");
+  const [locationInput, setLocationInput] = useState("Hyderabad");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -115,10 +116,14 @@ const OneIdeaInput = () => {
 
   const handleAnalyze = useCallback(() => {
     if (!startupIdea.trim()) return;
+    if (!locationInput.trim()) {
+      alert("Please specify a target location.");
+      return;
+    }
     
     setIsAnalyzing(true);
-    navigate('/ai-processing', { state: { ideaText: startupIdea } });
-  }, [startupIdea, navigate]);
+    navigate('/ai-processing', { state: { ideaText: startupIdea, location: locationInput } });
+  }, [startupIdea, locationInput, navigate]);
 
   const handleGetStarted = () => {
     if (inputRef.current) {
@@ -171,7 +176,7 @@ const OneIdeaInput = () => {
           <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-600/30 via-cyan-500/30 to-indigo-600/30 rounded-full blur-xl opacity-40 group-hover:opacity-80 transition duration-700 group-hover:duration-300"></div>
           
           <div className="relative flex flex-col md:flex-row items-center bg-white rounded-3xl md:rounded-full p-2.5 shadow-[0_8px_40px_rgb(0,0,0,0.08)] border border-border/80 transition-all group-hover:border-indigo-600/30">
-            <div className="hidden md:flex pl-8 pr-4 text-indigo-600">
+            <div className="hidden md:flex pl-8 pr-4 text-indigo-600 flex-shrink-0">
               <Icon icon="lucide:lightbulb" className="text-3xl" />
             </div>
             <input 
@@ -183,11 +188,28 @@ const OneIdeaInput = () => {
               placeholder="Describe your startup idea in detail..."
               disabled={isAnalyzing}
             />
+
+            {/* Divider line */}
+            <div className="hidden md:block w-px h-8 bg-gray-200 mx-2 flex-shrink-0" />
+
+            {/* Location Input with Map Pin */}
+            <div className="flex items-center pl-6 md:pl-2 pr-4 py-3 md:py-0 w-full md:w-72 border-t md:border-t-0 border-gray-100 flex-shrink-0">
+              <Icon icon="lucide:map-pin" className="text-2xl text-indigo-600 mr-2 flex-shrink-0" />
+              <input 
+                type="text"
+                value={locationInput}
+                onChange={(e) => setLocationInput(e.target.value)}
+                className="bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted-foreground/60 font-medium w-full"
+                placeholder="Target location (e.g. Punjagutta)"
+                disabled={isAnalyzing}
+              />
+            </div>
+
             <button 
               onClick={handleAnalyze}
               disabled={isAnalyzing}
               className={cn(
-                "w-full md:w-auto bg-primary hover:bg-slate-900 text-primary-foreground font-bold text-lg px-10 py-5 rounded-full shadow-lg transition-all flex items-center justify-center gap-3 md:ml-2 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed",
+                "w-full md:w-auto bg-primary hover:bg-slate-900 text-primary-foreground font-bold text-lg px-10 py-5 rounded-full shadow-lg transition-all flex items-center justify-center gap-3 md:ml-2 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex-shrink-0",
                 isAnalyzing && "animate-pulse"
               )}
             >
@@ -230,22 +252,23 @@ const OneIdeaInput = () => {
             <Icon icon="lucide:sparkles" className="text-indigo-500 animate-pulse text-sm" /> Try suggesting:
           </span>
           {[
-            "Pure vegetarian restaurant in Hyderabad",
-            "Subscription organic pet food in Hyderabad",
-            "SaaS billing and invoicing dashboard for startups",
-            "On-demand laundry and dry cleaning delivery service"
+            { idea: "Pure vegetarian restaurant", location: "Hyderabad" },
+            { idea: "Subscription organic pet food", location: "Hyderabad" },
+            { idea: "SaaS billing and invoicing dashboard", location: "Hyderabad" },
+            { idea: "On-demand laundry and dry cleaning", location: "Hyderabad" }
           ].map((tag, idx) => (
             <button
               key={idx}
               onClick={() => {
-                setStartupIdea(tag);
+                setStartupIdea(tag.idea);
+                setLocationInput(tag.location);
                 if (inputRef.current) {
                   inputRef.current.focus();
                 }
               }}
               className="text-xs font-semibold px-4 py-2 rounded-full border border-border/80 bg-white/50 backdrop-blur-sm hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-95"
             >
-              {tag}
+              {tag.idea} in {tag.location}
             </button>
           ))}
         </motion.div>
