@@ -125,8 +125,7 @@ const StatusItem = ({ step }) => {
 const AIProcessing2 = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const ideaText = location.state?.ideaText || "I want to start an organic pet food business.";
-  const userLocation = location.state?.location || "Hyderabad";
+  const ideaText = location.state?.ideaText || "I want to start an organic pet food business in Hyderabad.";
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
@@ -181,20 +180,22 @@ const AIProcessing2 = () => {
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            idea: ideaText,
-            location: userLocation 
-          }),
+          body: JSON.stringify({ idea_text: ideaText }),
         });
         if (res.ok) {
-          const data = await res.ok ? await res.json() : null;
+          const data = await res.json();
           apiResultRef.current = data;
         } else {
-          throw new Error('Analysis failed');
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Analysis failed');
         }
       } catch (err) {
         console.error("API Error during analysis:", err);
-        alert("AI analysis currently unavailable. Please try again later.");
+        if (err.message && err.message.toLowerCase().includes("location")) {
+          alert("Please specify a target location (example: Luxury Hotel in Punjagutta).");
+        } else {
+          alert("AI analysis currently unavailable. Please try again later.");
+        }
         navigate('/');
       }
     };

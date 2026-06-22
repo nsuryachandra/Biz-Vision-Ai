@@ -55,7 +55,8 @@ def analyze():
     try:
         result = market_service.analyze_idea(idea_text, user_id, location=location)
         if isinstance(result, dict) and not result.get("success", True):
-            return jsonify({"error": result.get("error", "AI report generation unavailable")}), 500
+            status_code = 400 if "location" in result.get("error", "").lower() else 500
+            return jsonify({"error": result.get("error", "AI report generation unavailable")}), status_code
 
         return jsonify({
             "report_id": result["report_id"],

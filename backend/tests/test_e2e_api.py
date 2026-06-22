@@ -37,8 +37,7 @@ def run_e2e_tests():
 
     # 3. Test POST /analyze (E2E Analysis pipeline)
     test_payload = {
-        "idea": "A premium indoor climbing gym with organic juice bar",
-        "location": "Seattle, WA",
+        "idea_text": "A premium indoor climbing gym with organic juice bar in Seattle, WA",
         "user_id": None
     }
     logger.info(f"Testing POST /analyze with payload: {test_payload}")
@@ -57,7 +56,7 @@ def run_e2e_tests():
     # Validate LLM metadata parsing results
     metadata = res_data["metadata"]
     logger.info(f"Generated metadata: {metadata}")
-    assert metadata["idea_text"] == test_payload["idea"], "Parsed idea text mismatch"
+    assert metadata["idea_text"] == test_payload["idea_text"], "Parsed idea text mismatch"
     assert "seattle" in metadata["location"].lower(), f"Expected Seattle in location, got: {metadata['location']}"
     assert len(metadata["keywords"]) > 0, "Expected non-empty keywords list/string"
     
@@ -68,6 +67,18 @@ def run_e2e_tests():
     assert "market_overview" in report, "Missing market_overview in report"
     
     logger.info("API payload structures and report details validated successfully.")
+
+    # 3b. Test POST /analyze with missing location (should return HTTP 400)
+    invalid_payload = {
+        "idea_text": "A premium indoor climbing gym with organic juice bar",
+        "user_id": None
+    }
+    logger.info(f"Testing POST /analyze with invalid payload (missing location): {invalid_payload}")
+    invalid_response = client.post("/analyze", json=invalid_payload)
+    assert invalid_response.status_code == 400, f"Expected 400 for missing location, got {invalid_response.status_code}"
+    invalid_data = invalid_response.get_json()
+    assert "location" in invalid_data.get("error", "").lower(), f"Expected location error message, got: {invalid_data}"
+    logger.info("POST /analyze with missing location rejected with HTTP 400 as expected.")
 
     # 4. Verify Database Persistence
     idea_id = res_data["idea_id"]

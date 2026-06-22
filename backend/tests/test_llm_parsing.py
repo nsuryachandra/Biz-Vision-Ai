@@ -34,8 +34,8 @@ def run_tests():
             "expected_type": "Food Service / Restaurant"
         },
         {
-            "text": "An AI-powered automated video editing platform for content creators",
-            "expected_loc": "Global / Online",
+            "text": "An AI-powered automated video editing platform for content creators in Seattle, WA",
+            "expected_loc": "Seattle, WA",
             "expected_industry": "Technology & SaaS",
             "expected_type": "SaaS / Software Product"
         }

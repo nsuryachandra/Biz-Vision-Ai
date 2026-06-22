@@ -78,12 +78,7 @@ class MarketIntelligenceService:
             return {}
 
     def fetch_google_search(self, keywords: str, location: str) -> dict:
-        loc_lower = location.lower().strip() if location else ""
-        if not loc_lower or any(val in loc_lower for val in ["global / online", "global", "online", "virtual", "remote", "worldwide"]):
-            query = f"{keywords} business market"
-        else:
-            query = f"{keywords} {location} business market"
-        
+        query = f"{location} {keywords}"
         return self._serpapi_get({"engine": "google", "q": query}, "Google Search")
 
     def fetch_google_trends(self, keywords: str) -> dict:
@@ -95,12 +90,7 @@ class MarketIntelligenceService:
         return self._serpapi_get({"engine": "google", "tbm": "nws", "q": query}, "Google News")
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
-        loc_lower = location.lower().strip() if location else ""
-        if not loc_lower or any(val in loc_lower for val in ["global / online", "global", "online", "virtual", "remote", "worldwide"]):
-            query = keywords
-        else:
-            query = f"{keywords} near {location}"
-        
+        query = f"{keywords} {location}"
         return self._serpapi_get({"engine": "google_maps", "q": query}, "Google Maps")
 
     def fetch_google_shopping(self, keywords: str) -> dict:
@@ -234,7 +224,7 @@ CRITICAL DATA GUIDELINES:
         "rating": 4.5,
         "reviews": 120,
         "address": "[Address/Area]",
-        "vulnerability": "[Identify a vulnerability based on reviews/ratings or local constraints, max 15 words]"
+        "vulnerability": "Only identify a vulnerability if supported by actual review data provided in API results. If review evidence is unavailable, return: 'Insufficient data'."
       }}
     ],
     "local_market_gap": "Explain the exact gap or underserved segment in the local market (e.g. hygiene standards, digital booking, unique packages)."
@@ -308,7 +298,7 @@ CRITICAL DATA GUIDELINES:
 
     # ─── Idea Parsing / Classification via LLM ─────────────────────────────────
 
-    def parse_idea_via_llm(self, idea_text: str, location: str = "Global / Online") -> dict:
+    def parse_idea_via_llm(self, idea_text: str, location: str = None) -> dict:
         """
         Classifies and extracts structured metadata from the raw business idea
         using Groq / Gemini. Relies on a robust fallback if APIs are unavailable.
@@ -358,11 +348,49 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
             "sub_category": parsed.get("sub_category") or "General Niche"
         }
 
+    def extract_location_from_text(self, text: str) -> str:
+        """
+        Deterministically extracts geographic location from startup idea text
+        by looking for common prepositions like "in" or "at" preceding a location name.
+        Example: "organic pet food business in Hyderabad" -> "Hyderabad"
+        Example: "Luxury Hotel in Austin, TX" -> "Austin, TX"
+        Example: "Online SaaS platform" -> None
+        """
+        if not text:
+            return None
+        # Match " in <location>" or " at <location>" near the end of the text.
+        match = re.search(r'\b(?:in|at)\s+([A-Z][a-zA-Z\s,]+)(?:\.|\?|!|\s*$)', text)
+        if match:
+            loc = match.group(1).strip()
+            non_locations = {"a", "an", "the", "my", "our", "detail", "general", "brick"}
+            if loc.lower() not in non_locations:
+                return loc
+        
+        # Fallback split check: split by " in " or " at "
+        parts = re.split(r'\b(?:in|at)\b', text, flags=re.IGNORECASE)
+        if len(parts) > 1:
+            loc = parts[-1].strip()
+            loc = re.sub(r'[.,!?]+$', '', loc).strip()
+            if loc and len(loc) <= 50:
+                return loc
+                
+        return None
+
     # ─── Orchestrator ──────────────────────────────────────────────────────────
 
     def analyze_idea(self, idea_text: str, user_id=None, location=None) -> dict:
-        # ── 1. NLP Parse
-        idea_data = self.parse_idea_via_llm(idea_text, location=location or "Global / Online")
+        # ── 1. Determine location from direct input if not provided
+        if not location:
+            location = self.extract_location_from_text(idea_text)
+            
+        if not location:
+            return {
+                "success": False,
+                "error": "Please specify a target location."
+            }
+            
+        # ── 2. NLP Parse
+        idea_data = self.parse_idea_via_llm(idea_text, location=location)
         
         # ── 2. Persist Idea
         idea_id = None
