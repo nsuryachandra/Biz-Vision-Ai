@@ -65,7 +65,7 @@ def run_e2e_tests():
     report = res_data["report"]
     assert "executive_summary" in report, "Missing executive_summary in report"
     assert "final_verdict" in report, "Missing final_verdict in report"
-    assert "market_intelligence" in report, "Missing market_intelligence in report"
+    assert "market_overview" in report, "Missing market_overview in report"
     
     logger.info("API payload structures and report details validated successfully.")
 
@@ -100,7 +100,6 @@ def run_e2e_tests():
     # 5. Cleanup Test Data
     logger.info("Cleaning up E2E test database records...")
     execute_query("DELETE FROM analysis_reports WHERE id = %s", (report_id,), commit=True)
-    execute_query("DELETE FROM search_history WHERE idea_id = %s", (idea_id,), commit=True)
     execute_query("DELETE FROM business_ideas WHERE id = %s", (idea_id,), commit=True)
     logger.info("Database records cleaned up.")
     

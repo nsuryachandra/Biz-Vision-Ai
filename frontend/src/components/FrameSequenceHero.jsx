@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
-const TOTAL_FRAMES = 240;
+const TOTAL_FRAMES = 120;
 const SCROLL_TRACK_VH = 4;
 
-export default function FrameSequenceHero() {
+const FrameSequenceHero = forwardRef((props, ref) => {
   const spacerRef       = useRef(null);
   const canvasRef       = useRef(null);
   const imagesRef       = useRef([]);          // ImageBitmap[] or HTMLImageElement[]
@@ -11,6 +11,7 @@ export default function FrameSequenceHero() {
   const targetFrameRef  = useRef(1);
   const rafIdRef        = useRef(null);
   const ctxRef          = useRef(null);
+  const scrollAnimRef   = useRef(null);
 
   const [loadProgress, setLoadProgress] = useState(0);
   const [isLoaded,     setIsLoaded]     = useState(false);
@@ -33,7 +34,7 @@ export default function FrameSequenceHero() {
     };
 
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const url = `/frames/${String(i).padStart(5, '0')}.jpg`;
+      const url = `/scrollpack/frames/frame_${String(i).padStart(4, '0')}.jpg`;
       const idx = i - 1;
 
       if (useIB) {
@@ -55,7 +56,10 @@ export default function FrameSequenceHero() {
       }
     }
 
-    return () => { if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current); };
+    return () => { 
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current); 
+      if (scrollAnimRef.current) cancelAnimationFrame(scrollAnimRef.current);
+    };
   }, []);
 
   // ── Draw one frame, crisp & Retina-correct ───────────────────────────────
@@ -158,6 +162,69 @@ export default function FrameSequenceHero() {
     return () => window.removeEventListener('resize', onResize);
   }, [isLoaded]);
 
+  // ── Play animation and scroll user to bottom of the track ─────────────────
+  const playAndScroll = (onComplete) => {
+    if (scrollAnimRef.current) cancelAnimationFrame(scrollAnimRef.current);
+
+    const spacer = spacerRef.current;
+    if (!spacer) return;
+
+    const start = window.scrollY;
+    const end = document.documentElement.scrollHeight - window.innerHeight;
+    const distance = Math.abs(end - start);
+    if (distance < 10) {
+      if (onComplete) onComplete();
+      return;
+    }
+
+    const duration = 3500; // 3.5 seconds
+    const startTime = performance.now();
+
+    // Interrupt auto-scroll if user interacts
+    let interrupted = false;
+    const interruptHandler = () => {
+      interrupted = true;
+      cleanup();
+    };
+
+    const cleanup = () => {
+      window.removeEventListener('wheel', interruptHandler);
+      window.removeEventListener('touchmove', interruptHandler);
+      window.removeEventListener('mousedown', interruptHandler);
+    };
+
+    window.addEventListener('wheel', interruptHandler, { passive: true });
+    window.addEventListener('touchmove', interruptHandler, { passive: true });
+    window.addEventListener('mousedown', interruptHandler, { passive: true });
+
+    const animateScroll = (currentTime) => {
+      if (interrupted) return;
+
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing: easeInOutQuad
+      const ease = progress < 0.5 
+        ? 2 * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      window.scrollTo(0, start + (end - start) * ease);
+
+      if (progress < 1) {
+        scrollAnimRef.current = requestAnimationFrame(animateScroll);
+      } else {
+        cleanup();
+        if (onComplete) onComplete();
+      }
+    };
+
+    scrollAnimRef.current = requestAnimationFrame(animateScroll);
+  };
+
+  useImperativeHandle(ref, () => ({
+    playAndScroll
+  }));
+
   return (
     <>
       {/* Fixed full-viewport canvas */}
@@ -195,4 +262,6 @@ export default function FrameSequenceHero() {
                     flexShrink:0, background:'rgb(205,205,207)' }} />
     </>
   );
-}
+});
+
+export default FrameSequenceHero;

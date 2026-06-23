@@ -1,131 +1,54 @@
 CREATE DATABASE IF NOT EXISTS bizvision_ai;
 USE bizvision_ai;
 
--- 1. Users Table
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    full_name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 2. Business Ideas Table
+-- 1. Business Ideas Table
 CREATE TABLE IF NOT EXISTS business_ideas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NULL,
     idea_text TEXT NOT NULL,
-    keywords VARCHAR(255) NULL,
     location VARCHAR(100) NULL,
     industry VARCHAR(100) NULL,
     business_type VARCHAR(100) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_business_ideas_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 3. Competitor Data Table
-CREATE TABLE IF NOT EXISTS competitor_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idea_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    rating DECIMAL(3,2) NULL,
-    review_count INT NULL,
-    address VARCHAR(255) NULL,
-    reviews TEXT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_competitor_data_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 4. Trend Data Table
-CREATE TABLE IF NOT EXISTS trend_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idea_id INT NOT NULL,
-    `query` VARCHAR(255) NOT NULL,
-    date_points TEXT NOT NULL, -- JSON string representation
-    growth_rate DECIMAL(5,2) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_trend_data_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 5. News Data Table
-CREATE TABLE IF NOT EXISTS news_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idea_id INT NOT NULL,
-    title VARCHAR(500) NOT NULL,
-    source VARCHAR(255) NULL,
-    url VARCHAR(500) NULL,
-    sentiment VARCHAR(50) NULL, -- positive, negative, neutral
-    published_date VARCHAR(100) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_news_data_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 6. Analysis Reports Table
-CREATE TABLE IF NOT EXISTS analysis_reports (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idea_id INT NOT NULL,
-    report_json LONGTEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_analysis_reports_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 6b. Shopping Data Table
-CREATE TABLE IF NOT EXISTS shopping_data (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idea_id INT NOT NULL,
-    title VARCHAR(500) NOT NULL,
-    price VARCHAR(100) NULL,
-    source VARCHAR(255) NULL,
-    rating DECIMAL(3,2) NULL,
-    reviews INT NULL,
-    thumbnail VARCHAR(500) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_shopping_data_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 7. Search History Table
-CREATE TABLE IF NOT EXISTS search_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NULL,
-    idea_id INT NOT NULL,
-    `query` TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_search_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    CONSTRAINT fk_search_history_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 8. API Logs Table
-CREATE TABLE IF NOT EXISTS api_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    api_name VARCHAR(100) NOT NULL,
-    endpoint VARCHAR(255) NOT NULL,
-    status_code INT NULL,
-    response_summary TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 9. Prompt Logs Table
+-- 2. API Snapshots Table
+CREATE TABLE IF NOT EXISTS api_snapshots (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idea_id INT NOT NULL,
+    google_search_json JSON NULL,
+    google_maps_json JSON NULL,
+    google_trends_json JSON NULL,
+    google_news_json JSON NULL,
+    google_shopping_json JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_api_snapshots_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 3. Analysis Reports Table
+CREATE TABLE IF NOT EXISTS analysis_reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idea_id INT NOT NULL,
+    snapshot_id INT NOT NULL,
+    report_json JSON NOT NULL,
+    report_version VARCHAR(50) DEFAULT '1.0.0',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_analysis_reports_idea FOREIGN KEY (idea_id) REFERENCES business_ideas(id) ON DELETE CASCADE,
+    CONSTRAINT fk_analysis_reports_snapshot FOREIGN KEY (snapshot_id) REFERENCES api_snapshots(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 4. Prompt Logs Table
 CREATE TABLE IF NOT EXISTS prompt_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prompt_name VARCHAR(100) NOT NULL,
-    input_variables LONGTEXT NULL,
     prompt_text LONGTEXT NULL,
     response_text LONGTEXT NULL,
+    model_used VARCHAR(100) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Indexes for optimal performance
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_business_ideas_user ON business_ideas(user_id);
-CREATE INDEX idx_competitor_data_idea ON competitor_data(idea_id);
-CREATE INDEX idx_trend_data_idea ON trend_data(idea_id);
-CREATE INDEX idx_news_data_idea ON news_data(idea_id);
-CREATE INDEX idx_shopping_data_idea ON shopping_data(idea_id);
+CREATE INDEX idx_business_ideas_created ON business_ideas(created_at);
+CREATE INDEX idx_api_snapshots_idea ON api_snapshots(idea_id);
 CREATE INDEX idx_analysis_reports_idea ON analysis_reports(idea_id);
-CREATE INDEX idx_search_history_user ON search_history(user_id);
-CREATE INDEX idx_search_history_idea ON search_history(idea_id);
-CREATE INDEX idx_api_logs_name ON api_logs(api_name);
+CREATE INDEX idx_analysis_reports_snapshot ON analysis_reports(snapshot_id);
 CREATE INDEX idx_prompt_logs_name ON prompt_logs(prompt_name);

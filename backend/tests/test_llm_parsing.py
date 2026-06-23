@@ -66,12 +66,10 @@ def run_tests():
         logger.info("Attempting to insert parsed idea into database...")
         idea_id = execute_query(
             """INSERT INTO business_ideas
-               (user_id, idea_text, keywords, location, industry, business_type)
-               VALUES (%s, %s, %s, %s, %s, %s)""",
+               (idea_text, location, industry, business_type)
+               VALUES (%s, %s, %s, %s)""",
             (
-                None,  # user_id
                 parsed["idea_text"],
-                parsed["keywords"],
                 parsed["location"],
                 parsed["industry"],
                 parsed["business_type"]
@@ -90,7 +88,6 @@ def run_tests():
         
         # Check values
         assert persisted["idea_text"] == parsed["idea_text"]
-        assert persisted["keywords"] == parsed["keywords"]
         assert persisted["location"] == parsed["location"]
         assert persisted["industry"] == parsed["industry"]
         assert persisted["business_type"] == parsed["business_type"]

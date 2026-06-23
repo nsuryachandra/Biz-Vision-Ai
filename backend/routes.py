@@ -226,51 +226,49 @@ def get_report(report_id):
         if not idea:
             return jsonify({"error": "Associated business idea not found"}), 404
 
-        competitors = execute_query(
-            """SELECT name AS title, rating,
-                      review_count AS reviews, address,
-                      reviews      AS reviews_list
-               FROM competitor_data WHERE idea_id = %s""",
-            (report["idea_id"],),
-            fetch="all"
+        snapshot = execute_query(
+            "SELECT * FROM api_snapshots WHERE id = %s", (report["snapshot_id"],), fetch="one"
         )
-        for c in competitors:
+        if not snapshot:
+            return jsonify({"error": "Associated API snapshot not found"}), 404
+
+        def get_json_field(val):
+            if not val:
+                return {}
+            if isinstance(val, (dict, list)):
+                return val
             try:
-                c["reviews_list"] = json.loads(c["reviews_list"]) if c.get("reviews_list") else []
+                return json.loads(val)
             except Exception:
-                c["reviews_list"] = []
+                return {}
 
-        trend_row = execute_query(
-            "SELECT date_points, growth_rate FROM trend_data WHERE idea_id = %s",
-            (report["idea_id"],),
-            fetch="one"
-        )
-        trend_timeline = []
-        if trend_row:
-            try:
-                trend_timeline = json.loads(trend_row["date_points"])
-            except Exception:
-                trend_timeline = []
+        maps_raw = get_json_field(snapshot.get("google_maps_json"))
+        trends_raw = get_json_field(snapshot.get("google_trends_json"))
+        news_raw = get_json_field(snapshot.get("google_news_json"))
+        shopping_raw = get_json_field(snapshot.get("google_shopping_json"))
+        search_raw = get_json_field(snapshot.get("google_search_json"))
 
-        news = execute_query(
-            """SELECT title, source,
-                      url            AS link,
-                      sentiment      AS sentiment_hint,
-                      published_date AS date
-               FROM news_data WHERE idea_id = %s""",
-            (report["idea_id"],),
-            fetch="all"
-        )
+        competitors = MarketIntelligenceService.parse_raw_competitors(maps_raw, idea.get("location"))
+        trend_timeline = MarketIntelligenceService.parse_raw_trends(trends_raw)
+        news = MarketIntelligenceService.parse_raw_news(news_raw)
+        shopping = MarketIntelligenceService.parse_raw_shopping(shopping_raw)
 
-        shopping = execute_query(
-            """SELECT title, price, source, rating, reviews, thumbnail
-               FROM shopping_data WHERE idea_id = %s""",
-            (report["idea_id"],),
-            fetch="all"
-        )
+        # Reconstruct keywords from snapshot search parameters or fallback to extracting from idea text
+        keywords = ""
+        q = search_raw.get("search_parameters", {}).get("q")
+        if q:
+            if " near " in q:
+                keywords = q.split(" near ")[0].strip()
+            else:
+                keywords = q
+        if not keywords:
+            import re
+            stop_words = {'i', 'want', 'to', 'start', 'a', 'an', 'the', 'business', 'company', 'startup', 'in', 'at', 'for'}
+            words = [w.lower() for w in re.findall(r'\b\w+\b', idea["idea_text"]) if w.lower() not in stop_words and len(w) > 2]
+            keywords = ", ".join(words[:4]) if words else "startup"
 
         try:
-            report_data = json.loads(report["report_json"])
+            report_data = json.loads(report["report_json"]) if isinstance(report["report_json"], str) else report["report_json"]
         except Exception as e:
             logger.error(f"Failed to parse report_json from database: {e}")
             report_data = {}
@@ -285,7 +283,7 @@ def get_report(report_id):
             "created_at": report["created_at"],
             "metadata": {
                 "idea_text": idea["idea_text"],
-                "keywords": idea["keywords"],
+                "keywords": keywords,
                 "location": idea["location"],
                 "industry": idea["industry"],
                 "business_type": idea["business_type"],

@@ -108,6 +108,7 @@ const OneIdeaInput = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
+  const heroRef = useRef(null);
 
   const handleInputChange = (e) => {
     setStartupIdea(e.target.value);
@@ -121,9 +122,18 @@ const OneIdeaInput = () => {
   }, [startupIdea, navigate]);
 
   const handleGetStarted = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
+    if (heroRef.current) {
+      heroRef.current.playAndScroll(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+          inputRef.current.select();
+        }
+      });
+    } else {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.select();
+      }
     }
   };
 
@@ -134,7 +144,7 @@ const OneIdeaInput = () => {
       <Navigation onGetStarted={handleGetStarted} />
 
       {/* Scroll track + fixed canvas */}
-      <FrameSequenceHero />
+      <FrameSequenceHero ref={heroRef} />
 
       {/* Hero content appears naturally after scroll track ends */}
       <main className="flex-1 flex flex-col items-center justify-center relative px-6 z-20 w-full max-w-7xl mx-auto pb-20 pt-24">

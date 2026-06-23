@@ -47,9 +47,32 @@ def startup_checks() -> bool:
         _check(f"MySQL (Local) -> {Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_NAME}", mysql_ok,
                "check DB_HOST / DB_PASSWORD in .env" if not mysql_ok else "")
 
-    serp_ok = bool(Config.SERPAPI_KEY and Config.SERPAPI_KEY != "YOUR_SERPAPI_KEY_HERE")
-    _check("SerpAPI Key", serp_ok,
-           "add SERPAPI_KEY to .env  ->  serpapi.com" if not serp_ok else "")
+    serp_status_ok = False
+    serp_status_msg = "Not configured"
+    if Config.SERPAPI_KEY and Config.SERPAPI_KEY != "YOUR_SERPAPI_KEY_HERE":
+        try:
+            import requests
+            resp = requests.get(f"https://serpapi.com/account?api_key={Config.SERPAPI_KEY}", timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                left = data.get("total_searches_left", 0)
+                email = data.get("account_email")
+                plan = data.get("plan_name")
+                status = data.get("account_status")
+                if left > 0:
+                    serp_status_ok = True
+                    serp_status_msg = f"{plan} | {email} | {left} searches left"
+                else:
+                    serp_status_ok = False
+                    serp_status_msg = f"{plan} | {email} | {status or 'Out of searches (0 remaining)'}"
+            else:
+                serp_status_msg = f"API Error HTTP {resp.status_code}"
+        except Exception as e:
+            serp_status_msg = f"Check failed: {e}"
+    else:
+        serp_status_msg = "Missing key in .env"
+
+    _check("SerpAPI Status", serp_status_ok, serp_status_msg)
 
     groq_ok = bool(Config.GROQ_API_KEY and Config.GROQ_API_KEY != "YOUR_GROQ_API_KEY_HERE")
     _check("Groq API Key", groq_ok,
@@ -61,8 +84,8 @@ def startup_checks() -> bool:
         print(f"\n{R}{B}  [FATAL]  MySQL unavailable — server cannot start without a database.{X}\n")
         return False
 
-    if not serp_ok:
-        print(f"\n{Y}{B}  [WARN]  No SerpAPI key — market/competitor data will use fallback values.{X}")
+    if not serp_status_ok:
+        print(f"\n{Y}{B}  [WARN]  SerpAPI issues — market/competitor data will use fallback values.{X}")
     if not groq_ok:
         print(f"\n{Y}{B}  [FATAL]  No Groq API key — LLM analysis unavailable.{X}")
         return False
