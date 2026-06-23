@@ -1555,52 +1555,6 @@ const IntelligenceReport = () => {
                 </div>
               </div>
             </motion.div>
-
-            {/* Revenue Model */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.4 }}
-              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
-              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100/50">
-                    <Icon icon="lucide:wallet" className="text-xl" />
-                  </div>
-                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
-                </div>
-                {renderIdentityCircle('Financial')}
-              </div>
-              <div className="pt-2 space-y-4">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                    {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
-                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm">
-                        <span className="text-emerald-500 font-bold">•</span> {stream}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </div>
 
           {/* Right Column Stack */}
@@ -1657,6 +1611,52 @@ const IntelligenceReport = () => {
                       <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
                       <p className="text-xs text-slate-700 font-bold mt-2">{formatCurrencyToINR(data.scenario_planning?.worst_case)}</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Revenue Model */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100/50">
+                    <Icon icon="lucide:wallet" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
+                </div>
+                {renderIdentityCircle('Financial')}
+              </div>
+              <div className="pt-2 space-y-4">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
+                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm">
+                        <span className="text-emerald-500 font-bold">•</span> {stream}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
                   </div>
                 </div>
               </div>
