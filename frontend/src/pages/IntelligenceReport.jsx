@@ -35,21 +35,10 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+import html2pdf from 'html2pdf.js';
+
 const loadHtml2Pdf = () => {
-  return new Promise((resolve, reject) => {
-    if (window.html2pdf) {
-      resolve(window.html2pdf);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-    script.integrity = 'sha512-GsLlZN/3F2ErC5IfS51RRmtCgoUtTHcQRqWj9m1f/5MvlobCLObE4gMi1N30RYgQbIcvS0cClwzZxN5c17yvg==';
-    script.crossOrigin = 'anonymous';
-    script.referrerPolicy = 'no-referrer';
-    script.onload = () => resolve(window.html2pdf);
-    script.onerror = (e) => reject(e);
-    document.body.appendChild(script);
-  });
+  return Promise.resolve(html2pdf);
 };
 
 const formatCurrencyToINR = (val) => {

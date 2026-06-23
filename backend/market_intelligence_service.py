@@ -141,7 +141,8 @@ class MarketIntelligenceService:
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
         query = f"{keywords} in {location}" if location else keywords
         params = {"engine": "google_maps", "q": query}
-        return self._serpapi_get(params, "Google Maps", location=location)
+        # Don't pass location param — Maps engine doesn't support free-form location, needs z/ll
+        return self._serpapi_get(params, "Google Maps")
 
     def fetch_google_shopping(self, keywords: str, location: str) -> dict:
         topic = keywords.split(",")[0].strip()
@@ -157,52 +158,69 @@ class MarketIntelligenceService:
 
     # ─── LLM Caller ───────────────────────────────────────────────────────────
 
+    def _groq_request(self, api_key, prompt_text, label="Groq", max_retries=3):
+        """Make a Groq API call with 429 retry logic. Parses retry delay from error response."""
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{"role": "user", "content": prompt_text}],
+            "temperature": 0.2,
+            "response_format": {"type": "json_object"}
+        }
+
+        for attempt in range(max_retries):
+            try:
+                resp = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers=headers, json=payload, timeout=15
+                )
+                if resp.status_code == 200:
+                    content = resp.json()["choices"][0]["message"]["content"].strip()
+                    logger.info(f"Generated report via {label} Groq API.")
+                    return content
+
+                if resp.status_code == 429:
+                    body = resp.text
+                    # Parse retry delay: "Please try again in 3m11.808s" or "in 30s"
+                    m = re.search(r"again in (?:(\d+)m)?(\d+(?:\.\d+)?)s", body)
+                    delay = 0
+                    if m:
+                        minutes = int(m.group(1) or 0)
+                        seconds = float(m.group(2))
+                        delay = minutes * 60 + seconds + 1  # +1 buffer
+                    else:
+                        delay = 2 ** attempt * 5  # exponential backoff fallback
+
+                    if attempt < max_retries - 1:
+                        logger.warning(
+                            f"{label} Groq rate limited. Retrying in {delay:.0f}s "
+                            f"(attempt {attempt+1}/{max_retries})."
+                        )
+                        time.sleep(delay)
+                    else:
+                        logger.warning(f"{label} Groq rate limited after {max_retries} retries.")
+                else:
+                    logger.warning(f"{label} Groq returned status {resp.status_code}: {resp.text}")
+                    break  # non-429 error, no point retrying
+            except Exception as e:
+                logger.warning(f"{label} Groq failed: {e}")
+                break
+        return None
+
     def _call_llm(self, prompt_text):
         response_content = None
-        
-        # 1. Primary Groq
-        if self.groq_api_key and self.groq_api_key != "YOUR_GROQ_API_KEY_HERE":
-            try:
-                headers = {
-                    "Authorization": f"Bearer {self.groq_api_key}",
-                    "Content-Type": "application/json"
-                }
-                payload = {
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [{"role": "user", "content": prompt_text}],
-                    "temperature": 0.2,
-                    "response_format": {"type": "json_object"}
-                }
-                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=15)
-                if resp.status_code == 200:
-                    response_content = resp.json()["choices"][0]["message"]["content"].strip()
-                    logger.info("Generated intelligence report via primary Groq API.")
-                else:
-                    logger.warning(f"Primary Groq returned status {resp.status_code}: {resp.text}")
-            except Exception as e:
-                logger.warning(f"Primary Groq failed: {e}")
 
-        # 2. Backup Groq
+        # 1. Primary Groq (with 429 retry)
+        if self.groq_api_key and self.groq_api_key != "YOUR_GROQ_API_KEY_HERE":
+            response_content = self._groq_request(self.groq_api_key, prompt_text, label="primary")
+
+        # 2. Backup Groq (with 429 retry)
         if not response_content and self.groq_api_key_backup:
-            try:
-                headers = {
-                    "Authorization": f"Bearer {self.groq_api_key_backup}",
-                    "Content-Type": "application/json"
-                }
-                payload = {
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [{"role": "user", "content": prompt_text}],
-                    "temperature": 0.2,
-                    "response_format": {"type": "json_object"}
-                }
-                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=15)
-                if resp.status_code == 200:
-                    response_content = resp.json()["choices"][0]["message"]["content"].strip()
-                    logger.info("Generated intelligence report via backup Groq API.")
-                else:
-                    logger.warning(f"Backup Groq returned status {resp.status_code}: {resp.text}")
-            except Exception as e:
-                logger.warning(f"Backup Groq failed: {e}")
+            response_content = self._groq_request(self.groq_api_key_backup, prompt_text, label="backup")
+
         return response_content
 
     # ─── Prompt Construction ──────────────────────────────────────────────────
