@@ -45,14 +45,57 @@ class MarketIntelligenceService:
         except Exception as e:
             logger.error(f"Failed to log prompt: {e}")
 
+    # ─── Location Helper ─────────────────────────────────────────────────────
+
+    def _build_location_str(self, location: str) -> str:
+        """Build a SerpAPI-friendly location string from user input. No hardcoded locality map."""
+        if not location or not location.strip():
+            return None
+        loc = location.strip()
+        loc_lower = loc.lower()
+        # If it already includes country/state/city info, use as-is
+        if any(c in loc_lower for c in [",", "india", "telangana", "andhra",
+                                         "karnataka", "tamil", "kerala", "maharashtra",
+                                         "gujarat", "rajasthan", "delhi", "mumbai",
+                                         "bangalore", "hyderabad", "chennai", "kolkata"]):
+            return loc
+        # Append India so Google resolves "Ameerpet" → Ameerpet, Telangana, India
+        return f"{loc}, India"
+
+    def _get_geo_for_location(self, location: str) -> str:
+        """Return a country-level geo code (2-letter) for Google Trends.
+        Defaults to IN for any Indian locality (no hardcoded list needed)."""
+        if not location:
+            return None
+        loc_lower = location.lower()
+        # Non-India countries — explicit check
+        if any(w in loc_lower for w in ["us", "united states", "usa"]):
+            return "US"
+        if any(w in loc_lower for w in ["uk", "united kingdom", "london", "england", "britain"]):
+            return "GB"
+        if any(w in loc_lower for w in ["ca", "canada"]):
+            return "CA"
+        if any(w in loc_lower for w in ["au", "australia"]):
+            return "AU"
+        # Default to India (primary use case — "Punjagutta", "ameerpet", "Gachibowli" all resolve here)
+        return "IN"
+
     # ─── SerpAPI Data Fetchers ────────────────────────────────────────────────
 
-    def _serpapi_get(self, params, api_name, timeout=8):
+    def _serpapi_get(self, params, api_name, timeout=8, location=None):
         if not self.serpapi_key or self.serpapi_key == "YOUR_SERPAPI_KEY_HERE":
             logger.warning(f"{api_name} skipped: SerpAPI key not configured.")
             return {}
-        
+
         params["api_key"] = self.serpapi_key
+
+        # Add dedicated location parameter so SerpAPI uses Google's geo-targeting
+        if location:
+            loc_str = self._build_location_str(location)
+            if loc_str:
+                params["location"] = loc_str
+                params["google_domain"] = "google.co.in"
+
         try:
             resp = requests.get(self.serpapi_url, params=params, timeout=timeout)
             status = resp.status_code
@@ -67,31 +110,13 @@ class MarketIntelligenceService:
             return {}
 
     def fetch_google_search(self, keywords: str, location: str) -> dict:
-        query = f"{location} {keywords}"
+        query = f"{keywords} near {location}" if location else keywords
         params = {"engine": "google", "q": query}
-        return self._serpapi_get(params, "Google Search")
-
-    def _get_geo_for_location(self, location: str) -> str:
-        if not location:
-            return None
-        india_terms = {"india", "hyderabad", "punjagutta", "gachibowli", "madhapur", "bangalore", "mumbai", "delhi", "chennai", "kolkata", "pune"}
-        loc_lower = location.lower()
-        for term in india_terms:
-            if term in loc_lower:
-                return "IN"
-        if "us" in loc_lower or "united states" in loc_lower:
-            return "US"
-        if "uk" in loc_lower or "united kingdom" in loc_lower or "london" in loc_lower:
-            return "GB"
-        if "ca" in loc_lower or "canada" in loc_lower:
-            return "CA"
-        if "au" in loc_lower or "australia" in loc_lower:
-            return "AU"
-        return None
+        return self._serpapi_get(params, "Google Search", location=location)
 
     def fetch_google_trends(self, keywords: str, location: str) -> dict:
         topic = keywords.split(",")[0].strip()
-        query = f"{location} {topic}"
+        query = f"{location} {topic}"  # keep location in q for Trends context
         params = {
             "engine": "google_trends",
             "q": query,
@@ -100,31 +125,32 @@ class MarketIntelligenceService:
         geo = self._get_geo_for_location(location)
         if geo:
             params["geo"] = geo
+        # Don't pass location to _serpapi_get — Trends doesn't support free-form location param
         return self._serpapi_get(params, "Google Trends")
 
     def fetch_google_news(self, keywords: str, location: str, industry: str) -> dict:
-        query = f"{location} {keywords}"
+        query = f"{keywords} near {location}" if location else keywords
         params = {"engine": "google", "tbm": "nws", "q": query}
-        res = self._serpapi_get(params, "Google News")
+        res = self._serpapi_get(params, "Google News", location=location)
         if not res or not res.get("news_results"):
-            fallback_query = f"{location} {industry}"
+            fallback_query = f"{industry} in {location}" if location else industry
             fallback_params = {"engine": "google", "tbm": "nws", "q": fallback_query}
-            res = self._serpapi_get(fallback_params, "Google News")
+            res = self._serpapi_get(fallback_params, "Google News", location=location)
         return res
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
-        query = f"{keywords} {location}"
+        query = f"{keywords} in {location}" if location else keywords
         params = {"engine": "google_maps", "q": query}
-        return self._serpapi_get(params, "Google Maps")
+        return self._serpapi_get(params, "Google Maps", location=location)
 
     def fetch_google_shopping(self, keywords: str, location: str) -> dict:
         topic = keywords.split(",")[0].strip()
-        query = f"{topic} {location}" if location else topic
+        query = f"{topic} in {location}" if location else topic
         params = {"engine": "google_shopping", "q": query}
-        shopping_data = self._serpapi_get(params, "Google Shopping", timeout=10)
+        shopping_data = self._serpapi_get(params, "Google Shopping", timeout=10, location=location)
         if not shopping_data or not shopping_data.get("shopping_results"):
             fallback_params = {"engine": "google_shopping", "q": topic}
-            return self._serpapi_get(fallback_params, "Google Shopping", timeout=10)
+            return self._serpapi_get(fallback_params, "Google Shopping", timeout=10, location=location)
         return shopping_data
 
 
