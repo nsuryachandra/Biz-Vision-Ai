@@ -207,9 +207,11 @@ class MarketIntelligenceService:
     # ─── Prompt Construction ──────────────────────────────────────────────────
 
     def build_prompt(self, idea_data: dict, market_data: dict) -> str:
-        prompt_template = """System: You are an elite Venture Capital Investment Committee Chair and McKinsey Business Intelligence Consultant.
-You are generating a premium business intelligence report for a startup concept.
-You must analyze the collected real-market API data below and build a comprehensive, highly strategic report.
+        prompt_template = """System: You are a Tier-1 Venture Capital Partner, Startup Founder, Product Strategist, and Business Intelligence Expert.
+Your job is NOT to write a consulting report. Your job is to help a founder make a business decision in under 60 seconds.
+Every section must be concise, minimal, founder-friendly, investor-grade, clear, and fast to scan.
+Avoid corporate jargon, avoid long paragraphs, never generate filler text, and never explain obvious things. Every insight must be actionable (2-3 sentences max per insight, prefer bullets).
+The final output should feel like "PitchBook + YC Partner Notes + Shark Tank Evaluation".
 
 REAL-MARKET API DATA COLLECTED:
 1. Top Google Search Results:
@@ -231,93 +233,91 @@ STARTUP CONCEPT DETAILS:
 - Extracted Keywords: {keywords}
 - Data Collection Warnings: {warnings}
 
-CRITICAL DATA GUIDELINES:
+CRITICAL RULES:
 - You must ONLY use the real competitor names, addresses, review counts, news titles, sources, and shopping prices provided in the API data.
 - If no competitors are provided, report that no local competitors were found in this region. Do not invent any competitor names, reviews, ratings, news articles, or shopping items.
-- RULE: Only identify competitor vulnerabilities if supported by actual review evidence supplied in API data. If evidence is unavailable, output exactly: "Insufficient data".
-- Maintain maximum color fidelity, sharpness, and high-quality insight paragraphs. Do not wrap sections in any markdown fences.
 - Return a single, valid JSON object matching this structure EXACTLY. No comments, no extra characters.
 
 {{
   "executive_summary": {{
-    "title": "A highly premium, professional business title (e.g. 'Elevate Fitness Studio')",
-    "business_summary": "A deep, comprehensive summary paragraph of the business idea, target value proposition, and customer segment.",
-    "one_paragraph_verdict": "A concise, single-paragraph decisive investment verdict and viability assessment by the VC committee.",
-    "key_opportunity": "The prime market catalyst or competitive advantage that makes this venture highly attractive right now.",
-    "biggest_challenge": "The single most significant structural, operational, or customer adoption barrier to entry."
+    "title": "Concept Name | Positioning Statement | One-Line Tagline. DO NOT repeat the user idea. Example: 'UrbanFit Hub | High-End Gym | Elevate Your Daily Motion'",
+    "business_summary": "Main Business Type and brief description. Maximum 1 sentence.",
+    "one_paragraph_verdict": "Launch Recommendation. Maximum 1 sentence.",
+    "key_opportunity": "Main Opportunity. Maximum 1 sentence.",
+    "biggest_challenge": "Main Challenge. Maximum 1 sentence."
   }},
   "market_overview": {{
-    "search_demand": "A detailed analysis of local search volume, query velocity, and interest trajectory based on search results.",
-    "trend_direction": "A brief sentence identifying if search query momentum and general consumer interest are growing, stable, or declining.",
-    "market_maturity": "An analysis of the local market's lifecycle phase (e.g. Emerging, Growing, Mature, Saturated)."
+    "search_demand": "Demand Level: High/Medium/Low + one concise explanation.",
+    "trend_direction": "Trend Direction: High/Medium/Low + one concise explanation.",
+    "market_maturity": "Market Maturity: High/Medium/Low + one concise explanation."
   }},
   "competitor_intelligence": {{
-    "market_gaps": "A synthesis of unserved needs, negative competitor review patterns, or lack of customization in local rivals."
+    "market_gaps": "Top Competitor name, rating, review count, and biggest market gap. Maximum 15 words."
   }},
   "customer_intelligence": {{
-    "customer_persona": "A detailed profile of the core local target customer (demographics, habits, preferences).",
-    "pain_points": ["Specific friction point 1", "Specific friction point 2"],
-    "buying_behavior": "Key criteria driving the customer's choice (e.g., convenience, hygiene, brand reputation).",
-    "spending_patterns": "Typical wallet share, average transaction size, and price sensitivity of local buyers."
+    "customer_persona": "Target Audience. No long persona descriptions.",
+    "pain_points": ["Biggest Pain Point 1", "Biggest Pain Point 2"],
+    "buying_behavior": "Buying Trigger. Maximum 15 words.",
+    "spending_patterns": "Typical Spending Range. Maximum 15 words."
   }},
   "industry_trends": {{
-    "news_analysis": "A summary of recent local news articles, regulations, or public discussions affecting this industry.",
-    "trend_analysis": "Contextual analysis of macro and micro industry trends shaping market demand.",
-    "emerging_changes": "Key changes shifting consumer expectations or industry standards."
+    "news_analysis": "News Sentiment. Maximum 15 words.",
+    "trend_analysis": "Macro Trend. Maximum 15 words.",
+    "emerging_changes": "Emerging Standards. Maximum 15 words."
   }},
   "opportunity_analysis": {{
-    "why_work": "A strategic argument of why this specific business idea is viable in the target location.",
-    "untapped_opportunities": ["Unserved local niche 1", "Unserved local niche 2"],
-    "premium_positioning": "How the venture can position itself as a high-margin premium player to stand out."
+    "why_work": "Why This Can Work. Maximum 20 words.",
+    "untapped_opportunities": ["Untapped Opportunity 1 (max 20 words)", "Untapped Opportunity 2 (max 20 words)"],
+    "premium_positioning": "Premium Positioning Angle. Maximum 20 words."
   }},
   "revenue_model": {{
-    "revenue_streams": ["Primary revenue stream description", "Secondary revenue stream"],
-    "upsells": "Specific higher-value options, add-ons, or bundle suggestions to increase average order value.",
-    "memberships": "Loyalty program or membership structures to increase lifetime value.",
-    "subscriptions": "Recurring revenue options, subscription boxes, or retainer plans suitable for the business."
+    "revenue_streams": ["Primary Revenue stream description", "Secondary Revenue stream. No memberships. No subscriptions unless strongly relevant."],
+    "upsells": "Growth Revenue mechanism. Maximum 15 words.",
+    "memberships": "N/A or very short note under 12 words.",
+    "subscriptions": "N/A or very short note under 12 words."
   }},
   "cost_capital_analysis": {{
-    "estimated_startup_cost": "Estimated initial capital required in local currency (e.g. ₹5,00,000)",
-    "operating_cost": "Estimated monthly operational expenses (rent, payroll, utilities) in local currency (e.g. ₹1,20,000/mo)",
-    "recommended_capital": "Total funding suggested for safe MVP launch and early growth (e.g. ₹15,00,000)",
-    "runway": "Estimated months of runway this capital provides (e.g. 6-9 months)",
-    "context_text": "Plain text explaining key drivers of these expenses (e.g., high retail rents in Jubilee Hills)."
+    "estimated_startup_cost": "Startup Budget Range (e.g. $10k - $25k or equivalent local currency). Realistic and simple.",
+    "operating_cost": "Capital Requirement / Monthly cost. Realistic and simple.",
+    "recommended_capital": "Total funding suggested for early growth. Realistic and simple.",
+    "runway": "Break-even Estimate. Maximum 15 words.",
+    "context_text": "Risk Category. Maximum 10 words."
   }},
   "swot_analysis": {{
-    "strengths": ["Internal Strength 1 (max 10 words)", "Internal Strength 2"],
-    "weaknesses": ["Internal Weakness 1 (max 10 words)", "Internal Weakness 2"],
-    "opportunities": ["External Opportunity 1 (max 12 words)", "External Opportunity 2"],
-    "threats": ["External Threat 1 (max 10 words)", "External Threat 2"]
+    "strengths": ["Strength 1 (under 5 words)", "Strength 2 (under 5 words)"],
+    "weaknesses": ["Weakness 1 (under 5 words)", "Weakness 2 (under 5 words)"],
+    "opportunities": ["Opportunity 1 (under 5 words)", "Opportunity 2 (under 5 words)"],
+    "threats": ["Threat 1 (under 5 words)", "Threat 2 (under 5 words)"]
   }},
   "risk_assessment": {{
-    "market_risks": "Risk of shifting local taste, economic recession, or interest drops.",
-    "competition_risks": "Threat of aggressive price cuts or mimicry by existing local incumbents.",
-    "operational_risks": "Key operational failure modes (supply chain, staffing, rent increases).",
-    "legal_risks": "Zoning regulations, business licensing, health permits, or local compliance rules."
+    "market_risks": "Market Risk: Low/Medium/High + one-line reason.",
+    "competition_risks": "Competition Risk: Low/Medium/High + one-line reason.",
+    "operational_risks": "Operational Risk: Low/Medium/High + one-line reason.",
+    "legal_risks": "Compliance Risk: Low/Medium/High + one-line reason."
   }},
   "scenario_planning": {{
-    "best_case": "Optimistic revenue and growth projection details.",
-    "expected_case": "Realistic baseline execution metrics.",
-    "worst_case": "Downside scenario details and trigger point to pivot."
+    "best_case": "Best Case. Maximum 15 words.",
+    "expected_case": "Expected Case. Maximum 15 words.",
+    "worst_case": "Worst Case. Maximum 15 words."
   }},
   "launch_roadmap": {{
-    "week_1_2": ["Milestone 1", "Milestone 2"],
-    "week_3_4": ["Milestone 1", "Milestone 2"],
-    "month_2": ["Milestone 1", "Milestone 2"],
-    "month_3": ["Milestone 1", "Milestone 2"]
+    "week_1_2": ["Step 1 (max 12 words)", "Step 2 (max 12 words)"],
+    "week_3_4": ["Step 1 (max 12 words)", "Step 2 (max 12 words)"],
+    "month_2": ["Step 1 (max 12 words)", "Step 2 (max 12 words)"],
+    "month_3": ["Step 1 (max 12 words)", "Step 2 (max 12 words)"]
   }},
   "founder_decision_engine": {{
-    "market_fit": 88,
-    "competition": 74,
-    "scalability": 91,
-    "capital_efficiency": 79,
-    "risk": 67
+    "market_fit": 85,
+    "competition": 75,
+    "scalability": 90,
+    "capital_efficiency": 80,
+    "risk": 65
   }},
   "final_verdict": {{
-    "context_text": "A comprehensive final strategic summary that ties all findings together.",
-    "investment_grade": "A",
-    "launch_recommendation": "Pilot First",
-    "confidence_level": "High"
+    "context_text": "Next Action. One-sentence clear next action step.",
+    "investment_grade": "Overall Grade (e.g. A, B, C, F)",
+    "launch_recommendation": "Launch Decision. Must be one of: Proceed, Pilot First, Validate Further, Pivot, Reject",
+    "confidence_level": "Confidence % (e.g. 88%)"
   }}
 }}
 """
