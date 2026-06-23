@@ -17,6 +17,7 @@ import {
   Filler
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
+import html2pdf from 'html2pdf.js';
 
 ChartJS.register(
   CategoryScale,
@@ -77,7 +78,7 @@ const DisclaimerBanner = () => (
 );
 
 // ─── HEADER COMPONENT ───────────────────────────────────────────────────────
-const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
+const ReportHeader = ({ isSaved, onSave, onDownload, isLoading }) => (
   <header className="sticky top-0 z-50 w-full bg-[#FAFBFD]/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
     <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -95,13 +96,7 @@ const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
           onClick={onDownload}
           className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-muted text-sm font-medium transition-colors cursor-pointer"
         >
-          <Icon icon="lucide:download" className="text-indigo-600" /> Export PDF/HTML
-        </button>
-        <button 
-          onClick={onShare}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-muted text-sm font-medium transition-colors cursor-pointer"
-        >
-          <Icon icon="lucide:share-2" className="text-indigo-600" /> Share
+          <Icon icon="lucide:download" className="text-indigo-600" /> Export PDF
         </button>
         <button 
           onClick={onSave}
@@ -292,7 +287,17 @@ const LaunchRoadmapSection = ({ roadmap }) => {
 
 // ─── COMPETITORS RATINGS COMPARISON BAR CHART ──────────────────────────────
 const CompetitorsRatingsChart = ({ competitors }) => {
-  const labels = competitors.map(c => c.name || c.title || 'Competitor');
+  const cleanCompetitorName = (name) => {
+    if (!name) return 'Competitor';
+    let clean = name.split(/[|\[\(\-,]/)[0].trim();
+    clean = clean.replace(/\b(pet store & spa|pet store|pet shop|veterinary hospital|veterinary clinic|restaurant & bar|restaurant|cafe|café|lounge|dhaba|bistro|diner|kitchen)\b/gi, '').trim();
+    if (clean.length > 22) {
+      clean = clean.slice(0, 20) + '...';
+    }
+    return clean || 'Competitor';
+  };
+
+  const labels = competitors.map(c => cleanCompetitorName(c.name || c.title));
   const ratings = competitors.map(c => Number(c.rating) || 4.0);
 
   const data = {
@@ -301,16 +306,17 @@ const CompetitorsRatingsChart = ({ competitors }) => {
       {
         label: 'Competitor Rating',
         data: ratings.slice(0, 5),
-        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+        backgroundColor: 'rgba(99, 102, 241, 0.75)',
         borderColor: '#6366F1',
         borderWidth: 2,
-        borderRadius: 8,
-        barThickness: 32,
+        borderRadius: 6,
+        barThickness: 16,
       }
     ]
   };
 
   const options = {
+    indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -324,8 +330,8 @@ const CompetitorsRatingsChart = ({ competitors }) => {
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } },
-      y: { min: 0, max: 5, ticks: { stepSize: 1, font: { family: 'Inter', size: 10 } } }
+      x: { min: 0, max: 5, ticks: { stepSize: 1, font: { family: 'Inter', size: 10 } } },
+      y: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } }
     }
   };
 
@@ -412,7 +418,7 @@ const IntelligenceReport = () => {
         legal_risks: "Local health authority compliance and food safety inspections."
       },
       scenario_planning: {
-        best_case: "₹20,0,000 /mo",
+        best_case: "₹20,00,000 /mo",
         expected_case: "₹8,00,000 /mo",
         worst_case: "₹2,50,000 /mo"
       },
@@ -831,15 +837,15 @@ const IntelligenceReport = () => {
           <div class="grid-3">
             <div class="grid-card">
               <div class="content-label">Startup Capital</div>
-              <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.estimated_startup_cost || "N/A"}</strong>
+              <strong style="color: #4F46E5; font-size: 16px;">${formatCurrencyToINR(currentData.cost_capital_analysis?.estimated_startup_cost || "N/A")}</strong>
             </div>
             <div class="grid-card">
               <div class="content-label">Operating Cost</div>
-              <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.operating_cost || "N/A"}</strong>
+              <strong style="color: #4F46E5; font-size: 16px;">${formatCurrencyToINR(currentData.cost_capital_analysis?.operating_cost || "N/A")}</strong>
             </div>
             <div class="grid-card">
               <div class="content-label">Recommended Capital</div>
-              <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.recommended_capital || "N/A"}</strong>
+              <strong style="color: #4F46E5; font-size: 16px;">${formatCurrencyToINR(currentData.cost_capital_analysis?.recommended_capital || "N/A")}</strong>
             </div>
           </div>
         </div>
@@ -849,15 +855,15 @@ const IntelligenceReport = () => {
           <div class="grid-3">
             <div class="grid-card">
               <div class="content-label">Best Case Scenario</div>
-              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${currentData.scenario_planning?.best_case || "N/A"}</p>
+              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${formatCurrencyToINR(currentData.scenario_planning?.best_case || "N/A")}</p>
             </div>
             <div class="grid-card">
               <div class="content-label">Expected Case Scenario</div>
-              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${currentData.scenario_planning?.expected_case || "N/A"}</p>
+              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${formatCurrencyToINR(currentData.scenario_planning?.expected_case || "N/A")}</p>
             </div>
             <div class="grid-card">
               <div class="content-label">Worst Case Scenario</div>
-              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${currentData.scenario_planning?.worst_case || "N/A"}</p>
+              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${formatCurrencyToINR(currentData.scenario_planning?.worst_case || "N/A")}</p>
             </div>
           </div>
         </div>
@@ -1032,14 +1038,6 @@ const IntelligenceReport = () => {
 
   const handleDownloadPDF = useCallback(() => {
     window.print();
-    downloadHtmlReport(report);
-  }, [report]);
-
-  const handleShare = useCallback(() => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Report link copied to clipboard!');
-    });
   }, []);
 
   const handleSaveToWorkspace = useCallback(() => {
@@ -1140,7 +1138,6 @@ const IntelligenceReport = () => {
         isSaved={isSaved}
         onSave={handleSaveToWorkspace}
         onDownload={handleDownloadPDF}
-        onShare={handleShare}
         isLoading={isLoading}
       />
 
@@ -1497,15 +1494,15 @@ const IntelligenceReport = () => {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center shadow-sm">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
-                      <span className="text-base font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
+                      <span className="text-base font-extrabold text-slate-700">{formatCurrencyToINR(data.cost_capital_analysis?.estimated_startup_cost)}</span>
                     </div>
                     <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center shadow-sm">
                       <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
-                      <span className="text-base font-extrabold text-slate-700">{data.cost_capital_analysis?.operating_cost}</span>
+                      <span className="text-base font-extrabold text-slate-700">{formatCurrencyToINR(data.cost_capital_analysis?.operating_cost)}</span>
                     </div>
                     <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center shadow-sm">
                       <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
-                      <span className="text-base font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
+                      <span className="text-base font-extrabold text-cyan-700">{formatCurrencyToINR(data.cost_capital_analysis?.recommended_capital)}</span>
                     </div>
                   </div>
                 </div>
@@ -1515,15 +1512,15 @@ const IntelligenceReport = () => {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center shadow-sm">
                       <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
-                      <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
+                      <p className="text-xs text-slate-700 font-bold mt-2">{formatCurrencyToINR(data.scenario_planning?.best_case)}</p>
                     </div>
                     <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center shadow-sm">
                       <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
-                      <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
+                      <p className="text-xs text-slate-700 font-bold mt-2">{formatCurrencyToINR(data.scenario_planning?.expected_case)}</p>
                     </div>
                     <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center shadow-sm">
                       <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
-                      <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
+                      <p className="text-xs text-slate-700 font-bold mt-2">{formatCurrencyToINR(data.scenario_planning?.worst_case)}</p>
                     </div>
                   </div>
                 </div>
