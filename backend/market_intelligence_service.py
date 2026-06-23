@@ -4,6 +4,7 @@ import logging
 import requests
 import time
 from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import google.generativeai as genai
 
 from config import Config
@@ -65,7 +66,7 @@ class MarketIntelligenceService:
         
         params["api_key"] = self.serpapi_key
         try:
-            resp = requests.get(self.serpapi_url, params=params, timeout=15)
+            resp = requests.get(self.serpapi_url, params=params, timeout=8)
             status = resp.status_code
             data = resp.json() if status == 200 else {"error": resp.text}
             self._log_api_call(api_name, str(params.get("q", "")), status, data)
@@ -148,7 +149,7 @@ class MarketIntelligenceService:
                     "temperature": 0.2,
                     "response_format": {"type": "json_object"}
                 }
-                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=25)
+                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=15)
                 if resp.status_code == 200:
                     response_content = resp.json()["choices"][0]["message"]["content"].strip()
                     logger.info("Generated intelligence report via primary Groq API.")
@@ -170,7 +171,7 @@ class MarketIntelligenceService:
                     "temperature": 0.2,
                     "response_format": {"type": "json_object"}
                 }
-                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=25)
+                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=15)
                 if resp.status_code == 200:
                     response_content = resp.json()["choices"][0]["message"]["content"].strip()
                     logger.info("Generated intelligence report via backup Groq API.")
@@ -476,17 +477,39 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         loc = idea_data.get("location", "")
         ind = idea_data.get("industry", "")
         
-        search_raw = self.fetch_google_search(kw, loc)
-        trends_raw = self.fetch_google_trends(kw, loc)
-        news_raw = self.fetch_google_news(kw, loc, ind)
-        maps_raw = self.fetch_google_maps(kw, loc)
-        shopping_raw = self.fetch_google_shopping(kw)
-        
+        fetch_tasks = {
+            "search_raw": (self.fetch_google_search, (kw, loc)),
+            "trends_raw": (self.fetch_google_trends, (kw, loc)),
+            "news_raw": (self.fetch_google_news, (kw, loc, ind)),
+            "maps_raw": (self.fetch_google_maps, (kw, loc)),
+            "shopping_raw": (self.fetch_google_shopping, (kw,))
+        }
+
+        results = {}
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_key = {
+                executor.submit(func, *args): key
+                for key, (func, args) in fetch_tasks.items()
+            }
+            for future in as_completed(future_to_key):
+                key = future_to_key[future]
+                try:
+                    results[key] = future.result()
+                except Exception as exc:
+                    logger.warning(f"Parallel fetch task {key} failed: {exc}")
+                    results[key] = {}
+
+        search_raw = results.get("search_raw", {})
+        trends_raw = results.get("trends_raw", {})
+        news_raw = results.get("news_raw", {})
+        maps_raw = results.get("maps_raw", {})
+        shopping_raw = results.get("shopping_raw", {})
+
         # Normalize gathered API data
         search_count = search_raw.get("search_information", {}).get("total_results", 0)
         if isinstance(search_count, str):
             search_count = int("".join(filter(str.isdigit, search_count)) or "0")
-            
+
         organic_results = search_raw.get("organic_results", [])
         top_search_results = []
         for res in organic_results[:5]:
@@ -494,10 +517,10 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
                 "title": res.get("title") or "",
                 "snippet": res.get("snippet") or ""
             })
-            
+
         trends_data = trends_raw.get("interest_over_time", {}).get("timeline_data", [])
         trends_growth = trends_raw.get("growth_rate", 0.0) if trends_data else 0.0
-        
+
         news_articles = news_raw.get("news_results", [])
         competitors = maps_raw.get("local_results", [])
         shopping_products = shopping_raw.get("shopping_results", [])
