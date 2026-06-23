@@ -359,6 +359,12 @@ class MarketIntelligenceService:
                 body = resp.text
                 print(f"    Groq response body (first 300): {body[:300]}")
                 if status == 429:
+                    if payload["model"] == "llama-3.3-70b-versatile":
+                        print("    Groq 429: Rate limit hit on 70B model. Falling back to llama-3.1-8b-instant immediately...")
+                        logger.warning("Groq 429. Falling back to llama-3.1-8b-instant model immediately.")
+                        payload["model"] = "llama-3.1-8b-instant"
+                        continue
+
                     m = re.search(r"again in (?:(\d+)m)?(\d+(?:\.\d+)?)s", body)
                     delay = 0
                     if m:
@@ -506,9 +512,9 @@ CRITICAL RULES:
   }}
 }}
 """
-        # Filter competitors to only essential fields for LLM analysis
+        # Filter competitors to only essential fields for LLM analysis (limit to top 4)
         filtered_competitors = []
-        for c in market_data.get("competitors", []):
+        for c in market_data.get("competitors", [])[:4]:
             filtered_competitors.append({
                 "name": c.get("title") or c.get("name") or "",
                 "rating": c.get("rating") or "N/A",
@@ -516,18 +522,18 @@ CRITICAL RULES:
                 "address": c.get("address") or ""
             })
 
-        # Filter news articles
+        # Filter news articles (limit to top 3)
         filtered_news = []
-        for n in market_data.get("news", []):
+        for n in market_data.get("news", [])[:3]:
             filtered_news.append({
                 "title": n.get("title") or "",
                 "source": n.get("source") or "",
                 "snippet": n.get("snippet") or ""
             })
 
-        # Filter shopping products
+        # Filter shopping products (limit to top 3)
         filtered_shopping = []
-        for s in market_data.get("shopping", []):
+        for s in market_data.get("shopping", [])[:3]:
             filtered_shopping.append({
                 "title": s.get("title") or "",
                 "price": s.get("price") or s.get("price_str") or "N/A",
@@ -541,7 +547,7 @@ CRITICAL RULES:
             industry=idea_data["industry"],
             business_type=idea_data["business_type"],
             sub_category=idea_data.get("sub_category", "N/A"),
-            search_results_json=json.dumps(market_data.get("top_search_results", []), indent=2),
+            search_results_json=json.dumps(market_data.get("top_search_results", [])[:3], indent=2),
             trends_growth_rate=market_data["trends"]["growth_rate"],
             competitors_json=json.dumps(filtered_competitors, indent=2),
             news_json=json.dumps(filtered_news, indent=2),
