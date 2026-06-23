@@ -252,9 +252,9 @@ CRITICAL RULES:
     "subscriptions": "N/A or very short note under 12 words."
   }},
   "cost_capital_analysis": {{
-    "estimated_startup_cost": "Startup Budget Range (e.g. $10k - $25k or equivalent local currency). Realistic and simple.",
-    "operating_cost": "Capital Requirement / Monthly cost. Realistic and simple.",
-    "recommended_capital": "Total funding suggested for early growth. Realistic and simple.",
+    "estimated_startup_cost": "Startup Budget Range in Indian Rupees (₹) (e.g. ₹5,00,000 - ₹10,00,000). Always output in Indian Rupees (₹) using Indian formatting.",
+    "operating_cost": "Capital Requirement / Monthly cost in Indian Rupees (₹) (e.g. ₹1,00,000 - ₹2,00,000 per month). Always output in Indian Rupees (₹) using Indian formatting.",
+    "recommended_capital": "Total funding suggested for early growth in Indian Rupees (₹) (e.g. ₹15,00,000 - ₹25,00,000). Always output in Indian Rupees (₹) using Indian formatting.",
     "runway": "Break-even Estimate. Maximum 15 words.",
     "context_text": "Risk Category. Maximum 10 words."
   }},
@@ -271,9 +271,9 @@ CRITICAL RULES:
     "legal_risks": "Compliance Risk: Low/Medium/High + one-line reason."
   }},
   "scenario_planning": {{
-    "best_case": "Best Case. Maximum 15 words.",
-    "expected_case": "Expected Case. Maximum 15 words.",
-    "worst_case": "Worst Case. Maximum 15 words."
+    "best_case": "Best Case in Indian Rupees (₹) (e.g. ₹8,00,000/mo). Always output in Indian Rupees (₹) using Indian formatting.",
+    "expected_case": "Expected Case in Indian Rupees (₹) (e.g. ₹4,00,000/mo). Always output in Indian Rupees (₹) using Indian formatting.",
+    "worst_case": "Worst Case in Indian Rupees (₹) (e.g. ₹1,50,000/mo). Always output in Indian Rupees (₹) using Indian formatting."
   }},
   "launch_roadmap": {{
     "week_1_2": ["Step 1 (max 12 words)", "Step 2 (max 12 words)"],

@@ -34,6 +34,38 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+const formatCurrencyToINR = (val) => {
+  if (!val) return "N/A";
+  let str = String(val).trim();
+  
+  // If it already has Indian Rupee symbol, return it
+  if (str.includes('₹')) {
+    return str;
+  }
+  
+  // Convert K/k or M/m suffixes
+  str = str.replace(/\$(\d+(?:\.\d+)?)\s*[kK]\b/g, (m, p1) => `$${parseFloat(p1) * 1000}`);
+  str = str.replace(/\$(\d+(?:\.\d+)?)\s*[mM]\b/g, (m, p1) => `$${parseFloat(p1) * 1000000}`);
+  
+  // If no currency symbols but has digits, add $ prefix to trigger conversion
+  if (!str.includes('$') && /^\d/.test(str)) {
+    str = str.replace(/(\b\d[\d,]*\b)/g, '$$$1');
+  }
+  
+  // Convert USD to INR
+  str = str.replace(/\$([\d,]+(?:\.\d+)?)/g, (match, p1) => {
+    const num = parseFloat(p1.replace(/,/g, ''));
+    if (!isNaN(num)) {
+      const inrValue = num * 83;
+      return '₹' + Math.round(inrValue).toLocaleString('en-IN');
+    }
+    return '₹' + p1;
+  });
+  
+  str = str.replace(/\$/g, '₹');
+  return str;
+};
+
 const DisclaimerBanner = () => (
   <div className="p-4 rounded-xl bg-indigo-50/40 border border-indigo-100/50 text-indigo-800 text-xs font-semibold leading-relaxed flex items-center gap-3 shadow-sm select-none">
     <Icon icon="lucide:alert-circle" className="text-lg text-indigo-600 flex-shrink-0" />
@@ -46,7 +78,7 @@ const DisclaimerBanner = () => (
 
 // ─── HEADER COMPONENT ───────────────────────────────────────────────────────
 const ReportHeader = ({ isSaved, onSave, onDownload, onShare, isLoading }) => (
-  <header className="sticky top-0 z-50 w-full bg-background/85 backdrop-blur-xl border-b border-border/65 shadow-sm">
+  <header className="sticky top-0 z-50 w-full bg-[#FAFBFD]/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
     <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <Link to="/history-dashboard" className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted text-foreground transition-colors">
@@ -126,15 +158,15 @@ const FinancialSizingSection = ({ revenue, costs }) => {
         <div className="grid grid-cols-3 gap-4">
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Launch</span>
-            <span className="text-lg font-extrabold text-slate-700">{costs?.minimum_cost || "₹5,00,000"}</span>
+            <span className="text-lg font-extrabold text-slate-700">{formatCurrencyToINR(costs?.minimum_cost || "₹5,00,000")}</span>
           </div>
           <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
             <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Recommended MVP</span>
-            <span className="text-lg font-extrabold text-indigo-700">{costs?.recommended_cost || "₹15,0,000"}</span>
+            <span className="text-lg font-extrabold text-indigo-700">{formatCurrencyToINR(costs?.recommended_cost || "₹15,00,000")}</span>
           </div>
           <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
             <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Premium Launch</span>
-            <span className="text-lg font-extrabold text-cyan-700">{costs?.premium_launch_cost || "₹25,0,000"}</span>
+            <span className="text-lg font-extrabold text-cyan-700">{formatCurrencyToINR(costs?.premium_launch_cost || "₹25,00,000")}</span>
           </div>
         </div>
 
@@ -159,15 +191,15 @@ const FinancialSizingSection = ({ revenue, costs }) => {
         <div className="space-y-3.5 mb-6">
           <div className="flex justify-between items-center p-3 rounded-lg bg-slate-50 border border-slate-100">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Conservative Scenario (Low Case)</span>
-            <span className="text-sm font-extrabold text-slate-700">{revenue?.low_case || "₹2,50,000 /mo"}</span>
+            <span className="text-sm font-extrabold text-slate-700">{formatCurrencyToINR(revenue?.low_case || "₹2,50,000 /mo")}</span>
           </div>
           <div className="flex justify-between items-center p-3 rounded-lg bg-indigo-50/40 border border-indigo-100">
             <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Target Objective (Expected Case)</span>
-            <span className="text-sm font-extrabold text-indigo-700">{revenue?.expected_case || "₹8,00,000 /mo"}</span>
+            <span className="text-sm font-extrabold text-indigo-700">{formatCurrencyToINR(revenue?.expected_case || "₹8,00,000 /mo")}</span>
           </div>
           <div className="flex justify-between items-center p-3 rounded-lg bg-emerald-50/40 border border-emerald-100">
             <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Aggressive Objective (High Case)</span>
-            <span className="text-sm font-extrabold text-emerald-700">{revenue?.high_case || "₹20,00,000 /mo"}</span>
+            <span className="text-sm font-extrabold text-emerald-700">{formatCurrencyToINR(revenue?.high_case || "₹20,00,000 /mo")}</span>
           </div>
         </div>
 
