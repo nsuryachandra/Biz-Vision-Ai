@@ -17,7 +17,7 @@ import {
   Filler
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
-import html2pdf from 'html2pdf.js';
+import gsap from 'gsap';
 
 ChartJS.register(
   CategoryScale,
@@ -34,6 +34,23 @@ ChartJS.register(
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
+
+const loadHtml2Pdf = () => {
+  return new Promise((resolve, reject) => {
+    if (window.html2pdf) {
+      resolve(window.html2pdf);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    script.integrity = 'sha512-GsLlZN/3F2ErC5IfS51RRmtCgoUtTHcQRqWj9m1f/5MvlobCLObE4gMi1N30RYgQbIcvS0cClwzZxN5c17yvg==';
+    script.crossOrigin = 'anonymous';
+    script.referrerPolicy = 'no-referrer';
+    script.onload = () => resolve(window.html2pdf);
+    script.onerror = (e) => reject(e);
+    document.body.appendChild(script);
+  });
+};
 
 const formatCurrencyToINR = (val) => {
   if (!val) return "N/A";
@@ -65,6 +82,79 @@ const formatCurrencyToINR = (val) => {
   
   str = str.replace(/\$/g, '₹');
   return str;
+};
+
+const CircularGauge = ({ label, value, ringColor, bgColor }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+  const ringRef = useRef(null);
+  
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+
+  useEffect(() => {
+    const obj = { val: 0 };
+    // Animating number count up
+    gsap.to(obj, {
+      val: value,
+      duration: 1.5,
+      ease: 'power2.out',
+      onUpdate: () => {
+        setDisplayValue(Math.round(obj.val));
+      }
+    });
+
+    // Animating circle drawing
+    if (ringRef.current) {
+      const targetOffset = circumference - (value / 100) * circumference;
+      gsap.fromTo(ringRef.current, 
+        { strokeDashoffset: circumference },
+        { strokeDashoffset: targetOffset, duration: 1.5, ease: 'power2.out' }
+      );
+    }
+  }, [value, circumference]);
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.03, y: -2 }}
+      className={cn("bg-slate-50/40 border border-slate-100 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-3.5 shadow-sm transition-all duration-300", bgColor)}
+    >
+      <div className="relative flex items-center justify-center w-16 h-16">
+        <svg className="w-16 h-16 transform -rotate-90">
+          <circle cx="32" cy="32" r={radius} className="text-slate-100" strokeWidth="4.5" stroke="currentColor" fill="transparent" />
+          <circle 
+            ref={ringRef}
+            cx="32" 
+            cy="32" 
+            r={radius} 
+            className={`${ringColor} transition-all`} 
+            strokeWidth="5" 
+            strokeDasharray={circumference} 
+            strokeLinecap="round" 
+            stroke="currentColor" 
+            fill="transparent" 
+          />
+        </svg>
+        <span className="absolute text-sm font-extrabold text-slate-800">{displayValue}%</span>
+      </div>
+      <span className="text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{label}</span>
+    </motion.div>
+  );
+};
+
+const AnimatedViabilityValue = ({ value }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+  useEffect(() => {
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: value,
+      duration: 1.5,
+      ease: 'power2.out',
+      onUpdate: () => {
+        setDisplayValue(Math.round(obj.val));
+      }
+    });
+  }, [value]);
+  return <p className="text-3xl font-extrabold">{displayValue}%</p>;
 };
 
 const DisclaimerBanner = () => (
@@ -498,6 +588,24 @@ const IntelligenceReport = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const reportRef = useRef(null);
+
+  useEffect(() => {
+    if (reportRef.current) {
+      const cards = reportRef.current.querySelectorAll('.rounded-\\[2rem\\]');
+      gsap.set(cards, { opacity: 0, y: 35 });
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power2.out',
+        clearProps: 'transform,opacity',
+        delay: 0.15
+      });
+    }
+  }, []);
 
   const downloadHtmlReport = (reportData) => {
     const { metadata, report: rData, competitors: comps, trends: trendData, news: newsData, shopping: shopData } = reportData;
@@ -1062,7 +1170,12 @@ const IntelligenceReport = () => {
       pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    html2pdf().set(opt).from(element).save();
+    loadHtml2Pdf().then((html2pdfLib) => {
+      html2pdfLib().set(opt).from(element).save();
+    }).catch(err => {
+      console.error("Failed to load html2pdf from CDN, printing natively:", err);
+      window.print();
+    });
   }, [metadata]);
 
   const handleSaveToWorkspace = useCallback(() => {
@@ -1166,7 +1279,7 @@ const IntelligenceReport = () => {
         isLoading={isLoading}
       />
 
-      <main id="report-pdf-content" className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-6 space-y-6 pb-24">
+      <main ref={reportRef} id="report-pdf-content" className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-6 space-y-6 pb-24">
         <DisclaimerBanner />
 
         {/* Venture Statement Callout */}
@@ -1211,33 +1324,30 @@ const IntelligenceReport = () => {
           </div>
           <div className="pt-2 space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { label: 'Market Fit', value: data.founder_decision_engine?.market_fit || 50, color: 'text-indigo-600', ringColor: 'text-indigo-600', bg: 'bg-indigo-50/10 hover:border-indigo-100' },
-                { label: 'Competition Readiness', value: data.founder_decision_engine?.competition || 50, color: 'text-cyan-600', ringColor: 'text-cyan-600', bg: 'bg-cyan-50/10 hover:border-cyan-100' },
-                { label: 'Scalability Potential', value: data.founder_decision_engine?.scalability || 50, color: 'text-emerald-600', ringColor: 'text-emerald-600', bg: 'bg-emerald-50/10 hover:border-emerald-100' },
-                { label: 'Capital Efficiency', value: data.founder_decision_engine?.capital_efficiency || 50, color: 'text-violet-600', ringColor: 'text-violet-600', bg: 'bg-violet-50/10 hover:border-violet-100' }
-              ].map((item, idx) => {
-                const radius = 28;
-                const circumference = 2 * Math.PI * radius;
-                const offset = circumference - (item.value / 100) * circumference;
-
-                return (
-                  <motion.div
-                    key={idx}
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    className={cn("bg-slate-50/40 border border-slate-100 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-3.5 shadow-sm transition-all duration-300", item.bg)}
-                  >
-                    <div className="relative flex items-center justify-center w-16 h-16">
-                      <svg className="w-16 h-16 transform -rotate-90">
-                        <circle cx="32" cy="32" r={radius} className="text-slate-100" strokeWidth="4.5" stroke="currentColor" fill="transparent" />
-                        <circle cx="32" cy="32" r={radius} className={`${item.ringColor} transition-all duration-1000 ease-out`} strokeWidth="5" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" stroke="currentColor" fill="transparent" />
-                      </svg>
-                      <span className="absolute text-sm font-extrabold text-slate-800">{item.value}%</span>
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{item.label}</span>
-                  </motion.div>
-                );
-              })}
+              <CircularGauge 
+                label="Market Fit" 
+                value={data.founder_decision_engine?.market_fit || 50} 
+                ringColor="text-indigo-600" 
+                bgColor="bg-indigo-50/10 hover:border-indigo-100" 
+              />
+              <CircularGauge 
+                label="Competition Readiness" 
+                value={data.founder_decision_engine?.competition || 50} 
+                ringColor="text-cyan-600" 
+                bgColor="bg-cyan-50/10 hover:border-cyan-100" 
+              />
+              <CircularGauge 
+                label="Scalability Potential" 
+                value={data.founder_decision_engine?.scalability || 50} 
+                ringColor="text-emerald-600" 
+                bgColor="bg-emerald-50/10 hover:border-emerald-100" 
+              />
+              <CircularGauge 
+                label="Capital Efficiency" 
+                value={data.founder_decision_engine?.capital_efficiency || 50} 
+                ringColor="text-violet-600" 
+                bgColor="bg-violet-50/10 hover:border-violet-100" 
+              />
             </div>
 
             <div className="p-4 bg-red-50/35 border border-red-100/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
@@ -1838,7 +1948,7 @@ const FinalVerdict = ({ scores, analysis, onGenerate, onSave, isLoading, metadat
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">VC Confidence</p>
-            <p className="text-3xl font-extrabold">{viability}%</p>
+            <AnimatedViabilityValue value={viability} />
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Status Verdict</p>
