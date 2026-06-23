@@ -4,7 +4,7 @@ import logging
 from mysql.connector import Error
 
 # Add backend directory to sys.path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db import get_db_connection
 
@@ -59,7 +59,8 @@ def run_migration():
                 "already exists",
                 "foreign key constraint is incorrectly formed",
                 "cannot drop index",
-                "duplicate entry"
+                "duplicate entry",
+                "duplicate foreign key"
             ]
             if any(msg in err_msg for msg in ignore_errors):
                 logger.info(f"Notice: Ignored expected warning/error: {e}")
