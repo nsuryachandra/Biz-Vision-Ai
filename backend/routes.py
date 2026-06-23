@@ -31,7 +31,6 @@ def health():
         "database": "connected" if db_ok else "disconnected",
         "serpapi": bool(Config.SERPAPI_KEY),
         "groq": bool(Config.GROQ_API_KEY),
-        "gemini": bool(Config.GEMINI_API_KEY),
     }), 200 if db_ok else 503
 
 @routes_bp.route("/analyze", methods=["POST"])

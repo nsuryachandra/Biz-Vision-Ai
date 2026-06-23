@@ -16,7 +16,6 @@ class MarketIntelligenceService:
         self.serpapi_key = Config.SERPAPI_KEY
         self.serpapi_url = "https://serpapi.com/search"
         self.groq_api_key = Config.GROQ_API_KEY
-        self.groq_api_key_backup = getattr(Config, "GROQ_API_KEY_1", None)
 
     # ─── API Logging helpers ──────────────────────────────────────────────────
 
@@ -158,8 +157,8 @@ class MarketIntelligenceService:
 
     # ─── LLM Caller ───────────────────────────────────────────────────────────
 
-    def _groq_request(self, api_key, prompt_text, label="Groq", max_retries=3):
-        """Make a Groq API call with 429 retry logic. Parses retry delay from error response."""
+    def _groq_request(self, api_key, prompt_text, max_retries=3):
+        """Make a Groq API call with 429 retry. Returns content or error string."""
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
@@ -179,49 +178,38 @@ class MarketIntelligenceService:
                 )
                 if resp.status_code == 200:
                     content = resp.json()["choices"][0]["message"]["content"].strip()
-                    logger.info(f"Generated report via {label} Groq API.")
+                    logger.info("Generated report via Groq API.")
                     return content
 
+                body = resp.text
                 if resp.status_code == 429:
-                    body = resp.text
-                    # Parse retry delay: "Please try again in 3m11.808s" or "in 30s"
                     m = re.search(r"again in (?:(\d+)m)?(\d+(?:\.\d+)?)s", body)
                     delay = 0
                     if m:
                         minutes = int(m.group(1) or 0)
                         seconds = float(m.group(2))
-                        delay = minutes * 60 + seconds + 1  # +1 buffer
+                        delay = minutes * 60 + seconds + 1
                     else:
-                        delay = 2 ** attempt * 5  # exponential backoff fallback
+                        delay = 2 ** attempt * 5
 
                     if attempt < max_retries - 1:
-                        logger.warning(
-                            f"{label} Groq rate limited. Retrying in {delay:.0f}s "
-                            f"(attempt {attempt+1}/{max_retries})."
-                        )
+                        logger.warning(f"Groq 429. Retrying in {delay:.0f}s (attempt {attempt+1}/{max_retries}).")
                         time.sleep(delay)
                     else:
-                        logger.warning(f"{label} Groq rate limited after {max_retries} retries.")
+                        logger.warning(f"Groq 429 after {max_retries} retries.")
+                        return f"429: {body}"
                 else:
-                    logger.warning(f"{label} Groq returned status {resp.status_code}: {resp.text}")
-                    break  # non-429 error, no point retrying
+                    logger.warning(f"Groq returned {resp.status_code}")
+                    return f"{resp.status_code}: {body}"
             except Exception as e:
-                logger.warning(f"{label} Groq failed: {e}")
-                break
-        return None
+                logger.warning(f"Groq request failed: {e}")
+                return f"ERROR: {e}"
+        return "ERROR: Groq API retries exhausted"
 
     def _call_llm(self, prompt_text):
-        response_content = None
-
-        # 1. Primary Groq (with 429 retry)
         if self.groq_api_key and self.groq_api_key != "YOUR_GROQ_API_KEY_HERE":
-            response_content = self._groq_request(self.groq_api_key, prompt_text, label="primary")
-
-        # 2. Backup Groq (with 429 retry)
-        if not response_content and self.groq_api_key_backup:
-            response_content = self._groq_request(self.groq_api_key_backup, prompt_text, label="backup")
-
-        return response_content
+            return self._groq_request(self.groq_api_key, prompt_text)
+        return "ERROR: Groq API key not configured"
 
     # ─── Prompt Construction ──────────────────────────────────────────────────
 
@@ -698,7 +686,16 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         prompt = self.build_prompt(idea_data, market_data)
         logger.info("Invoking AI model (Groq) for final synthesis...")
         response_text = self._call_llm(prompt)
-        
+
+        # Check if LLM returned an error (not JSON)
+        if response_text and response_text.startswith("ERROR:") or (response_text and re.match(r'^\d+:', response_text)):
+            logger.error(f"LLM synthesis failed: {response_text}")
+            return {
+                "success": False,
+                "error": response_text,
+                "report": None
+            }
+
         # Parse & Validate JSON
         report_json = {}
         if response_text:
@@ -715,7 +712,7 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
 
         # Return error state if LLM failed
         if not report_json:
-            logger.error("LLM synthesis failed. AI report generation unavailable.")
+            logger.error("LLM returned empty or unparseable response.")
             return {
                 "success": False,
                 "error": "AI report generation unavailable",

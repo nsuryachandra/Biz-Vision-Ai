@@ -52,12 +52,8 @@ def startup_checks() -> bool:
            "add SERPAPI_KEY to .env  ->  serpapi.com" if not serp_ok else "")
 
     groq_ok = bool(Config.GROQ_API_KEY and Config.GROQ_API_KEY != "YOUR_GROQ_API_KEY_HERE")
-    _check("Groq API Key  (primary LLM)", groq_ok,
+    _check("Groq API Key", groq_ok,
            "add GROQ_API_KEY to .env  ->  console.groq.com" if not groq_ok else "llama-3.3-70b-versatile ready")
-
-    gem_ok = bool(Config.GEMINI_API_KEY and Config.GEMINI_API_KEY != "YOUR_GEMINI_API_KEY_HERE")
-    _check("Gemini API Key  (LLM fallback)", gem_ok,
-           "add GEMINI_API_KEY to .env  ->  aistudio.google.com" if not gem_ok else "gemini-2.5-flash ready")
 
     print(f"{B}{'-'*46}{X}")
 
@@ -65,13 +61,12 @@ def startup_checks() -> bool:
         print(f"\n{R}{B}  [FATAL]  MySQL unavailable — server cannot start without a database.{X}\n")
         return False
 
-    llm_ok = groq_ok or gem_ok
     if not serp_ok:
         print(f"\n{Y}{B}  [WARN]  No SerpAPI key — market/competitor data will use fallback values.{X}")
-    if not llm_ok:
-        print(f"\n{Y}{B}  [WARN]  No LLM key — AI consulting text will use simulated fallback reports.{X}")
-    if serp_ok and llm_ok:
-        print(f"\n{G}{B}  All systems operational. BizVision AI is ready.{X}\n")
+    if not groq_ok:
+        print(f"\n{Y}{B}  [FATAL]  No Groq API key — LLM analysis unavailable.{X}")
+        return False
+    print(f"\n{G}{B}  All systems operational. BizVision AI is ready.{X}\n")
     return True
 
 
