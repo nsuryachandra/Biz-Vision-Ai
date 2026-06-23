@@ -1037,8 +1037,33 @@ const IntelligenceReport = () => {
   };
 
   const handleDownloadPDF = useCallback(() => {
-    window.print();
-  }, []);
+    const element = document.getElementById('report-pdf-content');
+    if (!element) {
+      window.print();
+      return;
+    }
+
+    const fileName = (metadata?.idea_text || "Report")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const opt = {
+      margin:       [10, 10, 10, 10], // top, left, bottom, right margins in mm
+      filename:     `bizvision-ai-${fileName || 'report'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { 
+        scale: 2, 
+        useCORS: true,
+        logging: false,
+        letterRendering: true
+      },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save();
+  }, [metadata]);
 
   const handleSaveToWorkspace = useCallback(() => {
     setIsLoading(true);
@@ -1141,7 +1166,7 @@ const IntelligenceReport = () => {
         isLoading={isLoading}
       />
 
-      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-6 space-y-6 pb-24">
+      <main id="report-pdf-content" className="flex-1 w-full max-w-[1400px] mx-auto px-6 py-6 space-y-6 pb-24">
         <DisclaimerBanner />
 
         {/* Venture Statement Callout */}
