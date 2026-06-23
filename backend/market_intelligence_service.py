@@ -5,7 +5,6 @@ import requests
 import time
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import google.generativeai as genai
 
 from config import Config
 from db import execute_query
@@ -18,17 +17,6 @@ class MarketIntelligenceService:
         self.serpapi_url = "https://serpapi.com/search"
         self.groq_api_key = Config.GROQ_API_KEY
         self.groq_api_key_backup = getattr(Config, "GROQ_API_KEY_1", None)
-        self.gemini_api_key = Config.GEMINI_API_KEY
-
-        if self.gemini_api_key:
-            try:
-                genai.configure(api_key=self.gemini_api_key)
-                self.gemini_model = genai.GenerativeModel("gemini-2.5-flash")
-            except Exception as e:
-                logger.warning(f"Failed to configure Gemini client: {e}")
-                self.gemini_model = None
-        else:
-            self.gemini_model = None
 
     # ─── API Logging helpers ──────────────────────────────────────────────────
 
@@ -189,19 +177,6 @@ class MarketIntelligenceService:
                     logger.warning(f"Backup Groq returned status {resp.status_code}: {resp.text}")
             except Exception as e:
                 logger.warning(f"Backup Groq failed: {e}")
-
-        # 3. Gemini Fallback
-        if not response_content and self.gemini_model:
-            try:
-                response = self.gemini_model.generate_content(
-                    prompt_text,
-                    generation_config={"response_mime_type": "application/json"}
-                )
-                response_content = response.text.strip()
-                logger.info("Generated intelligence report via fallback Gemini API.")
-            except Exception as e:
-                logger.warning(f"Fallback Gemini API failed: {e}")
-
         return response_content
 
     # ─── Prompt Construction ──────────────────────────────────────────────────
