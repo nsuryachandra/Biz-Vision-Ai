@@ -59,14 +59,14 @@ class MarketIntelligenceService:
 
     # ─── SerpAPI Data Fetchers ────────────────────────────────────────────────
 
-    def _serpapi_get(self, params, api_name):
+    def _serpapi_get(self, params, api_name, timeout=8):
         if not self.serpapi_key or self.serpapi_key == "YOUR_SERPAPI_KEY_HERE":
             logger.warning(f"{api_name} skipped: SerpAPI key not configured.")
             return {}
         
         params["api_key"] = self.serpapi_key
         try:
-            resp = requests.get(self.serpapi_url, params=params, timeout=8)
+            resp = requests.get(self.serpapi_url, params=params, timeout=timeout)
             status = resp.status_code
             data = resp.json() if status == 200 else {"error": resp.text}
             self._log_api_call(api_name, str(params.get("q", "")), status, data)
@@ -80,7 +80,10 @@ class MarketIntelligenceService:
 
     def fetch_google_search(self, keywords: str, location: str) -> dict:
         query = f"{location} {keywords}"
-        return self._serpapi_get({"engine": "google", "q": query}, "Google Search")
+        params = {"engine": "google", "q": query}
+        if location:
+            params["location"] = location
+        return self._serpapi_get(params, "Google Search")
 
     def _get_geo_for_location(self, location: str) -> str:
         if not location:
@@ -115,19 +118,36 @@ class MarketIntelligenceService:
 
     def fetch_google_news(self, keywords: str, location: str, industry: str) -> dict:
         query = f"{location} {keywords}"
-        res = self._serpapi_get({"engine": "google", "tbm": "nws", "q": query}, "Google News")
+        params = {"engine": "google", "tbm": "nws", "q": query}
+        if location:
+            params["location"] = location
+        res = self._serpapi_get(params, "Google News")
         if not res or not res.get("news_results"):
             fallback_query = f"{location} {industry}"
-            res = self._serpapi_get({"engine": "google", "tbm": "nws", "q": fallback_query}, "Google News")
+            fallback_params = {"engine": "google", "tbm": "nws", "q": fallback_query}
+            if location:
+                fallback_params["location"] = location
+            res = self._serpapi_get(fallback_params, "Google News")
         return res
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
         query = f"{keywords} {location}"
-        return self._serpapi_get({"engine": "google_maps", "q": query}, "Google Maps")
+        params = {"engine": "google_maps", "q": query}
+        if location:
+            params["location"] = location
+        return self._serpapi_get(params, "Google Maps")
 
-    def fetch_google_shopping(self, keywords: str) -> dict:
+    def fetch_google_shopping(self, keywords: str, location: str) -> dict:
         topic = keywords.split(",")[0].strip()
-        return self._serpapi_get({"engine": "google_shopping", "q": topic}, "Google Shopping")
+        query = f"{topic} {location}" if location else topic
+        params = {"engine": "google_shopping", "q": query}
+        if location:
+            params["location"] = location
+        shopping_data = self._serpapi_get(params, "Google Shopping", timeout=10)
+        if not shopping_data or not shopping_data.get("shopping_results"):
+            fallback_params = {"engine": "google_shopping", "q": topic}
+            return self._serpapi_get(fallback_params, "Google Shopping", timeout=10)
+        return shopping_data
 
 
 
