@@ -81,8 +81,6 @@ class MarketIntelligenceService:
     def fetch_google_search(self, keywords: str, location: str) -> dict:
         query = f"{location} {keywords}"
         params = {"engine": "google", "q": query}
-        if location:
-            params["location"] = location
         return self._serpapi_get(params, "Google Search")
 
     def _get_geo_for_location(self, location: str) -> str:
@@ -119,30 +117,22 @@ class MarketIntelligenceService:
     def fetch_google_news(self, keywords: str, location: str, industry: str) -> dict:
         query = f"{location} {keywords}"
         params = {"engine": "google", "tbm": "nws", "q": query}
-        if location:
-            params["location"] = location
         res = self._serpapi_get(params, "Google News")
         if not res or not res.get("news_results"):
             fallback_query = f"{location} {industry}"
             fallback_params = {"engine": "google", "tbm": "nws", "q": fallback_query}
-            if location:
-                fallback_params["location"] = location
             res = self._serpapi_get(fallback_params, "Google News")
         return res
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
         query = f"{keywords} {location}"
         params = {"engine": "google_maps", "q": query}
-        if location:
-            params["location"] = location
         return self._serpapi_get(params, "Google Maps")
 
     def fetch_google_shopping(self, keywords: str, location: str) -> dict:
         topic = keywords.split(",")[0].strip()
         query = f"{topic} {location}" if location else topic
         params = {"engine": "google_shopping", "q": query}
-        if location:
-            params["location"] = location
         shopping_data = self._serpapi_get(params, "Google Shopping", timeout=10)
         if not shopping_data or not shopping_data.get("shopping_results"):
             fallback_params = {"engine": "google_shopping", "q": topic}
@@ -502,7 +492,7 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
             "trends_raw": (self.fetch_google_trends, (kw, loc)),
             "news_raw": (self.fetch_google_news, (kw, loc, ind)),
             "maps_raw": (self.fetch_google_maps, (kw, loc)),
-            "shopping_raw": (self.fetch_google_shopping, (kw,))
+            "shopping_raw": (self.fetch_google_shopping, (kw, loc))
         }
 
         results = {}
