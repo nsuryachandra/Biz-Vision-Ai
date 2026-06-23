@@ -126,10 +126,12 @@ const AIProcessing2 = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const ideaText = location.state?.ideaText || "Subscription organic pet food in Hyderabad";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [apiResult, setApiResult] = useState(null);
+  const [apiError, setApiError] = useState(null);
   const isFinishedRef = useRef(false);
 
   const steps = [
@@ -173,14 +175,17 @@ const AIProcessing2 = () => {
     });
   }, [navigate, steps.length, apiResult]);
 
+  // 1. One-time API trigger
   useEffect(() => {
-    // Start backend analyze fetch call
+    const controller = new AbortController();
+    
     const triggerAnalysis = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
+        const res = await fetch(`${backendUrl}/analyze`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idea_text: ideaText }),
+          signal: controller.signal,
         });
         if (res.ok) {
           const data = await res.json();
@@ -190,18 +195,29 @@ const AIProcessing2 = () => {
           throw new Error(errData.error || 'Analysis failed');
         }
       } catch (err) {
-        console.error("API Error during analysis:", err);
-        if (err.message && err.message.toLowerCase().includes("location")) {
-          alert("Please specify a target location (example: Luxury Hotel in Punjagutta).");
-        } else {
-          alert("AI analysis currently unavailable. Please try again later.");
+        if (err.name === 'AbortError') {
+          return;
         }
-        navigate('/');
+        console.error("API Error during analysis:", err);
+        setApiError(err.message || 'Analysis failed');
       }
     };
 
     triggerAnalysis();
 
+    const fetchTimeout = setTimeout(() => {
+      controller.abort();
+      setApiError('Analysis timed out.');
+    }, 60000); // 60s timeout for backend
+
+    return () => {
+      controller.abort();
+      clearTimeout(fetchTimeout);
+    };
+  }, [ideaText, backendUrl]);
+
+  // 2. Step transitions timer
+  useEffect(() => {
     const transitionTimer = setInterval(() => {
       handleStepTransition();
     }, 2500); // Transition step every 2.5s
@@ -209,11 +225,21 @@ const AIProcessing2 = () => {
     return () => {
       clearInterval(transitionTimer);
     };
-  }, [ideaText, navigate, handleStepTransition]);
+  }, [handleStepTransition]);
 
   // Keep checking if API finished early, and steps also finished
   useEffect(() => {
-    if (apiResult && currentStepIndex === steps.length - 1 && !isFinishedRef.current) {
+    if (apiError) {
+      if (apiError.toLowerCase().includes("location")) {
+        alert("Please specify a target location (example: Luxury Hotel in Punjagutta).");
+      } else {
+        alert("AI analysis currently unavailable. Please try again later.");
+      }
+      navigate('/');
+      return;
+    }
+
+    if (apiResult && !isFinishedRef.current) {
       isFinishedRef.current = true;
       setProgressPercentage(100);
       setCurrentSteps((prevSteps) => prevSteps.map(step => ({ ...step, status: 'completed' })));
@@ -221,7 +247,7 @@ const AIProcessing2 = () => {
         navigate('/intelligence-report', { state: { report: apiResult } });
       }, 800);
     }
-  }, [currentStepIndex, steps.length, navigate, apiResult]);
+  }, [currentStepIndex, steps.length, navigate, apiResult, apiError]);
 
   return (
     <div className="min-h-screen w-full bg-background flex flex-col relative items-center justify-center overflow-hidden font-sans text-foreground">

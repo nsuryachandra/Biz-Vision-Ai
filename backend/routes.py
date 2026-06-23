@@ -48,6 +48,11 @@ def analyze():
     location = (body.get("location") or "").strip()
     user_id = body.get("user_id")
 
+    print(f"\n=== /analyze called ===")
+    print(f"  idea_text: '{idea_text}'")
+    print(f"  location: '{location}'")
+    print(f"  user_id: {user_id}")
+
     if not idea_text:
         return jsonify({
             "success": False,
@@ -55,8 +60,13 @@ def analyze():
         }), 400
 
     try:
-        # Pass location (which might be None or empty string) so service layer can parse/validate
+        print(f"  >>> Calling market_service.analyze_idea()...")
         result = market_service.analyze_idea(idea_text, user_id, location=location or None)
+        print(f"  <<< analyze_idea() returned")
+        print(f"      success: {result.get('success', True)}")
+        print(f"      error: {result.get('error', 'None')}")
+        print(f"      report: {'present' if result.get('report') else 'None'}")
+        print(f"      report_id: {result.get('report_id')}")
         if isinstance(result, dict) and not result.get("success", True):
             status_code = 400 if "location" in result.get("error", "").lower() else 500
             return jsonify({
@@ -120,9 +130,9 @@ def dashboard():
                 data = json.loads(r["report_json"])
                 status = data.get("final_verdict", {}).get("verdict_status") or data.get("final_verdict", {}).get("launch_recommendation", "")
                 status_lower = str(status).lower()
-                if "approved" in status_lower or "pilot" in status_lower:
+                if "approved" in status_lower or "pilot" in status_lower or "go" in status_lower or "test" in status_lower or "proceed" in status_lower:
                     approved_pilots += 1
-                elif "pivot" in status_lower or "caution" in status_lower:
+                elif "pivot" in status_lower or "caution" in status_lower or "validate" in status_lower or "research" in status_lower or "direction" in status_lower:
                     pivots_recommended += 1
                 else:
                     not_feasible += 1

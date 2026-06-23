@@ -202,8 +202,8 @@ const InvestmentReadinessGauge = ({ recommendation }) => {
       <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-6">
         <Icon icon="lucide:shield-check" className="text-3xl text-indigo-600" />
       </div>
-      <h3 className="text-lg font-extrabold text-slate-800 mb-2">Investment Readiness</h3>
-      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-4">VC Strategic Recommendation</p>
+      <h3 className="text-lg font-extrabold text-slate-800 mb-2">Market Readiness</h3>
+      <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-4">Strategic Recommendation</p>
       <div className="px-4">
         <p className="text-sm leading-relaxed text-slate-600 font-semibold bg-slate-50/50 p-4 rounded-xl border border-slate-100/50">
           "{recommendation}"
@@ -517,7 +517,7 @@ const IntelligenceReport = () => {
       final_verdict: {
         context_text: "Highly viable opportunity. Build local landing page waitlist first to validate customer acquisition cost before capital deployment.",
         investment_grade: "A",
-        launch_recommendation: "Pilot First",
+        launch_recommendation: "Test (Pilot)",
         confidence_level: "High"
       }
     },
@@ -785,7 +785,7 @@ const IntelligenceReport = () => {
   <body>
     <div class="container">
       <div class="header">
-        <div class="badge-validated">VC Validated</div>
+        <div class="badge-validated">BizVision Validated</div>
         <h1 class="title">${currentData.executive_summary?.title || category}</h1>
         <div class="meta">
           <span>📍 <strong>Location:</strong> ${metadata?.location || 'Global'}</span>
@@ -1105,7 +1105,7 @@ const IntelligenceReport = () => {
           </div>
           <div>
             <div class="content-label" style="color: rgba(255,255,255,0.7);">Launch Recommendation</div>
-            <div class="verdict-value" style="color: #60A5FA; font-size: 20px; padding-top: 8px;">${currentData.final_verdict?.launch_recommendation || "Pilot First"}</div>
+            <div class="verdict-value" style="color: #60A5FA; font-size: 20px; padding-top: 8px;">${currentData.final_verdict?.launch_recommendation || "Test (Pilot)"}</div>
           </div>
           <div>
             <div class="content-label" style="color: rgba(255,255,255,0.7);">Confidence Level</div>
@@ -1339,23 +1339,69 @@ const IntelligenceReport = () => {
               />
             </div>
 
-            <div className="p-4 bg-red-50/35 border border-red-100/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-100/80 flex items-center justify-center text-red-600 shadow-sm">
-                  <Icon icon="lucide:alert-triangle" className="text-xl" />
+            {(() => {
+              const riskVal = data.founder_decision_engine?.risk || 50;
+              const riskLabel = riskVal < 40 ? "Low Risk" : riskVal <= 70 ? "Medium Risk" : "High Risk";
+              const riskColor = riskVal < 40 
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200/30" 
+                : riskVal <= 70 
+                  ? "bg-amber-50 text-amber-700 border-amber-200/30" 
+                  : "bg-red-50 text-red-700 border-red-200/30";
+              const containerColor = riskVal < 40 
+                ? "bg-emerald-50/20 border-emerald-100/30" 
+                : riskVal <= 70 
+                  ? "bg-amber-50/20 border-amber-100/30" 
+                  : "bg-red-50/35 border-red-100/50";
+              const iconBg = riskVal < 40 
+                ? "bg-emerald-100/80 text-emerald-600" 
+                : riskVal <= 70 
+                  ? "bg-amber-100/80 text-amber-600" 
+                  : "bg-red-100/80 text-red-600";
+              const iconName = riskVal < 40 
+                ? "lucide:shield-check" 
+                : "lucide:alert-triangle";
+
+              return (
+                <div className={`p-4 md:p-6 rounded-2xl space-y-4 border ${containerColor}`}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 ${iconBg}`}>
+                        <Icon icon={iconName} className="text-xl" />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="text-sm font-bold text-slate-900">Risk Factor Assessment</h4>
+                        <p className="text-xs text-slate-500 font-semibold leading-normal">Lower risk scores indicate higher probability of success and smoother launch execution.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 self-start md:self-center">
+                      <span className="text-xs font-bold uppercase text-slate-400">Risk Score:</span>
+                      <span className={`px-3.5 py-1.5 rounded-full font-extrabold text-sm flex items-center gap-1.5 shadow-sm border ${riskColor}`}>
+                        {riskLabel} ({riskVal}/100)
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t ${riskVal < 40 ? 'border-emerald-100/20' : riskVal <= 70 ? 'border-amber-100/20' : 'border-red-100/20'}`}>
+                    <div className="p-3 bg-white/60 rounded-xl border border-slate-100/60">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Market Risk</span>
+                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.market_risks || "No significant risk identified."}</p>
+                    </div>
+                    <div className="p-3 bg-white/60 rounded-xl border border-slate-100/60">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Competition Risk</span>
+                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.competition_risks || "No significant risk identified."}</p>
+                    </div>
+                    <div className="p-3 bg-white/60 rounded-xl border border-slate-100/60">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Operational Risk</span>
+                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.operational_risks || "No significant risk identified."}</p>
+                    </div>
+                    <div className="p-3 bg-white/60 rounded-xl border border-slate-100/60">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Legal & Compliance</span>
+                      <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.legal_risks || "No significant risk identified."}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <h4 className="text-sm font-bold text-slate-900">Risk Factor Assessment</h4>
-                  <p className="text-xs text-slate-500 font-semibold leading-normal">Lower risk scores indicate higher probability of success and smoother launch execution.</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 self-start md:self-center">
-                <span className="text-xs font-bold uppercase text-slate-400">Risk Score:</span>
-                <span className="px-3.5 py-1.5 rounded-full bg-red-100 text-red-700 font-extrabold text-sm flex items-center gap-1.5 shadow-sm border border-red-200/30">
-                  {data.founder_decision_engine?.risk || 50}/100
-                </span>
-              </div>
-            </div>
+              );
+            })()}
           </div>
         </motion.div>
 
@@ -1735,8 +1781,8 @@ const IntelligenceReport = () => {
                 {news.length > 0 && (
                   <div className="pt-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Live Industry News Signals</span>
-                    <div className="grid grid-cols-1 gap-4">
-                      {news.slice(0, 3).map((item, idx) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {news.slice(0, 2).map((item, idx) => (
                         <motion.a
                           key={idx}
                           href={item.link}
@@ -1758,20 +1804,28 @@ const IntelligenceReport = () => {
                 {shopping.length > 0 && (
                   <div className="pt-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Alternative Product & Pricing Benchmarks</span>
-                    <div className="grid grid-cols-2 gap-4">
-                      {shopping.slice(0, 4).map((item, idx) => (
-                        <motion.div
-                          key={idx}
-                          whileHover={{ y: -3 }}
-                          className="p-3 bg-slate-50/50 hover:bg-white rounded-xl border border-slate-100 hover:border-blue-100 flex flex-col justify-between shadow-sm transition-all"
-                        >
-                          <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
-                          <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
-                            <span className="text-xs font-extrabold text-emerald-600">{item.price || "N/A"}</span>
-                            {item.source && <span className="text-[9px] text-slate-400 font-bold truncate max-w-[50px]">{item.source}</span>}
-                          </div>
-                        </motion.div>
-                      ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {shopping.slice(0, 2).map((item, idx) => {
+                        const price = item.price || "N/A";
+                        const displayPrice = price.includes('$') 
+                          ? price.replace('$', '₹') 
+                          : (/^\d/.test(price) ? `₹${price}` : price);
+                        return (
+                          <motion.div
+                            key={idx}
+                            whileHover={{
+                              y: -3
+                            }}
+                            className="p-3 bg-slate-50/50 hover:bg-white rounded-xl border border-slate-100 hover:border-blue-100 flex flex-col justify-between shadow-sm transition-all"
+                          >
+                            <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
+                            <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
+                              <span className="text-xs font-extrabold text-emerald-600">{displayPrice}</span>
+                              {item.source && <span className="text-[9px] text-slate-400 font-bold truncate max-w-[50px]">{item.source}</span>}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -1921,23 +1975,26 @@ const IntelligenceReport = () => {
 // ─── FINAL VERDICT PANEL ───────────────────────────────────────────────────
 const FinalVerdict = ({ scores, analysis, onGenerate, onSave, isLoading, metadata }) => {
   const viability = scores?.viability || 50;
-  const statusColor = viability >= 75 ? "from-emerald-600 to-emerald-700" : 
-                      viability >= 45 ? "from-amber-600 to-amber-700" : 
+  const parsed = parseJSON(analysis?.final_recommendation, {});
+  const confidenceStr = String(parsed.confidence || "");
+  const confidenceVal = parseInt(confidenceStr.replace(/[^0-9]/g, "")) || viability;
+  
+  const statusColor = confidenceVal >= 75 ? "from-emerald-600 to-emerald-700" : 
+                      confidenceVal >= 45 ? "from-amber-600 to-amber-700" : 
                       "from-red-600 to-red-700";
   
-  const parsed = parseJSON(analysis?.final_recommendation, {});
   const nextStep = parsed.next_step || "Validate economic parameters before launch.";
-  const statusBadge = parsed.status || "Approved for Pilot";
+  const statusBadge = parsed.status || "Test (Pilot)";
 
   return (
     <div className={`bg-gradient-to-r ${statusColor} rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden flex flex-col gap-8 text-white`}>
       <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
       <div className="relative z-10">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/80 mb-6">Investment Verdict Summary</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-white/80 mb-6">Feasibility Verdict Summary</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">VC Confidence</p>
-            <AnimatedViabilityValue value={viability} />
+            <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Confidence Score</p>
+            <AnimatedViabilityValue value={confidenceVal} />
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Status Verdict</p>

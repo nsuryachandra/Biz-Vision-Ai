@@ -47,11 +47,26 @@ class MarketIntelligenceService:
     # ─── Location Helper ─────────────────────────────────────────────────────
 
     def _build_location_str(self, location: str) -> str:
-        """Build a SerpAPI-friendly location string from user input. No hardcoded locality map."""
+        """Build a SerpAPI-friendly location string from user input. Maps sub-localities to parent cities."""
         if not location or not location.strip():
             return None
         loc = location.strip()
         loc_lower = loc.lower()
+        
+        # Map common Hyderabad sub-localities to parent city
+        hyd_sub = ["ameerpet", "kukatpally", "madhapur", "gachibowli", "punjagutta", "banjara hills", 
+                   "jubilee hills", "secunderabad", "hitech city", "kondapur", "koti", "begumpet", 
+                   "charminar", "dilsukhnagar", "lb nagar", "miyapur", "tarnaka", "uppal", "yusufguda", 
+                   "sr nagar", "khairatabad", "nampally", "somajiguda"]
+        if any(w in loc_lower for w in hyd_sub) or loc_lower == "hyderabad":
+            return "Hyderabad, Telangana, India"
+            
+        # Map common Bangalore sub-localities to parent city
+        blr_sub = ["koramangala", "indiranagar", "hsr layout", "jayanagar", "jp nagar", 
+                   "whitefield", "marathahalli", "electronic city", "hebbal", "yelahanka", "bellandur"]
+        if any(w in loc_lower for w in blr_sub) or loc_lower in ("bangalore", "bengaluru"):
+            return "Bangalore, Karnataka, India"
+            
         # If it already includes country/state/city info, use as-is
         if any(c in loc_lower for c in [",", "india", "telangana", "andhra",
                                          "karnataka", "tamil", "kerala", "maharashtra",
@@ -88,16 +103,34 @@ class MarketIntelligenceService:
 
         params["api_key"] = self.serpapi_key
 
-        # Add dedicated location parameter so SerpAPI uses Google's geo-targeting
-        if location:
+        # Determine country and language targets
+        geo_country = self._get_geo_for_location(location) if location else "IN"
+        params["gl"] = geo_country.lower()
+        params["hl"] = "en"
+        
+        if geo_country == "IN":
+            params["google_domain"] = "google.co.in"
+        else:
+            params["google_domain"] = "google.com"
+
+        # Add dedicated location parameter only if supported by the engine
+        engine = params.get("engine", "google")
+        if location and engine not in ["google_shopping", "google_maps", "google_trends"]:
             loc_str = self._build_location_str(location)
             if loc_str:
                 params["location"] = loc_str
-                params["google_domain"] = "google.co.in"
 
         try:
             resp = requests.get(self.serpapi_url, params=params, timeout=timeout)
             status = resp.status_code
+            
+            # Self-healing fallback: if location parameter is unsupported, retry query-only
+            if status == 400 and "location" in params:
+                logger.warning(f"{api_name} failed with 400 for location targeting. Retrying without location param...")
+                del params["location"]
+                resp = requests.get(self.serpapi_url, params=params, timeout=timeout)
+                status = resp.status_code
+
             data = resp.json() if status == 200 else {"error": resp.text}
             self._log_api_call(api_name, str(params.get("q", "")), status, data)
             if status != 200:
@@ -128,13 +161,45 @@ class MarketIntelligenceService:
         return self._serpapi_get(params, "Google Trends")
 
     def fetch_google_news(self, keywords: str, location: str, industry: str) -> dict:
-        query = f"{keywords} near {location}" if location else keywords
+        # Clean keywords: take the first term, e.g., "organic laundry"
+        clean_kws = [k.strip() for k in keywords.split(",") if k.strip()]
+        primary_kw = clean_kws[0] if clean_kws else industry
+        if not primary_kw:
+            primary_kw = "startup"
+            
+        # Determine a clean city or country target for query formulation
+        city_or_country = "India"
+        if location:
+            parts = [p.strip() for p in location.split(",")]
+            if len(parts) > 1:
+                if parts[-1].lower() in ["india", "in", "united states", "us", "usa"]:
+                    city_or_country = parts[-2] if len(parts) > 2 else parts[-1]
+                else:
+                    city_or_country = parts[-1]
+            else:
+                city_or_country = location
+
+        # Primary Query: Focused on the specific business idea startup/industry in the city/country
+        query = f"{primary_kw} startup {city_or_country}"
         params = {"engine": "google", "tbm": "nws", "q": query}
-        res = self._serpapi_get(params, "Google News", location=location)
+        
+        # We do NOT pass the micro-locality to _serpapi_get's location param
+        # because it restricts Google News too much or causes it to fail.
+        # Instead, we pass the city_or_country.
+        res = self._serpapi_get(params, "Google News", location=city_or_country)
+        
+        # Fallback 1: Broaden to the idea/startup at national/global level
         if not res or not res.get("news_results"):
-            fallback_query = f"{industry} in {location}" if location else industry
-            fallback_params = {"engine": "google", "tbm": "nws", "q": fallback_query}
-            res = self._serpapi_get(fallback_params, "Google News", location=location)
+            query_broad = f"{primary_kw} startup"
+            params_broad = {"engine": "google", "tbm": "nws", "q": query_broad}
+            res = self._serpapi_get(params_broad, "Google News")
+            
+        # Fallback 2: Industry-level trends
+        if not res or not res.get("news_results"):
+            query_industry = f"{industry} industry trends India"
+            params_industry = {"engine": "google", "tbm": "nws", "q": query_industry}
+            res = self._serpapi_get(params_industry, "Google News")
+            
         return res
 
     def fetch_google_maps(self, keywords: str, location: str) -> dict:
@@ -144,14 +209,8 @@ class MarketIntelligenceService:
         return self._serpapi_get(params, "Google Maps")
 
     def fetch_google_shopping(self, keywords: str, location: str) -> dict:
-        topic = keywords.split(",")[0].strip()
-        query = f"{topic} in {location}" if location else topic
-        params = {"engine": "google_shopping", "q": query}
-        shopping_data = self._serpapi_get(params, "Google Shopping", timeout=10, location=location)
-        if not shopping_data or not shopping_data.get("shopping_results"):
-            fallback_params = {"engine": "google_shopping", "q": topic}
-            return self._serpapi_get(fallback_params, "Google Shopping", timeout=10, location=location)
-        return shopping_data
+        params = {"engine": "google_shopping", "q": keywords}
+        return self._serpapi_get(params, "Google Shopping", timeout=10, location=location)
 
 
 
@@ -159,6 +218,7 @@ class MarketIntelligenceService:
 
     def _groq_request(self, api_key, prompt_text, max_retries=3):
         """Make a Groq API call with 429 retry. Returns content or error string."""
+        print(f"    --- [_groq_request] attempt 1/{max_retries} ---")
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
@@ -176,13 +236,17 @@ class MarketIntelligenceService:
                     "https://api.groq.com/openai/v1/chat/completions",
                     headers=headers, json=payload, timeout=15
                 )
-                if resp.status_code == 200:
+                status = resp.status_code
+                print(f"    Groq attempt {attempt+1}: status={status}")
+                if status == 200:
                     content = resp.json()["choices"][0]["message"]["content"].strip()
                     logger.info("Generated report via Groq API.")
+                    print(f"    Groq OK: response length={len(content)}")
                     return content
 
                 body = resp.text
-                if resp.status_code == 429:
+                print(f"    Groq response body (first 300): {body[:300]}")
+                if status == 429:
                     m = re.search(r"again in (?:(\d+)m)?(\d+(?:\.\d+)?)s", body)
                     delay = 0
                     if m:
@@ -193,9 +257,11 @@ class MarketIntelligenceService:
                         delay = 2 ** attempt * 5
 
                     if attempt < max_retries - 1:
+                        print(f"    Groq 429 — sleeping {delay:.0f}s then retrying...")
                         logger.warning(f"Groq 429. Retrying in {delay:.0f}s (attempt {attempt+1}/{max_retries}).")
                         time.sleep(delay)
                     else:
+                        print(f"    Groq 429 — exhausted retries, returning error")
                         logger.warning(f"Groq 429 after {max_retries} retries.")
                         return f"429: {body}"
                 else:
@@ -214,11 +280,11 @@ class MarketIntelligenceService:
     # ─── Prompt Construction ──────────────────────────────────────────────────
 
     def build_prompt(self, idea_data: dict, market_data: dict) -> str:
-        prompt_template = """System: You are a Tier-1 Venture Capital Partner, Startup Founder, Product Strategist, and Business Intelligence Expert.
+        prompt_template = """System: You are a Tier-1 Startup Incubator Leader, Product Strategist, Business Intelligence Expert, and Experienced Founder.
 Your job is NOT to write a consulting report. Your job is to help a founder make a business decision in under 60 seconds.
-Every section must be concise, minimal, founder-friendly, investor-grade, clear, and fast to scan.
+Every section must be concise, minimal, founder-friendly, professional-grade, clear, and fast to scan.
 Avoid corporate jargon, avoid long paragraphs, never generate filler text, and never explain obvious things. Every insight must be actionable (2-3 sentences max per insight, prefer bullets).
-The final output should feel like "PitchBook + YC Partner Notes + Shark Tank Evaluation".
+The final output should feel like "Incubator Partner Notes + Expert Market Evaluation".
 
 REAL-MARKET API DATA COLLECTED:
 1. Top Google Search Results:
@@ -314,16 +380,16 @@ CRITICAL RULES:
     "month_3": ["Step 1 (max 12 words)", "Step 2 (max 12 words)"]
   }},
   "founder_decision_engine": {{
-    "market_fit": 85,
-    "competition": 75,
-    "scalability": 90,
-    "capital_efficiency": 80,
-    "risk": 65
+    "market_fit": "integer (1-100) reflecting product-market fit. Calculate dynamically based on local search volume and trend signals; never repeat example values like 60 or 50.",
+    "competition": "integer (1-100) reflecting competitive space (higher means less saturated/easier to enter). Calculate dynamically based on competitor counts/ratings; never repeat example values like 40.",
+    "scalability": "integer (1-100) reflecting potential to expand model. Calculate dynamically; never repeat example values like 80.",
+    "capital_efficiency": "integer (1-100) reflecting margin potential relative to start costs. Calculate dynamically; never repeat example values like 50.",
+    "risk": "integer (1-100) reflecting risk factor (higher means riskier). Calculate dynamically based on the risk assessment factors; never repeat example values like 60."
   }},
   "final_verdict": {{
     "context_text": "Next Action. One-sentence clear next action step.",
-    "investment_grade": "Overall Grade (e.g. A, B, C, F)",
-    "launch_recommendation": "Launch Decision. Must be one of: Proceed, Pilot First, Validate Further, Pivot, Reject",
+    "investment_grade": "Overall Feasibility Grade (e.g. A, B, C, F)",
+    "launch_recommendation": "Launch Decision. Simplified and clear. Must be one of: Go (Launch), Test (Pilot), Research (Validate), Change Direction (Pivot), Not Recommended (Avoid)",
     "confidence_level": "Confidence % (e.g. 88%)"
   }}
 }}
@@ -427,36 +493,46 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         # Deterministic corrections for common local/niche business models (e.g. South Indian "Hotel" meaning Restaurant, or general Hotels/SaaS/Gyms)
         idea_lower = idea_text.lower()
         
-        # 1. Food / Restaurant / Café (specifically handle Veg Hotel / Cafe / Restaurant)
-        if any(w in idea_lower for w in ["restaurant", "cafe", "café", "kitchen", "bakery", "dining", "dhaba", "food", "veg hotel", "veg restaurant", "biryani", "caterer", "catering", "veg", "vegetarian", "tiffin", "tiffins", "meals", "eats", "eatery"]):
+        def has_word(word_list):
+            return any(re.search(r"\b" + re.escape(w) + r"\b", idea_lower) for w in word_list)
+        
+        # 1. Food / Restaurant / Café / Sweet Shop (specifically handle Veg Hotel / Cafe / Restaurant / Sweet Shop)
+        if (has_word(["restaurant", "cafe", "café", "kitchen", "bakery", "dining", "dhaba", "food", "veg hotel", "veg restaurant", "biryani", "caterer", "catering", "veg", "vegetarian", "tiffin", "tiffins", "meals", "eats", "eatery", "sweet", "sweets", "mithai", "halwai", "confectionery"]) or "tiffin" in idea_lower or "biryani" in idea_lower or "sweets" in idea_lower or "mithai" in idea_lower) and not has_word(["pet", "dog", "cat", "animal"]):
             industry = "Food & Beverage"
-            if "cafe" in idea_lower or "café" in idea_lower:
+            if has_word(["cafe", "café"]):
                 business_type = "Cafe / Coffee Shop"
-            elif "bakery" in idea_lower:
+            elif has_word(["bakery"]):
                 business_type = "Bakery"
+            elif has_word(["sweet", "sweets", "mithai", "halwai", "confectionery"]):
+                business_type = "Sweet Shop"
             else:
                 business_type = "Restaurant / Dining"
                 
         # 2. Hospitality / Accommodation (Lodging hotel, resort, guest house)
         # Ensure it is lodging and not a food hotel (e.g. if it contains "hotel" but does NOT contain food keywords)
-        elif any(w in idea_lower for w in ["hotel", "resort", "lodge", "stay", "accommodation", "hostel", "inn"]) and not any(w in idea_lower for w in ["veg", "food", "dining", "biryani", "pure veg", "restaurant"]):
+        elif has_word(["hotel", "resort", "lodge", "stay", "accommodation", "hostel", "inn"]) and not any(w in idea_lower for w in ["veg", "food", "dining", "biryani", "pure veg", "restaurant"]):
             industry = "Hospitality & Tourism"
             business_type = "Hotel / Lodging"
             
         # 3. Gym / Fitness / Wellness
-        elif any(w in idea_lower for w in ["gym", "fitness", "yoga", "crossfit", "workout", "studio", "health club"]):
+        elif has_word(["gym", "fitness", "yoga", "crossfit", "workout", "studio", "health club"]):
             industry = "Fitness & Wellness"
             business_type = "Fitness Center / Gym"
             
         # 4. SaaS / Software Technology
-        elif any(w in idea_lower for w in ["saas", "software", "dashboard", "app", "platform", "billing"]):
+        elif has_word(["saas", "software", "dashboard", "app", "platform", "billing"]) or "saas" in idea_lower:
             industry = "Technology & Software"
             business_type = "SaaS / Software Product"
             
         # 5. On-Demand Services (e.g. laundry)
-        elif any(w in idea_lower for w in ["laundry", "dry cleaning", "washing"]):
+        elif has_word(["laundry", "dry cleaning", "washing"]) and not has_word(["pet", "dog", "cat", "animal"]):
             industry = "Consumer Services"
             business_type = "On-Demand Service"
+            
+        # 6. Pet Services / Shops / Food
+        elif has_word(["pet", "dog", "cat", "animal", "vet", "veterinary"]):
+            industry = "Consumer Services"
+            business_type = "Pet Shop / Service"
 
         return {
             "idea_text": idea_text,
@@ -492,12 +568,91 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
                     
         return None
 
+    def _get_maps_search_query(self, business_type: str, keywords: str) -> str:
+        bt_lower = business_type.lower()
+        
+        # Mapping common business types to simple physical category terms
+        if re.search(r"\bpet(s)?\b", bt_lower):
+            return "pet shop"
+        if "sweet" in bt_lower or "mithai" in bt_lower or "halwai" in bt_lower:
+            return "sweet shop"
+        if "hotel" in bt_lower or "lodging" in bt_lower:
+            return "hotel"
+        if "restaurant" in bt_lower or "dining" in bt_lower:
+            return "restaurant"
+        if "cafe" in bt_lower or "coffee" in bt_lower:
+            return "cafe"
+        if "bakery" in bt_lower:
+            return "bakery"
+        if "gym" in bt_lower or "fitness" in bt_lower:
+            return "gym"
+        if "saas" in bt_lower or "software" in bt_lower:
+            return "software company"
+        if "laundry" in bt_lower or "service" in bt_lower:
+            # Check keywords for specific service
+            kw_lower = keywords.lower()
+            if "laundry" in kw_lower:
+                return "laundry service"
+            if re.search(r"\bpet(s)?\b", kw_lower):
+                return "pet shop"
+            return "services"
+            
+        # Default: use the first keyword (which is usually the primary noun)
+        primary_kw = keywords.split(",")[0].strip() if keywords else "business"
+        pk_lower = primary_kw.lower()
+        if re.search(r"\bpet(s)?\b", pk_lower):
+            return "pet shop"
+        if "boutique" in pk_lower or "store" in pk_lower or "shop" in pk_lower:
+            return primary_kw
+        return primary_kw
+
+    def _get_shopping_search_query(self, industry: str, business_type: str, keywords: str) -> str:
+        ind_lower = industry.lower()
+        bt_lower = business_type.lower()
+        kw_lower = keywords.lower()
+        
+        # 1. Pets (use word boundary check to avoid matching Ameerpet etc)
+        if re.search(r"\bpet(s)?\b", kw_lower) or re.search(r"\bpet(s)?\b", bt_lower):
+            return "pet food"
+            
+        # 2. Food & Beverage / Restaurant / Cafe / Sweet Shop
+        if "food" in ind_lower or "restaurant" in bt_lower or "cafe" in bt_lower or "bakery" in bt_lower or "sweet" in bt_lower or "mithai" in bt_lower:
+            if "coffee" in kw_lower or "cafe" in bt_lower:
+                return "coffee beans"
+            if "bakery" in bt_lower:
+                return "cake stand"
+            if "sweet" in bt_lower or "mithai" in bt_lower:
+                return "organic sugar"
+            return "organic ingredients"
+            
+        # 3. Gym / Fitness
+        if "fitness" in ind_lower or "gym" in bt_lower:
+            return "gym equipment"
+            
+        # 4. Laundry / dry cleaning / washing
+        if "laundry" in kw_lower or "laundry" in bt_lower or "dry clean" in kw_lower:
+            return "laundry detergent"
+            
+        # 5. SaaS / Software Technology
+        if "saas" in bt_lower or "software" in bt_lower:
+            return "software subscription"
+            
+        # Default: first keyword
+        primary = keywords.split(",")[0].strip() if keywords else "product"
+        return primary
+
     # ─── Orchestrator ──────────────────────────────────────────────────────────
 
     def analyze_idea(self, idea_text: str, user_id=None, location=None) -> dict:
+        print(f"\n--- [analyze_idea] ENTER ---")
+        print(f"    idea_text: '{idea_text[:80]}...' " if len(idea_text) > 80 else f"    idea_text: '{idea_text}'")
+        print(f"    location input: '{location}'")
+
         # ── 1. Enforce explicit location input and reject empty locations
         if not location or not location.strip():
+            print(f"    -> location empty, extracting from text...")
             location = self.extract_location_from_text(idea_text)
+            print(f"    -> extracted location: '{location}'")
             
         if not location or not location.strip():
             return {
@@ -506,7 +661,9 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
             }
             
         # ── 2. NLP Parse
+        print(f"    >>> parse_idea_via_llm()...")
         idea_data = self.parse_idea_via_llm(idea_text, location=location)
+        print(f"    <<< parse done: keywords='{idea_data.get('keywords')}' industry='{idea_data.get('industry')}'")
         
         # ── 2. Persist Idea
         idea_id = None
@@ -537,13 +694,16 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
         kw = idea_data.get("keywords", "")
         loc = idea_data.get("location", "")
         ind = idea_data.get("industry", "")
+        maps_kw = self._get_maps_search_query(idea_data.get("business_type", ""), kw)
+        shopping_kw = self._get_shopping_search_query(idea_data.get("industry", ""), idea_data.get("business_type", ""), kw)
+        print(f"    Fetching 5 SerpAPI calls in parallel for: kw='{kw}' maps_kw='{maps_kw}' shopping_kw='{shopping_kw}' loc='{loc}'...")
         
         fetch_tasks = {
             "search_raw": (self.fetch_google_search, (kw, loc)),
             "trends_raw": (self.fetch_google_trends, (kw, loc)),
             "news_raw": (self.fetch_google_news, (kw, loc, ind)),
-            "maps_raw": (self.fetch_google_maps, (kw, loc)),
-            "shopping_raw": (self.fetch_google_shopping, (kw, loc))
+            "maps_raw": (self.fetch_google_maps, (maps_kw, loc)),
+            "shopping_raw": (self.fetch_google_shopping, (shopping_kw, loc))
         }
 
         results = {}
@@ -559,6 +719,7 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
                 except Exception as exc:
                     logger.warning(f"Parallel fetch task {key} failed: {exc}")
                     results[key] = {}
+        print(f"    <<< All 5 SerpAPI calls completed.")
 
         search_raw = results.get("search_raw", {})
         trends_raw = results.get("trends_raw", {})
@@ -584,6 +745,38 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
 
         news_articles = news_raw.get("news_results", [])
         competitors = maps_raw.get("local_results", [])
+        
+        # Programmatic local area filtering to prioritize immediate neighborhood/adjacent suburbs
+        if competitors and loc:
+            loc_lower = loc.lower()
+            adjacent_map = {
+                "ameerpet": ["ameerpet", "balkampet", "bk guda", "srinagar colony", "yella reddy guda", "sr nagar", "sanjeeva reddy nagar", "panjagutta", "punjagutta", "somajiguda", "begumpet"],
+                "kukatpally": ["kukatpally", "kphb", "miyapur", "nizampet", "pragathi nagar", "moosapet", "hyderabad", "jntu"],
+                "madhapur": ["madhapur", "hitech city", "kondapur", "gachibowli", "jubilee hills", "kavuri hills", "yousufguda"]
+            }
+            # Look for synonyms or adjacent suburbs. If none, match the location query string itself.
+            valid_areas = adjacent_map.get(loc_lower, [loc_lower])
+            
+            def is_local_match(c):
+                addr = (c.get("address") or "").lower()
+                name = (c.get("title") or c.get("name") or "").lower()
+                return any(area in addr or area in name for area in valid_areas)
+                
+            local_only = [c for c in competitors if is_local_match(c)]
+            # If we found matches within the exact locality, keep ONLY those!
+            if local_only:
+                competitors = local_only
+            
+            # Sort the final list to guarantee the closest matches are on top
+            def proximity_sort(c):
+                addr = (c.get("address") or "").lower()
+                name = (c.get("title") or c.get("name") or "").lower()
+                # 0 for main locality match, 1 for adjacent area match, 2 otherwise
+                if loc_lower in addr or loc_lower in name:
+                    return 0
+                return 1
+            competitors.sort(key=proximity_sort)
+
         shopping_products = shopping_raw.get("shopping_results", [])
         
         warnings = []
@@ -683,9 +876,15 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
                 logger.warning(f"Failed to save shopping_data to database: {e}")
 
         # ── 5. Call LLM
+        print(f"    >>> Building prompt & calling Groq...")
         prompt = self.build_prompt(idea_data, market_data)
         logger.info("Invoking AI model (Groq) for final synthesis...")
         response_text = self._call_llm(prompt)
+        print(f"    <<< Groq responded. response_text length: {len(response_text) if response_text else 0}")
+        if response_text:
+            print(f"    First 200 chars: {response_text[:200]}")
+        else:
+            print(f"    WARNING: response_text is None/empty")
 
         # Check if LLM returned an error (not JSON)
         if response_text and response_text.startswith("ERROR:") or (response_text and re.match(r'^\d+:', response_text)):
