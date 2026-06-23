@@ -348,6 +348,12 @@ CRITICAL RULES:
         """
         prompt = f"""You are an elite business analyst and startup classification engine.
 Analyze the following startup/business idea text and extract the key attributes.
+
+CLASSIFICATION ACCURACY DIRECTIVES:
+1. Industry: Determine the macro industry sector (e.g. "Hospitality", "Food & Beverage", "Fitness & Wellness", "Technology", "Retail", "Healthcare", "Education").
+2. Business Type: Determine the specific business model/facility type (e.g. "Hotel", "Restaurant", "Cafe", "Gym", "SaaS", "E-commerce"). DO NOT use generic terms like "Brick and Mortar" or "Brick-and-mortar retail" or "Physical store". Be specific (e.g. use "Hotel" for hotels, "Restaurant" for food joints, "SaaS" for software, etc.).
+3. Sub-Category: Specify the niche or category extension (e.g. "Veg Fine Dining", "Luxury Resort", "Boutique Cafe", "CrossFit Box").
+
 You must return a valid JSON object matching this schema EXACTLY:
 {{
   "idea_text": "The original input text, cleaned of unnecessary spacing.",
@@ -382,13 +388,51 @@ Return only the JSON object. Do not include markdown fences, preambles, or addit
             words = [w.lower() for w in re.findall(r'\b\w+\b', idea_text) if w.lower() not in stop_words and len(w) > 2]
             keywords = ", ".join(words[:4]) if words else "startup"
 
+        industry = parsed.get("industry") or "General Business"
+        business_type = parsed.get("business_type") or "General Service"
+        sub_category = parsed.get("sub_category") or "General Niche"
+
+        # Deterministic corrections for common local/niche business models (e.g. South Indian "Hotel" meaning Restaurant, or general Hotels/SaaS/Gyms)
+        idea_lower = idea_text.lower()
+        
+        # 1. Food / Restaurant / Café (specifically handle Veg Hotel / Cafe / Restaurant)
+        if any(w in idea_lower for w in ["restaurant", "cafe", "café", "kitchen", "bakery", "dining", "dhaba", "food", "veg hotel", "veg restaurant", "biryani", "caterer", "catering", "veg", "vegetarian", "tiffin", "tiffins", "meals", "eats", "eatery"]):
+            industry = "Food & Beverage"
+            if "cafe" in idea_lower or "café" in idea_lower:
+                business_type = "Cafe / Coffee Shop"
+            elif "bakery" in idea_lower:
+                business_type = "Bakery"
+            else:
+                business_type = "Restaurant / Dining"
+                
+        # 2. Hospitality / Accommodation (Lodging hotel, resort, guest house)
+        # Ensure it is lodging and not a food hotel (e.g. if it contains "hotel" but does NOT contain food keywords)
+        elif any(w in idea_lower for w in ["hotel", "resort", "lodge", "stay", "accommodation", "hostel", "inn"]) and not any(w in idea_lower for w in ["veg", "food", "dining", "biryani", "pure veg", "restaurant"]):
+            industry = "Hospitality & Tourism"
+            business_type = "Hotel / Lodging"
+            
+        # 3. Gym / Fitness / Wellness
+        elif any(w in idea_lower for w in ["gym", "fitness", "yoga", "crossfit", "workout", "studio", "health club"]):
+            industry = "Fitness & Wellness"
+            business_type = "Fitness Center / Gym"
+            
+        # 4. SaaS / Software Technology
+        elif any(w in idea_lower for w in ["saas", "software", "dashboard", "app", "platform", "billing"]):
+            industry = "Technology & Software"
+            business_type = "SaaS / Software Product"
+            
+        # 5. On-Demand Services (e.g. laundry)
+        elif any(w in idea_lower for w in ["laundry", "dry cleaning", "washing"]):
+            industry = "Consumer Services"
+            business_type = "On-Demand Service"
+
         return {
             "idea_text": idea_text,
             "keywords": keywords,
             "location": location,
-            "industry": parsed.get("industry") or "General Business",
-            "business_type": parsed.get("business_type") or "General Service",
-            "sub_category": parsed.get("sub_category") or "General Niche"
+            "industry": industry,
+            "business_type": business_type,
+            "sub_category": sub_category
         }
 
     def extract_location_from_text(self, text: str) -> str:

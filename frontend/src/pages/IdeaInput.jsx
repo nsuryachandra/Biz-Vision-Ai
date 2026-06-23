@@ -239,8 +239,7 @@ const OneIdeaInput = () => {
             <button
               key={idx}
               onClick={() => {
-                setStartupIdea(tag.idea);
-                setLocationInput(tag.location);
+                setStartupIdea(`${tag.idea} in ${tag.location}`);
                 if (inputRef.current) {
                   inputRef.current.focus();
                 }
