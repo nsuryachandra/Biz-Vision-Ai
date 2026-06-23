@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -189,33 +190,34 @@ const FinancialSizingSection = ({ revenue, costs }) => {
 // ─── SWOT ANALYSIS QUADRANT ────────────────────────────────────────────────
 const SWOTAnalysisSection = ({ swot }) => {
   const quadrants = [
-    { title: "Strengths", items: swot?.strengths, icon: "lucide:zap", color: "emerald", bg: "bg-emerald-50/20 border-emerald-100/50 text-emerald-700" },
-    { title: "Weaknesses", items: swot?.weaknesses, icon: "lucide:alert-circle", color: "amber", bg: "bg-amber-50/20 border-amber-100/50 text-amber-700" },
-    { title: "Opportunities", items: swot?.opportunities, icon: "lucide:lightbulb", color: "indigo", bg: "bg-indigo-50/20 border-indigo-100/50 text-indigo-700" },
-    { title: "Threats", items: swot?.threats, icon: "lucide:shield-alert", color: "red", bg: "bg-red-50/20 border-red-100/50 text-red-700" }
+    { title: "Strengths", items: swot?.strengths, icon: "lucide:zap", bg: "bg-emerald-50/30 hover:bg-emerald-50/55 border-emerald-100/60 text-emerald-800" },
+    { title: "Weaknesses", items: swot?.weaknesses, icon: "lucide:alert-circle", bg: "bg-amber-50/30 hover:bg-amber-50/55 border-amber-100/60 text-amber-800" },
+    { title: "Opportunities", items: swot?.opportunities, icon: "lucide:lightbulb", bg: "bg-indigo-50/30 hover:bg-indigo-50/55 border-indigo-100/60 text-indigo-800" },
+    { title: "Threats", items: swot?.threats, icon: "lucide:shield-alert", bg: "bg-red-50/30 hover:bg-red-50/55 border-red-100/60 text-red-800" }
   ];
 
   return (
-    <div className="bg-card rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/50">
-      <h3 className="text-lg font-bold text-foreground mb-6">Strategic SWOT Grid</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {quadrants.map((q, idx) => (
-          <div key={idx} className={cn("p-5 rounded-xl border-2 bg-gradient-to-br", q.bg)}>
-            <div className="flex items-center gap-2.5 mb-3.5">
-              <Icon icon={q.icon} className="text-xl" />
-              <h4 className="font-extrabold text-sm uppercase tracking-wider">{q.title}</h4>
-            </div>
-            <ul className="space-y-2.5">
-              {(q.items || ["Insufficient evidence available in search context."]).map((item, i) => (
-                <li key={i} className="text-xs leading-relaxed text-foreground flex gap-2 font-normal">
-                  <span className="font-bold">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {quadrants.map((q, idx) => (
+        <motion.div
+          key={idx}
+          whileHover={{ y: -4, scale: 1.01 }}
+          className={cn("p-5 rounded-2xl border bg-gradient-to-br transition-all duration-300 shadow-sm", q.bg)}
+        >
+          <div className="flex items-center gap-2.5 mb-3.5 pb-2 border-b border-current/10">
+            <Icon icon={q.icon} className="text-xl" />
+            <h4 className="font-extrabold text-sm uppercase tracking-wider">{q.title}</h4>
           </div>
-        ))}
-      </div>
+          <ul className="space-y-2.5">
+            {(q.items || ["Insufficient evidence available."]).map((item, i) => (
+              <li key={i} className="text-xs leading-relaxed flex gap-2 font-semibold">
+                <span className="font-bold">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      ))}
     </div>
   );
 };
@@ -1114,81 +1116,79 @@ const IntelligenceReport = () => {
         <DisclaimerBanner />
 
         {/* Venture Statement Callout */}
-        <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-slate-200/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider">
-              <Icon icon="lucide:sparkles" /> Enterprise intelligence
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="p-6 md:p-8 rounded-[2rem] bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-950 text-white border border-indigo-950 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+          <div className="space-y-3 relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 uppercase tracking-wider border border-indigo-500/30">
+              <Icon icon="lucide:sparkles" className="animate-pulse" /> Enterprise intelligence
             </span>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white leading-tight">
               "{metadata?.idea_text || 'Startup Feasibility'}"
             </h1>
-            <div className="flex items-center gap-4 text-xs font-semibold text-slate-500">
-              <span className="flex items-center gap-1"><Icon icon="lucide:map-pin" className="text-sm text-indigo-600" /> {metadata?.location || 'Global'}</span>
-              <span className="flex items-center gap-1"><Icon icon="lucide:briefcase" className="text-sm text-indigo-600" /> {displayBusinessType}</span>
+            <div className="flex items-center gap-4 text-xs font-bold text-slate-300">
+              <span className="flex items-center gap-1"><Icon icon="lucide:map-pin" className="text-sm text-indigo-400" /> {metadata?.location || 'Global'}</span>
+              <span className="flex items-center gap-1"><Icon icon="lucide:briefcase" className="text-sm text-indigo-400" /> {displayBusinessType}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Founder Decision Engine */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+          className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100/50">
+                <Icon icon="lucide:cpu" className="text-xl" />
+              </div>
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Founder Decision Engine</h2>
+            </div>
             {renderIdentityCircle('Evidence + Insight')}
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Founder Decision Engine</h2>
           </div>
-          <div className="border-t border-slate-100 pt-4 space-y-6">
+          <div className="pt-2 space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'Market Fit', value: data.founder_decision_engine?.market_fit || 50, color: 'text-indigo-600' },
-                { label: 'Competition Readiness', value: data.founder_decision_engine?.competition || 50, color: 'text-cyan-600' },
-                { label: 'Scalability Potential', value: data.founder_decision_engine?.scalability || 50, color: 'text-emerald-600' },
-                { label: 'Capital Efficiency', value: data.founder_decision_engine?.capital_efficiency || 50, color: 'text-violet-600' }
+                { label: 'Market Fit', value: data.founder_decision_engine?.market_fit || 50, color: 'text-indigo-600', ringColor: 'text-indigo-600', bg: 'bg-indigo-50/10 hover:border-indigo-100' },
+                { label: 'Competition Readiness', value: data.founder_decision_engine?.competition || 50, color: 'text-cyan-600', ringColor: 'text-cyan-600', bg: 'bg-cyan-50/10 hover:border-cyan-100' },
+                { label: 'Scalability Potential', value: data.founder_decision_engine?.scalability || 50, color: 'text-emerald-600', ringColor: 'text-emerald-600', bg: 'bg-emerald-50/10 hover:border-emerald-100' },
+                { label: 'Capital Efficiency', value: data.founder_decision_engine?.capital_efficiency || 50, color: 'text-violet-600', ringColor: 'text-violet-600', bg: 'bg-violet-50/10 hover:border-violet-100' }
               ].map((item, idx) => {
                 const radius = 28;
                 const circumference = 2 * Math.PI * radius;
                 const offset = circumference - (item.value / 100) * circumference;
 
                 return (
-                  <div key={idx} className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-3.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all">
-                    {/* Circle at top with number inside */}
+                  <motion.div
+                    key={idx}
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    className={cn("bg-slate-50/40 border border-slate-100 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-3.5 shadow-sm transition-all duration-300", item.bg)}
+                  >
                     <div className="relative flex items-center justify-center w-16 h-16">
                       <svg className="w-16 h-16 transform -rotate-90">
-                        {/* Background track */}
-                        <circle
-                          cx="32"
-                          cy="32"
-                          r={radius}
-                          className="text-slate-100"
-                          strokeWidth="4.5"
-                          stroke="currentColor"
-                          fill="transparent"
-                        />
-                        {/* Foreground progress */}
-                        <circle
-                          cx="32"
-                          cy="32"
-                          r={radius}
-                          className={`${item.color} transition-all duration-1000 ease-out`}
-                          strokeWidth="5"
-                          strokeDasharray={circumference}
-                          strokeDashoffset={offset}
-                          strokeLinecap="round"
-                          stroke="currentColor"
-                          fill="transparent"
-                        />
+                        <circle cx="32" cy="32" r={radius} className="text-slate-100" strokeWidth="4.5" stroke="currentColor" fill="transparent" />
+                        <circle cx="32" cy="32" r={radius} className={`${item.ringColor} transition-all duration-1000 ease-out`} strokeWidth="5" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" stroke="currentColor" fill="transparent" />
                       </svg>
                       <span className="absolute text-sm font-extrabold text-slate-800">{item.value}%</span>
                     </div>
-                    {/* Label below the circle */}
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500 leading-tight">{item.label}</span>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
 
-            {/* Risk Factor Assessment */}
             <div className="p-4 bg-red-50/35 border border-red-100/50 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-100/80 flex items-center justify-center text-red-600">
+                <div className="w-10 h-10 rounded-full bg-red-100/80 flex items-center justify-center text-red-600 shadow-sm">
                   <Icon icon="lucide:alert-triangle" className="text-xl" />
                 </div>
                 <div className="text-left">
@@ -1198,21 +1198,33 @@ const IntelligenceReport = () => {
               </div>
               <div className="flex items-center gap-2 self-start md:self-center">
                 <span className="text-xs font-bold uppercase text-slate-400">Risk Score:</span>
-                <span className="px-3.5 py-1.5 rounded-full bg-red-100 text-red-700 font-extrabold text-sm flex items-center gap-1.5">
+                <span className="px-3.5 py-1.5 rounded-full bg-red-100 text-red-700 font-extrabold text-sm flex items-center gap-1.5 shadow-sm border border-red-200/30">
                   {data.founder_decision_engine?.risk || 50}/100
                 </span>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Executive Summary */}
-        <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+          className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 shadow-sm border border-purple-100/50">
+                <Icon icon="lucide:file-text" className="text-xl" />
+              </div>
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Executive Summary</h2>
+            </div>
             {renderIdentityCircle('Insight')}
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Executive Summary</h2>
           </div>
-          <div className="border-t border-slate-100 pt-4 space-y-4">
+          <div className="pt-2 space-y-4">
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Corporate Title</span>
               <h3 className="text-lg font-extrabold text-indigo-900">"{data.executive_summary?.title}"</h3>
@@ -1221,44 +1233,56 @@ const IntelligenceReport = () => {
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Business Summary</span>
               <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.executive_summary?.business_summary}</p>
             </div>
-            <div className="p-4 rounded-xl bg-indigo-50/40 border border-indigo-100/50">
+            <div className="p-4 rounded-xl bg-indigo-50/40 border border-indigo-100/50 shadow-sm">
               <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">One Paragraph Verdict</span>
               <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.executive_summary?.one_paragraph_verdict}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl">
+              <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl shadow-sm">
                 <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Key Opportunity</span>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.executive_summary?.key_opportunity}</p>
               </div>
-              <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl">
+              <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl shadow-sm">
                 <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Biggest Challenge</span>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.executive_summary?.biggest_challenge}</p>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* 2-Column Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           {/* Left Column Stack */}
           <div className="space-y-6 flex flex-col">
             {/* Market Overview */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100/50">
+                    <Icon icon="lucide:bar-chart-2" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Market Overview</h2>
+                </div>
                 {renderIdentityCircle('Evidence + Insight')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Market Overview</h2>
               </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div className="pt-2 space-y-4">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Search Demand Velocity</span>
                   <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.market_overview?.search_demand}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Trend Direction</span>
                     <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.trend_direction}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Maturity Stage</span>
                     <p className="text-xs text-slate-700 leading-relaxed font-bold">{data.market_overview?.market_maturity}</p>
                   </div>
@@ -1270,49 +1294,83 @@ const IntelligenceReport = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Customer Intelligence */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
-                {renderIdentityCircle('Insight')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Customer Intelligence</h2>
-              </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Target Customer Persona</span>
-                  <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.customer_intelligence?.customer_persona}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Observed Pain Points</span>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                    {(data.customer_intelligence?.pain_points || []).map((pt, i) => (
-                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
-                        <span className="text-indigo-500 font-bold">•</span> {pt}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Buying Behavior Drivers</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.buying_behavior}</p>
+            {/* Competitor Intelligence */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 shadow-sm border border-blue-100/50">
+                    <Icon icon="lucide:users" className="text-xl" />
                   </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Spending Patterns & Wallet Share</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.customer_intelligence?.spending_patterns}</p>
-                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Competitor Intelligence</h2>
                 </div>
+                {renderIdentityCircle('Evidence')}
               </div>
-            </div>
+              <div className="pt-2 space-y-4">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Market Gaps & Vulnerabilities</span>
+                  <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.competitor_intelligence?.market_gaps}</p>
+                </div>
+                
+                {competitors.length > 0 && (
+                  <div className="grid grid-cols-1 gap-6 pt-2">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Local Rivals Map (From Live API Sourcing)</span>
+                      {competitors.slice(0, 4).map((comp, idx) => (
+                        <motion.div
+                          key={idx}
+                          whileHover={{ x: 4 }}
+                          className="p-4 bg-slate-50/50 hover:bg-slate-50/80 rounded-xl border border-slate-100 hover:border-blue-200 flex items-start gap-4 transition-all"
+                        >
+                          <div className="w-10 h-10 bg-blue-50 text-blue-600 font-extrabold flex items-center justify-center rounded-lg flex-shrink-0 text-sm">
+                            {(comp.name || comp.title || 'CO').slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-bold text-slate-800">{comp.name || comp.title}</span>
+                              <span className="text-xs font-bold text-amber-500">★ {comp.rating || "4.0"} ({comp.reviews || "0"} reviews)</span>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-1 font-semibold">{comp.address}</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <div className="bg-slate-50/30 rounded-2xl p-6 border border-slate-100 shadow-sm">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Competitor Ratings Benchmarking</span>
+                      <CompetitorsRatingsChart competitors={competitors} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
 
             {/* Opportunity Analysis */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 shadow-sm border border-purple-100/50">
+                    <Icon icon="lucide:lightbulb" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Opportunity Analysis</h2>
+                </div>
                 {renderIdentityCircle('Insight')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Opportunity Analysis</h2>
               </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div className="pt-2 space-y-4">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Why This Business May Work</span>
                   <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.opportunity_analysis?.why_work}</p>
@@ -1321,7 +1379,7 @@ const IntelligenceReport = () => {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Untapped Local Opportunities</span>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                     {(data.opportunity_analysis?.untapped_opportunities || []).map((opp, i) => (
-                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm">
                         <span className="text-indigo-500 font-bold">•</span> {opp}
                       </li>
                     ))}
@@ -1329,32 +1387,93 @@ const IntelligenceReport = () => {
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Premium Positioning Hook</span>
-                  <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100">{data.opportunity_analysis?.premium_positioning}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100 shadow-sm">{data.opportunity_analysis?.premium_positioning}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Financial & Scenario Analysis */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
+            {/* Revenue Model */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100/50">
+                    <Icon icon="lucide:wallet" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
+                </div>
                 {renderIdentityCircle('Financial')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Financial & Scenario Analysis</h2>
               </div>
-              <div className="border-t border-slate-100 pt-4 space-y-6">
+              <div className="pt-2 space-y-4">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
+                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm">
+                        <span className="text-emerald-500 font-bold">•</span> {stream}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column Stack */}
+          <div className="space-y-6 flex flex-col">
+            {/* Financial & Scenario Analysis */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100/50">
+                    <Icon icon="lucide:calculator" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Financial & Scenario Analysis</h2>
+                </div>
+                {renderIdentityCircle('Financial')}
+              </div>
+              <div className="pt-2 space-y-6">
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Cost & Capital Analysis</span>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center shadow-sm">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
-                      <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
+                      <span className="text-base font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
                     </div>
-                    <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
+                    <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center shadow-sm">
                       <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
-                      <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.operating_cost}</span>
+                      <span className="text-base font-extrabold text-slate-700">{data.cost_capital_analysis?.operating_cost}</span>
                     </div>
-                    <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
+                    <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center shadow-sm">
                       <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
-                      <span className="text-lg font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
+                      <span className="text-base font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
                     </div>
                   </div>
                 </div>
@@ -1362,83 +1481,98 @@ const IntelligenceReport = () => {
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Scenario Planning</span>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center">
+                    <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center shadow-sm">
                       <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
                       <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
                     </div>
-                    <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center">
+                    <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center shadow-sm">
                       <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
                       <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
                     </div>
-                    <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center">
+                    <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center shadow-sm">
                       <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
                       <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
 
-          {/* Right Column Stack */}
-          <div className="space-y-6 flex flex-col">
-            {/* Competitor Intelligence */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
-                {renderIdentityCircle('Evidence')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Competitor Intelligence</h2>
-              </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Market Gaps & Vulnerabilities</span>
-                  <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.competitor_intelligence?.market_gaps}</p>
-                </div>
-                
-                {competitors.length > 0 && (
-                  <div className="grid grid-cols-1 gap-6 pt-4">
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Local Rivals Map (From Live API Sourcing)</span>
-                      {competitors.slice(0, 4).map((comp, idx) => (
-                        <div key={idx} className="p-4 bg-slate-50/50 rounded-xl border border-slate-100 flex items-start gap-4">
-                          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 font-extrabold flex items-center justify-center rounded-lg flex-shrink-0 text-sm">
-                            {(comp.name || comp.title || 'CO').slice(0, 2).toUpperCase()}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-bold text-slate-880">{comp.name || comp.title}</span>
-                              <span className="text-xs font-bold text-amber-500">★ {comp.rating || "4.0"} ({comp.reviews || "0"} reviews)</span>
-                            </div>
-                            <p className="text-xs text-slate-400 mt-1 font-semibold">{comp.address}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="bg-slate-50/40 rounded-2xl p-6 border border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Competitor Ratings Benchmarking</span>
-                      <CompetitorsRatingsChart competitors={competitors} />
-                    </div>
+            {/* Customer Intelligence */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 shadow-sm border border-purple-100/50">
+                    <Icon icon="lucide:user-check" className="text-xl" />
                   </div>
-                )}
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Customer Intelligence</h2>
+                </div>
+                {renderIdentityCircle('Insight')}
               </div>
-            </div>
+              <div className="pt-2 space-y-4">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Target Customer Persona</span>
+                  <p className="text-sm leading-relaxed text-slate-600 font-medium">{data.customer_intelligence?.customer_persona}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Observed Pain Points</span>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    {(data.customer_intelligence?.pain_points || []).map((pt, i) => (
+                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100 shadow-sm">
+                        <span className="text-indigo-500 font-bold">•</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Buying Behavior Drivers</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100 shadow-sm">{data.customer_intelligence?.buying_behavior}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Spending Patterns & Wallet Share</span>
+                    <p className="text-xs text-slate-600 leading-relaxed font-semibold bg-slate-50/50 p-3 rounded-xl border border-slate-100 shadow-sm">{data.customer_intelligence?.spending_patterns}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
 
             {/* Industry Trends */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 shadow-sm border border-blue-100/50">
+                    <Icon icon="lucide:globe" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Industry Trends</h2>
+                </div>
                 {renderIdentityCircle('Evidence')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Industry Trends</h2>
               </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div className="pt-2 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">News Sentiment Analysis</span>
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">News Sentiment</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.news_analysis}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Macro Trend Analysis</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.trend_analysis}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Emerging Standards</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-medium">{data.industry_trends?.emerging_changes}</p>
                   </div>
@@ -1446,15 +1580,22 @@ const IntelligenceReport = () => {
 
                 {/* Live News Signals */}
                 {news.length > 0 && (
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Live Industry News Signals</span>
                     <div className="grid grid-cols-1 gap-4">
                       {news.slice(0, 3).map((item, idx) => (
-                        <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="block p-4 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition-all">
+                        <motion.a
+                          key={idx}
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ x: 4 }}
+                          className="block p-4 bg-slate-50/50 hover:bg-slate-50 rounded-xl border border-slate-100 hover:border-blue-200 transition-all shadow-sm"
+                        >
                           <span className="text-[10px] font-bold text-indigo-600 block mb-1">{item.source || "News Source"}</span>
                           <p className="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
                           {item.date && <span className="text-[9px] text-slate-400 block mt-2 font-bold">{item.date}</span>}
-                        </a>
+                        </motion.a>
                       ))}
                     </div>
                   </div>
@@ -1462,150 +1603,153 @@ const IntelligenceReport = () => {
 
                 {/* Live Shopping Benchmarks */}
                 {shopping.length > 0 && (
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Alternative Product & Pricing Benchmarks</span>
                     <div className="grid grid-cols-2 gap-4">
                       {shopping.slice(0, 4).map((item, idx) => (
-                        <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col justify-between">
+                        <motion.div
+                          key={idx}
+                          whileHover={{ y: -3 }}
+                          className="p-3 bg-slate-50/50 hover:bg-white rounded-xl border border-slate-100 hover:border-blue-100 flex flex-col justify-between shadow-sm transition-all"
+                        >
                           <p className="text-[11px] font-bold text-slate-800 line-clamp-2 leading-relaxed">{item.title}</p>
                           <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
                             <span className="text-xs font-extrabold text-emerald-600">{item.price || "N/A"}</span>
                             {item.source && <span className="text-[9px] text-slate-400 font-bold truncate max-w-[50px]">{item.source}</span>}
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Revenue Model */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
-                {renderIdentityCircle('Financial')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Revenue Model</h2>
-              </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Primary Revenue Streams</span>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                    {(data.revenue_model?.revenue_streams || []).map((stream, i) => (
-                      <li key={i} className="text-xs text-slate-600 leading-normal flex gap-1.5 font-semibold bg-slate-50 p-2 rounded-lg border border-slate-100">
-                        <span className="text-emerald-500 font-bold">•</span> {stream}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Upsell Mechanics</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.upsells}</p>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Memberships Offering</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.memberships}</p>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Subscription Tiers</span>
-                    <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.revenue_model?.subscriptions}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </motion.div>
 
             {/* Risk Assessment */}
-            <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-              <div className="space-y-1.5">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+              className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100/50">
+                    <Icon icon="lucide:shield-alert" className="text-xl" />
+                  </div>
+                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Risk Assessment</h2>
+                </div>
                 {renderIdentityCircle('Evidence + Insight')}
-                <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Risk Assessment</h2>
               </div>
-              <div className="border-t border-slate-100 pt-4 space-y-4">
+              <div className="pt-2 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Market Risks</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.market_risks}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Competition Risks</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.competition_risks}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Operational Risks</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.operational_risks}</p>
                   </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Legal & Compliance Risks</span>
                     <p className="text-xs text-slate-600 leading-relaxed font-semibold">{data.risk_assessment?.legal_risks}</p>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* SWOT Analysis */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+          className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100/50">
+                <Icon icon="lucide:layers" className="text-xl" />
+              </div>
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">SWOT Analysis</h2>
+            </div>
             {renderIdentityCircle('Evidence + Insight')}
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">SWOT Analysis</h2>
           </div>
-          <div className="border-t border-slate-100 pt-4">
+          <div className="pt-2">
             <SWOTAnalysisSection swot={data.swot_analysis} />
           </div>
-        </div>
+        </motion.div>
 
         {/* Launch Roadmap */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+          className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100/50">
+                <Icon icon="lucide:map" className="text-xl" />
+              </div>
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Launch Roadmap</h2>
+            </div>
             {renderIdentityCircle('Evidence + Insight')}
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Launch Roadmap</h2>
           </div>
-          <div className="border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Weeks 1-2</span>
-              <ul className="space-y-1.5">
-                {(data.launch_roadmap?.week_1_2 || []).map((task, idx) => (
-                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Weeks 3-4</span>
-              <ul className="space-y-1.5">
-                {(data.launch_roadmap?.week_3_4 || []).map((task, idx) => (
-                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Month 2</span>
-              <ul className="space-y-1.5">
-                {(data.launch_roadmap?.month_2 || []).map((task, idx) => (
-                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">Month 3</span>
-              <ul className="space-y-1.5">
-                {(data.launch_roadmap?.month_3 || []).map((task, idx) => (
-                  <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
-                ))}
-              </ul>
-            </div>
+          <div className="pt-2 grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { title: "Weeks 1-2", tasks: data.launch_roadmap?.week_1_2 },
+              { title: "Weeks 3-4", tasks: data.launch_roadmap?.week_3_4 },
+              { title: "Month 2", tasks: data.launch_roadmap?.month_2 },
+              { title: "Month 3", tasks: data.launch_roadmap?.month_3 }
+            ].map((step, sIdx) => (
+              <motion.div
+                key={sIdx}
+                whileHover={{ y: -3 }}
+                className="p-4 bg-slate-50 border border-slate-100 rounded-xl shadow-sm transition-all"
+              >
+                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-2 font-extrabold">{step.title}</span>
+                <ul className="space-y-1.5">
+                  {(step.tasks || []).map((task, idx) => (
+                    <li key={idx} className="text-xs text-slate-600 font-semibold leading-normal flex gap-1"><span className="text-indigo-500 font-bold">•</span> {task}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
           </div>
-        </div>
-
-
+        </motion.div>
 
         {/* Final Verdict */}
-        <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-          <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.2)', boxShadow: '0 20px 40px rgba(99,102,241,0.04)' }}
+          className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.015)] space-y-6 transition-colors duration-300"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100/50">
+                <Icon icon="lucide:award" className="text-xl" />
+              </div>
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Final Verdict</h2>
+            </div>
             {renderIdentityCircle('Evidence + Insight')}
-            <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Final Verdict</h2>
           </div>
-          <div className="border-t border-slate-100 pt-4">
+          <div className="pt-2">
             <FinalVerdict 
               scores={{ viability: data.founder_decision_engine?.market_fit }}
               analysis={{ final_recommendation: JSON.stringify({ next_step: data.final_verdict?.context_text, status: data.final_verdict?.launch_recommendation, grade: data.final_verdict?.investment_grade, confidence: data.final_verdict?.confidence_level }) }}
@@ -1615,7 +1759,7 @@ const IntelligenceReport = () => {
               metadata={metadata}
             />
           </div>
-        </div>
+        </motion.div>
       </main>
     </div>
   );
