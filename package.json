@@ -1,0 +1,29 @@
+{
+  "name": "biz-vision-ai",
+  "version": "1.0.0",
+  "description": "BizVision AI is a premium, McKinsey-inspired SaaS application designed to validate business concepts before investing capital. The platform leverages SerpAPI to query Google Search, Trends, News, and Maps, and utilizes Groq (Llama-3.3) and Google Gemini to build detailed text reports, operational risks, competitor spreadsheets, and brand name viability profiles.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nsuryachandra/Biz-Vision-Ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nsuryachandra/Biz-Vision-Ai/issues"
+  },
+  "homepage": "https://github.com/nsuryachandra/Biz-Vision-Ai#readme",
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

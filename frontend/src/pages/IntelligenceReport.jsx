@@ -768,30 +768,43 @@ const IntelligenceReport = () => {
         </div>
       </div>
 
-      <!-- Cost & Capital Analysis -->
+      <!-- Financial & Scenario Analysis -->
       <div class="section-card">
-        <h2 class="section-title">Cost & Capital Analysis</h2>
-        <div class="grid-3">
-          <div class="grid-card">
-            <div class="content-label">Startup Capital</div>
-            <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.estimated_startup_cost || "N/A"}</strong>
-          </div>
-          <div class="grid-card">
-            <div class="content-label">Operating Cost</div>
-            <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.operating_cost || "N/A"}</strong>
-          </div>
-          <div class="grid-card">
-            <div class="content-label">Recommended Runway</div>
-            <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.runway || "N/A"}</strong>
-          </div>
-        </div>
-        <div class="content-block" style="margin-top: 15px;">
-          <div class="content-label">Recommended Allocation Capital</div>
-          <p class="content-text"><strong>${currentData.cost_capital_analysis?.recommended_capital || "N/A"}</strong></p>
-        </div>
+        <h2 class="section-title">Financial & Scenario Analysis</h2>
         <div class="content-block">
-          <div class="content-label">Contextual Expense Drivers</div>
-          <p class="content-text">${currentData.cost_capital_analysis?.context_text || "N/A"}</p>
+          <div class="content-label" style="margin-bottom: 8px;">Cost & Capital Analysis</div>
+          <div class="grid-3">
+            <div class="grid-card">
+              <div class="content-label">Startup Capital</div>
+              <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.estimated_startup_cost || "N/A"}</strong>
+            </div>
+            <div class="grid-card">
+              <div class="content-label">Operating Cost</div>
+              <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.operating_cost || "N/A"}</strong>
+            </div>
+            <div class="grid-card">
+              <div class="content-label">Recommended Capital</div>
+              <strong style="color: #4F46E5; font-size: 16px;">${currentData.cost_capital_analysis?.recommended_capital || "N/A"}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 20px;">
+          <div class="content-label" style="margin-bottom: 8px;">Scenario Planning</div>
+          <div class="grid-3">
+            <div class="grid-card">
+              <div class="content-label">Best Case Scenario</div>
+              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${currentData.scenario_planning?.best_case || "N/A"}</p>
+            </div>
+            <div class="grid-card">
+              <div class="content-label">Expected Case Scenario</div>
+              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${currentData.scenario_planning?.expected_case || "N/A"}</p>
+            </div>
+            <div class="grid-card">
+              <div class="content-label">Worst Case Scenario</div>
+              <p class="content-text" style="font-weight: bold; margin-top: 5px;">${currentData.scenario_planning?.worst_case || "N/A"}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -840,23 +853,7 @@ const IntelligenceReport = () => {
       </div>
 
       <!-- Scenario Planning -->
-      <div class="section-card">
-        <h2 class="section-title">Scenario Planning</h2>
-        <div class="grid-3">
-          <div class="grid-card">
-            <div class="content-label">Best Case Scenario</div>
-            <p class="content-text">${currentData.scenario_planning?.best_case || "N/A"}</p>
-          </div>
-          <div class="grid-card">
-            <div class="content-label">Expected Case Scenario</div>
-            <p class="content-text">${currentData.scenario_planning?.expected_case || "N/A"}</p>
-          </div>
-          <div class="grid-card">
-            <div class="content-label">Worst Case Scenario</div>
-            <p class="content-text">${currentData.scenario_planning?.worst_case || "N/A"}</p>
-          </div>
-        </div>
-      </div>
+      <!-- Scenario Planning merged with Financial & Scenario Analysis -->
 
       <!-- Launch Roadmap -->
       <div class="section-card">
@@ -1327,34 +1324,45 @@ const IntelligenceReport = () => {
             </div>
           </div>
 
-          {/* Cost & Capital Analysis */}
+          {/* Financial & Scenario Analysis */}
           <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Cost & Capital Analysis</h2>
+              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Financial & Scenario Analysis</h2>
             </div>
             <div className="border-t border-slate-100 pt-4 space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
-                  <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
-                </div>
-                <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
-                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
-                  <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.operating_cost}</span>
-                </div>
-                <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
-                  <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
-                  <span className="text-lg font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Cost & Capital Analysis</span>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Minimum Startup</span>
+                    <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.estimated_startup_cost}</span>
+                  </div>
+                  <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-center">
+                    <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Monthly Operating</span>
+                    <span className="text-lg font-extrabold text-slate-700">{data.cost_capital_analysis?.operating_cost}</span>
+                  </div>
+                  <div className="p-4 bg-cyan-50/50 rounded-xl border border-cyan-100 text-center">
+                    <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-wider block mb-1">Recommended Capital</span>
+                    <span className="text-lg font-extrabold text-cyan-700">{data.cost_capital_analysis?.recommended_capital}</span>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Recommended Runway</span>
-                  <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.runway}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Contextual Expense Drivers</span>
-                  <p className="text-xs text-slate-700 leading-relaxed font-bold bg-slate-50 p-3 rounded-xl border border-slate-100">{data.cost_capital_analysis?.context_text}</p>
+
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Scenario Planning</span>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center">
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
+                    <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
+                  </div>
+                  <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center">
+                    <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
+                    <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
+                  </div>
+                  <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center">
+                    <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
+                    <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1387,28 +1395,7 @@ const IntelligenceReport = () => {
             </div>
           </div>
 
-          {/* Scenario Planning */}
-          <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-slate-200/60 space-y-6">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Scenario Planning</h2>
-            </div>
-            <div className="border-t border-slate-100 pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-center">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Best Case</span>
-                  <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.best_case}</p>
-                </div>
-                <div className="p-4 bg-indigo-50/20 border border-indigo-100 rounded-xl text-center">
-                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block mb-1">Expected Case</span>
-                  <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.expected_case}</p>
-                </div>
-                <div className="p-4 bg-red-50/20 border border-red-100 rounded-xl text-center">
-                  <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider block mb-1">Worst Case</span>
-                  <p className="text-xs text-slate-700 font-bold mt-2">{data.scenario_planning?.worst_case}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Scenario Planning merged with Financial & Scenario Analysis */}
         </div>
 
         {/* SWOT Analysis */}
